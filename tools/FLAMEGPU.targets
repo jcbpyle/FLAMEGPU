@@ -40,6 +40,8 @@
     <Delete Condition=" '%(FLAMEGPU_Template_Build_Rule.SimulationTransform)' == 'true' " Files="%(FLAMEGPU_Template_Build_Rule.OutputDir)simulation.cu"/>
     <Delete Condition=" '%(FLAMEGPU_Template_Build_Rule.MainTransform)' == 'true' " Files="%(FLAMEGPU_Template_Build_Rule.OutputDir)main.cu;"/>
     <Delete Condition=" '%(FLAMEGPU_Template_Build_Rule.VisualisationTransform)' == 'true' " Files="%(FLAMEGPU_Template_Build_Rule.OutputDir)visualisation.cu"/>
+    <Delete Condition=" '%(FLAMEGPU_Template_Build_Rule.LoggingTransform)' == 'true' " Files="%(FLAMEGPU_Template_Build_Rule.OutputDir)logging.h"/>
+    <Delete Condition=" '%(FLAMEGPU_Template_Build_Rule.FunctionTemplateTransform)' == 'true' " Files="%(FLAMEGPU_Template_Build_Rule.OutputDir)function_template.c"/>
   </Target>
   
   
@@ -87,6 +89,8 @@
       SimulationTransform="%(FLAMEGPU_Template_Build_Rule.SimulationTransform)"
       MainTransform="%(FLAMEGPU_Template_Build_Rule.MainTransform)"
       VisualisationTransform="%(FLAMEGPU_Template_Build_Rule.VisualisationTransform)"
+      LoggingTransform="%(FLAMEGPU_Template_Build_Rule.LoggingTransform)"
+      FunctionTemplateTransform="%(FLAMEGPU_Template_Build_Rule.FunctionTemplateTransform)"
       AdditionalOptions="%(FLAMEGPU_Template_Build_Rule.AdditionalOptions)"
       Inputs="@(FLAMEGPU_Template_Build_Rule)" 
 	  StandardOutputImportance="High"
@@ -131,6 +135,14 @@
 		<VisualisationTransformOut Condition=" '%(FLAMEGPU_Template_Build_Rule.VisualisationTransform)' == 'true' ">"%(FLAMEGPU_Template_Build_Rule.XSLTProcessorLocation)" "%(FullPath)" "%(FLAMEGPU_Template_Build_Rule.TemplateDir)\visualisation.xslt" "%(FLAMEGPU_Template_Build_Rule.OutputDir)\visualisation.cu" &#xA;</VisualisationTransformOut>
 		<VisualisationTransformOut Condition=" '%(FLAMEGPU_Template_Build_Rule.VisualisationTransform)' != 'true' "></VisualisationTransformOut>
 		<VisualisationTransformOutFile Condition=" '%(FLAMEGPU_Template_Build_Rule.VisualisationTransform)' == 'true' ">%(FLAMEGPU_Template_Build_Rule.OutputDir)\visualisation.cu ;</VisualisationTransformOutFile>
+
+    <LoggingTransformOut Condition=" '%(FLAMEGPU_Template_Build_Rule.LoggingTransform)' == 'true' ">"%(FLAMEGPU_Template_Build_Rule.XSLTProcessorLocation)" "%(FullPath)" "%(FLAMEGPU_Template_Build_Rule.TemplateDir)\logging.xslt" "%(FLAMEGPU_Template_Build_Rule.OutputDir)\logging.h" &#xA;</LoggingTransformOut>
+    <LoggingTransformOut Condition=" '%(FLAMEGPU_Template_Build_Rule.LoggingTransform)' != 'true' "></LoggingTransformOut>
+    <LoggingTransformOut Condition=" '%(FLAMEGPU_Template_Build_Rule.LoggingTransform)' == 'true' ">%(FLAMEGPU_Template_Build_Rule.OutputDir)\logging.h ;</LoggingTransformOut>
+
+    <FunctionTemplateTransform Condition=" '%(FLAMEGPU_Template_Build_Rule.FunctionTemplateTransform)' == 'true' ">"%(FLAMEGPU_Template_Build_Rule.XSLTProcessorLocation)" "%(FullPath)" "%(FLAMEGPU_Template_Build_Rule.TemplateDir)\functions.xslt" "%(FLAMEGPU_Template_Build_Rule.OutputDir)\function_template.c" &#xA;</FunctionTemplateTransform>
+    <FunctionTemplateTransform Condition=" '%(FLAMEGPU_Template_Build_Rule.FunctionTemplateTransform)' != 'true' "></FunctionTemplateTransform>
+    <FunctionTemplateTransform Condition=" '%(FLAMEGPU_Template_Build_Rule.FunctionTemplateTransform)' == 'true' ">%(FLAMEGPU_Template_Build_Rule.OutputDir)\function_template.c ;</FunctionTemplateTransform>
 		
 		<AllBuildOutputs>$(HeadTransformOutFile) $(FLAMEGPUKernalsTransformOutFile) $(IOTransformOutFile) $(SimulationTransformOutFile) $(MainTransformOutFile) $(VisualisationTransformOutFile)</AllBuildOutputs>
 	</PropertyGroup>
