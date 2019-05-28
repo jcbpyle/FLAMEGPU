@@ -10,12 +10,12 @@
             <gpu:variable>
                 <type>float</type>
                 <name>REPRODUCE_PREY_PROB</name>
-                <defaultValue>0.05</defaultValue>
+                <defaultValue>0.05F</defaultValue>
             </gpu:variable>
             <gpu:variable>
                 <type>float</type>
                 <name>REPRODUCE_PREDATOR_PROB</name>
-                <defaultValue>0.03</defaultValue>
+                <defaultValue>0.03F</defaultValue>
             </gpu:variable>
             <gpu:variable>
                 <type>int</type>

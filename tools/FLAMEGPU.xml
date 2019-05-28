@@ -82,6 +82,20 @@
       DisplayName="Transform visualisation.xslt enabled"
       Description="Toggle XSLT Processing for the visualisation.xslt FLAMEGPU Template File"
        />
+    <BoolProperty
+      Name="LoggingTransform"
+      Category="XSLT Options"
+      HelpContext="0"
+      DisplayName="Transform logging.xslt enabled"
+      Description="Toggle XSLT Processing for the logging.xslt FLAMEGPU Template File"
+      />
+    <BoolProperty
+      Name="FunctionTemplateTransform"
+      Category="XSLT Options"
+      HelpContext="0"
+      DisplayName="Transform functions.xslt enabled"
+      Description="Toggle XSLT Processing for the functions.xslt FLAMEGPU Template File"
+      />
     <StringProperty
       Name="CommandLineTemplate"
       DisplayName="Command Line"

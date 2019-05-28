@@ -10,7 +10,7 @@
 <xsl:call-template name="copyrightNotice"></xsl:call-template>
 /*
  * Copyright 2019 University of Sheffield.
- * Author: JAmes Pyle
+ * Author: James Pyle
  * Contact: jcbpyle1@sheffield.ac.uk (https://jcbpyle.github.io/)
  *
  * University of Sheffield retain all intellectual property and 
@@ -27,8 +27,6 @@
 #ifndef _FLAMEGPU_LOGGING_FUNCTIONS
 #define _FLAMEGPU_LOGGING_FUNCTIONS
 
-#include &lt;header.h&gt;
-#include &lt;logging.h&gt;
 <xsl:if test="gpu:xmodel/xmml:logging">
 FILE *results_file;
 <xsl:for-each select="gpu:xmodel/xmml:logging/xmml:log">

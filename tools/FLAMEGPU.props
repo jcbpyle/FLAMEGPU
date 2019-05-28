@@ -20,9 +20,11 @@
 		<SimulationTransform>true</SimulationTransform>
 		<MainTransform>true</MainTransform>
 		<VisualisationTransform>false</VisualisationTransform>
+    <LoggingTransform>true</LoggingTransform>
+    <FunctionTemplateTransform>true</FunctionTemplateTransform>
 		
-		<CommandLineTemplate>[HeaderTransform] [FLAMEGPUKernalsTransform] [IOTransform] [SimulationTransform] [MainTransform] [VisualisationTransform]</CommandLineTemplate>
-		<Outputs>.\src\dynamic\header.h;.\src\dynamic\FLAMEGPU_kernals.cu;.\src\dynamic\io.cu;.\src\dynamic\simulation.cu;.\src\dynamic\main.cu;.\src\dynamic\visualisation.cu</Outputs>
+		<CommandLineTemplate>[HeaderTransform] [FLAMEGPUKernalsTransform] [IOTransform] [SimulationTransform] [MainTransform] [VisualisationTransform] [LoggingTransform] [FunctionTemplateTransform]</CommandLineTemplate>
+		<Outputs>.\src\dynamic\header.h;.\src\dynamic\FLAMEGPU_kernals.cu;.\src\dynamic\io.cu;.\src\dynamic\simulation.cu;.\src\dynamic\main.cu;.\src\dynamic\visualisation.cu;.\src\dynamic\logging.h;.\src\dynamic\function_temple.cu</Outputs>
       <ExecutionDescription>Generating Dynamic Code from FLAMEGPU Templates</ExecutionDescription>
     </FLAMEGPU_Template_Build_Rule>
   </ItemDefinitionGroup>

@@ -13,7 +13,7 @@
     <CudaCompile Include="src\dynamic\visualisation.cu">
       <Filter>dynamic</Filter>
     </CudaCompile>
-    <CudaCompile Include="src\dynamic\logging.cu">
+    <CudaCompile Include="src\dynamic\logging.h">
       <Filter>dynamic</Filter>
     </CudaCompile>
   </ItemGroup>
@@ -29,9 +29,7 @@
     <ClInclude Include="src\visualisation\visualisation.h">
       <Filter>visualisation</Filter>
     </ClInclude>
-    <ClInclude Include="src\visualisation\logging.h">
-      <Filter>dynamic</Filter>
-    </ClInclude>
+    <ClInclude Include="XMMLExperiment.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\FLAMEGPU\templates\FLAMEGPU_kernals.xslt">
@@ -53,9 +51,6 @@
       <Filter>templates</Filter>
     </Xml>
     <Xml Include="..\..\FLAMEGPU\templates\logging.xslt">
-      <Filter>templates</Filter>
-    </Xml>
-    <Xml Include="..\..\FLAMEGPU\templates\experiment.xslt">
       <Filter>templates</Filter>
     </Xml>
   </ItemGroup>
@@ -98,5 +93,6 @@
     <Xsd Include="..\..\FLAMEGPU\schemas\XMMLGPU.xsd">
       <Filter>schemas</Filter>
     </Xsd>
+    <Xsd Include="..\..\FLAMEGPU\schemas\XMMLExperiment.xsd" />
   </ItemGroup>
 </Project>

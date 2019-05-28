@@ -41,7 +41,7 @@
     <Delete Condition=" '%(FLAMEGPU_Template_Build_Rule.MainTransform)' == 'true' " Files="%(FLAMEGPU_Template_Build_Rule.OutputDir)main.cu;"/>
     <Delete Condition=" '%(FLAMEGPU_Template_Build_Rule.VisualisationTransform)' == 'true' " Files="%(FLAMEGPU_Template_Build_Rule.OutputDir)visualisation.cu"/>
     <Delete Condition=" '%(FLAMEGPU_Template_Build_Rule.LoggingTransform)' == 'true' " Files="%(FLAMEGPU_Template_Build_Rule.OutputDir)logging.h"/>
-    <Delete Condition=" '%(FLAMEGPU_Template_Build_Rule.FunctionTemplateTransform)' == 'true' " Files="%(FLAMEGPU_Template_Build_Rule.OutputDir)function_template.c"/>
+    <Delete Condition=" '%(FLAMEGPU_Template_Build_Rule.FunctionTemplateTransform)' == 'true' " Files="%(FLAMEGPU_Template_Build_Rule.OutputDir)function_template.cu"/>
   </Target>
   
   
@@ -79,7 +79,7 @@
     <FLAMEGPU_Template_Build_Rule
 		
       Condition="'@(FLAMEGPU_Template_Build_Rule)' != '' and '%(FLAMEGPU_Template_Build_Rule.ExcludedFromBuild)' != 'true'"
-      CommandLineTemplate="$(HeadTransformOut)  $(FLAMEGPUKernalsTransformOut)  $(IOTransformOut)  $(SimulationTransformOut)  $(MainTransformOut)  $(VisualisationTransformOut)"
+      CommandLineTemplate="$(HeadTransformOut)  $(FLAMEGPUKernalsTransformOut)  $(IOTransformOut)  $(SimulationTransformOut)  $(MainTransformOut)  $(VisualisationTransformOut) $(LoggingTransformOut) $(FunctionTemplateTransformOut)"
 	  
 	  Outputs = "$(AllBuildOutputs)"
 	  
@@ -138,13 +138,13 @@
 
     <LoggingTransformOut Condition=" '%(FLAMEGPU_Template_Build_Rule.LoggingTransform)' == 'true' ">"%(FLAMEGPU_Template_Build_Rule.XSLTProcessorLocation)" "%(FullPath)" "%(FLAMEGPU_Template_Build_Rule.TemplateDir)\logging.xslt" "%(FLAMEGPU_Template_Build_Rule.OutputDir)\logging.h" &#xA;</LoggingTransformOut>
     <LoggingTransformOut Condition=" '%(FLAMEGPU_Template_Build_Rule.LoggingTransform)' != 'true' "></LoggingTransformOut>
-    <LoggingTransformOut Condition=" '%(FLAMEGPU_Template_Build_Rule.LoggingTransform)' == 'true' ">%(FLAMEGPU_Template_Build_Rule.OutputDir)\logging.h ;</LoggingTransformOut>
+    <LoggingTransformOutFile Condition=" '%(FLAMEGPU_Template_Build_Rule.LoggingTransform)' == 'true' ">%(FLAMEGPU_Template_Build_Rule.OutputDir)\logging.h ;</LoggingTransformOutFile>
 
-    <FunctionTemplateTransform Condition=" '%(FLAMEGPU_Template_Build_Rule.FunctionTemplateTransform)' == 'true' ">"%(FLAMEGPU_Template_Build_Rule.XSLTProcessorLocation)" "%(FullPath)" "%(FLAMEGPU_Template_Build_Rule.TemplateDir)\functions.xslt" "%(FLAMEGPU_Template_Build_Rule.OutputDir)\function_template.c" &#xA;</FunctionTemplateTransform>
-    <FunctionTemplateTransform Condition=" '%(FLAMEGPU_Template_Build_Rule.FunctionTemplateTransform)' != 'true' "></FunctionTemplateTransform>
-    <FunctionTemplateTransform Condition=" '%(FLAMEGPU_Template_Build_Rule.FunctionTemplateTransform)' == 'true' ">%(FLAMEGPU_Template_Build_Rule.OutputDir)\function_template.c ;</FunctionTemplateTransform>
+    <FunctionTemplateTransformOut Condition=" '%(FLAMEGPU_Template_Build_Rule.FunctionTemplateTransform)' == 'true' ">"%(FLAMEGPU_Template_Build_Rule.XSLTProcessorLocation)" "%(FullPath)" "%(FLAMEGPU_Template_Build_Rule.TemplateDir)\functions_template.xslt" "%(FLAMEGPU_Template_Build_Rule.OutputDir)\function_template.cu" &#xA;</FunctionTemplateTransformOut>
+    <FunctionTemplateTransformOut Condition=" '%(FLAMEGPU_Template_Build_Rule.FunctionTemplateTransform)' != 'true' "></FunctionTemplateTransformOut>
+    <FunctionTemplateTransformOutFile Condition=" '%(FLAMEGPU_Template_Build_Rule.FunctionTemplateTransform)' == 'true' ">%(FLAMEGPU_Template_Build_Rule.OutputDir)\function_template.cu ;</FunctionTemplateTransformOutFile>
 		
-		<AllBuildOutputs>$(HeadTransformOutFile) $(FLAMEGPUKernalsTransformOutFile) $(IOTransformOutFile) $(SimulationTransformOutFile) $(MainTransformOutFile) $(VisualisationTransformOutFile)</AllBuildOutputs>
+		<AllBuildOutputs>$(HeadTransformOutFile) $(FLAMEGPUKernalsTransformOutFile) $(IOTransformOutFile) $(SimulationTransformOutFile) $(MainTransformOutFile) $(VisualisationTransformOutFile) $(LoggingTransformOutFile) $(FunctionTemplateTransformOutFile)</AllBuildOutputs>
 	</PropertyGroup>
 	
     <ItemGroup>
