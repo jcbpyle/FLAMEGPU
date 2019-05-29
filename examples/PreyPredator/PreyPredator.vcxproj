@@ -333,6 +333,9 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <Xml Include="..\..\FLAMEGPU\templates\simulation.xslt" />
     <Xml Include="..\..\FLAMEGPU\templates\visualisation.xslt" />
     <Xml Include="..\..\FLAMEGPU\templates\logging.xslt" />
+    <Xml Include="..\..\FLAMEGPU\templates\logging_and_functions.xslt" />
+    <Xml Include="..\..\FLAMEGPU\templates\experiment.xslt" />
+    <Xml Include="..\..\FLAMEGPU\templates\functions.xslt" />
     <FLAMEGPU_Template_Build_Rule Include="src\model\XMLModelFile.xml">
       <VisualisationTransform Condition="'$(Configuration)|$(Platform)'=='Debug_Visualisation|x64'">true</VisualisationTransform>
       <VisualisationTransform Condition="'$(Configuration)|$(Platform)'=='Release_Visualisation|x64'">true</VisualisationTransform>

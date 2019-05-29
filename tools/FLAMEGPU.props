@@ -22,11 +22,12 @@
 		<SimulationTransform>true</SimulationTransform>
 		<MainTransform>true</MainTransform>
 		<VisualisationTransform>false</VisualisationTransform>
-    <LoggingTransform>true</LoggingTransform>
+    <LoggingModelTransform>true</LoggingModelTransform>
+    <LoggingExperimentTransform>true</LoggingExperimentTransform>
     <FunctionTemplateTransform>true</FunctionTemplateTransform>
 		
-		<CommandLineTemplate>[HeaderTransform] [FLAMEGPUKernalsTransform] [IOTransform] [SimulationTransform] [MainTransform] [VisualisationTransform] [LoggingTransform] [FunctionTemplateTransform]</CommandLineTemplate>
-		<Outputs>.\src\dynamic\header.h;.\src\dynamic\FLAMEGPU_kernals.cu;.\src\dynamic\io.cu;.\src\dynamic\simulation.cu;.\src\dynamic\main.cu;.\src\dynamic\visualisation.cu;.\src\dynamic\logging_and_function_template.c;.\src\model\function_template.c;.\src\experimentation\logging_and_function_template.c</Outputs>
+		<CommandLineTemplate>[HeaderTransform] [FLAMEGPUKernalsTransform] [IOTransform] [SimulationTransform] [MainTransform] [VisualisationTransform] [LoggingModelTransform] [LoggingExperimentTransform] [FunctionTemplateTransform]</CommandLineTemplate>
+		<Outputs>.\src\dynamic\header.h;.\src\dynamic\FLAMEGPU_kernals.cu;.\src\dynamic\io.cu;.\src\dynamic\simulation.cu;.\src\dynamic\main.cu;.\src\dynamic\visualisation.cu;.\src\dynamic\logging_and_function_template.c;.\src\model\function_template.c;.\src\experimentation\logging_and_function_template.c;</Outputs>
       <ExecutionDescription>Generating Dynamic Code from FLAMEGPU Templates</ExecutionDescription>
     </FLAMEGPU_Template_Build_Rule>
   </ItemDefinitionGroup>

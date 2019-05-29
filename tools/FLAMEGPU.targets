@@ -90,8 +90,8 @@
       SimulationTransform="%(FLAMEGPU_Template_Build_Rule.SimulationTransform)"
       MainTransform="%(FLAMEGPU_Template_Build_Rule.MainTransform)"
       VisualisationTransform="%(FLAMEGPU_Template_Build_Rule.VisualisationTransform)"
-      LoggingModelTransformOut="%(FLAMEGPU_Template_Build_Rule.LoggingModelTransform)"
-      LoggingExperimentTransformOut="%(FLAMEGPU_Template_Build_Rule.LoggingExperimentTransform)"
+      LoggingModelTransform="%(FLAMEGPU_Template_Build_Rule.LoggingModelTransform)"
+      LoggingExperimentTransform="%(FLAMEGPU_Template_Build_Rule.LoggingExperimentTransform)"
       FunctionTemplateTransform="%(FLAMEGPU_Template_Build_Rule.FunctionTemplateTransform)"
       AdditionalOptions="%(FLAMEGPU_Template_Build_Rule.AdditionalOptions)"
       Inputs="@(FLAMEGPU_Template_Build_Rule)" 
@@ -142,7 +142,7 @@
     <LoggingModelTransformOut Condition=" '%(FLAMEGPU_Template_Build_Rule.LoggingModelTransform)' != 'true' "></LoggingModelTransformOut>
     <LoggingModelTransformOutFile Condition=" '%(FLAMEGPU_Template_Build_Rule.LoggingModelTransform)' == 'true' ">%(FLAMEGPU_Template_Build_Rule.ModelDir)\logging_and_function_template.c ;</LoggingModelTransformOutFile>
 
-    <LoggingExperimentTransformOut Condition=" '%(FLAMEGPU_Template_Build_Rule.LoggingExperimentTransform)' == 'true' ">"%(FLAMEGPU_Template_Build_Rule.XSLTProcessorLocation)" "%(FLAMEGPU_Template_Build_Rule.ExperimentDir)\XMLExperimentFile.xml" "%(FLAMEGPU_Template_Build_Rule.ExperimentDir)\logging_and_functions.xslt" "%(FLAMEGPU_Template_Build_Rule.ExperimentDir)\logging_and_function_template.c" &#xA;</LoggingExperimentTransformOut>
+    <LoggingExperimentTransformOut Condition=" '%(FLAMEGPU_Template_Build_Rule.LoggingExperimentTransform)' == 'true' ">"%(FLAMEGPU_Template_Build_Rule.XSLTProcessorLocation)" "%(FLAMEGPU_Template_Build_Rule.ExperimentDir)\XMLExperimentFile.xml" "%(FLAMEGPU_Template_Build_Rule.TemplateDir)\logging_and_functions.xslt" "%(FLAMEGPU_Template_Build_Rule.ExperimentDir)\logging_and_function_template.c" &#xA;</LoggingExperimentTransformOut>
     <LoggingExperimentTransformOut Condition=" '%(FLAMEGPU_Template_Build_Rule.LoggingExperimentTransform)' != 'true' "></LoggingExperimentTransformOut>
     <LoggingExperimentTransformOutFile Condition=" '%(FLAMEGPU_Template_Build_Rule.LoggingExperimentTransform)' == 'true' ">%(FLAMEGPU_Template_Build_Rule.ExperimentDir)\logging_and_function_template.c ;</LoggingExperimentTransformOutFile>
 
