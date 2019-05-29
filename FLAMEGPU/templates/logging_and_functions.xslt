@@ -26,10 +26,10 @@
 #define _FLAMEGPU_FUNCTIONS
 
 #include &lt;header.h&gt;
-<xsl:if test="gpu:xmodel/xmml:Logging">
+<xsl:if test="gpu:experimentation/xmml:Logging">
 <!-- <xsl:if test="xmml:Log"> -->
 FILE *results_file;
-<xsl:for-each select="gpu:xmodel/xmml:Logging/xmml:Log">
+<xsl:for-each select="gpu:experimentation/xmml:Logging/xmml:Log">
 <xsl:if test="xmml:InitLog">
  /**
  * Automatically generated using logging_and_functions.xslt

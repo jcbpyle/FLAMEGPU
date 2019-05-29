@@ -28,7 +28,7 @@
 #define _FLAMEGPU_FUNCTIONS
 
 #include &lt;header.h&gt;
-#include &lt;logging.h&gt;
+//#include &lt;logging.h&gt;
 <xsl:if test="gpu:xmodel/xmml:logging">
 FILE *results_file;
 <xsl:for-each select="gpu:xmodel/xmml:logging/xmml:log">
