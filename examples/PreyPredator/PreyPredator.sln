@@ -9,7 +9,8 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug_Console|x64 = Debug_Console|x64
 		Debug_Visualisation|x64 = Debug_Visualisation|x64
-		Function_Template|x64 = Function_Template|x64
+		Generate_Experiment_Files|x64 = Generate_Experiment_Files|x64
+		Generate_Function_Template|x64 = Generate_Function_Template|x64
 		Release_Console|x64 = Release_Console|x64
 		Release_Visualisation|x64 = Release_Visualisation|x64
 	EndGlobalSection
@@ -18,8 +19,10 @@ Global
 		{E6EA73EB-F133-4103-B375-768E6086339A}.Debug_Console|x64.Build.0 = Debug_Console|x64
 		{E6EA73EB-F133-4103-B375-768E6086339A}.Debug_Visualisation|x64.ActiveCfg = Debug_Visualisation|x64
 		{E6EA73EB-F133-4103-B375-768E6086339A}.Debug_Visualisation|x64.Build.0 = Debug_Visualisation|x64
-		{E6EA73EB-F133-4103-B375-768E6086339A}.Function_Template|x64.ActiveCfg = Function_Template|x64
-		{E6EA73EB-F133-4103-B375-768E6086339A}.Function_Template|x64.Build.0 = Function_Template|x64
+		{E6EA73EB-F133-4103-B375-768E6086339A}.Generate_Experiment_Files|x64.ActiveCfg = Generate_Experiment_Files|x64
+		{E6EA73EB-F133-4103-B375-768E6086339A}.Generate_Experiment_Files|x64.Build.0 = Generate_Experiment_Files|x64
+		{E6EA73EB-F133-4103-B375-768E6086339A}.Generate_Function_Template|x64.ActiveCfg = Generate_Function_Template|x64
+		{E6EA73EB-F133-4103-B375-768E6086339A}.Generate_Function_Template|x64.Build.0 = Generate_Function_Template|x64
 		{E6EA73EB-F133-4103-B375-768E6086339A}.Release_Console|x64.ActiveCfg = Release_Console|x64
 		{E6EA73EB-F133-4103-B375-768E6086339A}.Release_Console|x64.Build.0 = Release_Console|x64
 		{E6EA73EB-F133-4103-B375-768E6086339A}.Release_Visualisation|x64.ActiveCfg = Release_Visualisation|x64

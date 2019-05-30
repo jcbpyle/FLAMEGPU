@@ -40,9 +40,10 @@
     <Delete Condition=" '%(FLAMEGPU_Template_Build_Rule.SimulationTransform)' == 'true' " Files="%(FLAMEGPU_Template_Build_Rule.OutputDir)simulation.cu"/>
     <Delete Condition=" '%(FLAMEGPU_Template_Build_Rule.MainTransform)' == 'true' " Files="%(FLAMEGPU_Template_Build_Rule.OutputDir)main.cu;"/>
     <Delete Condition=" '%(FLAMEGPU_Template_Build_Rule.VisualisationTransform)' == 'true' " Files="%(FLAMEGPU_Template_Build_Rule.OutputDir)visualisation.cu"/>
-    <Delete Condition=" '%(FLAMEGPU_Template_Build_Rule.LoggingExperimentTransform)' == 'true' " Files="%(FLAMEGPU_Template_Build_Rule.ExperimentDir)logging_and_function_template.c"/>
-    <Delete Condition=" '%(FLAMEGPU_Template_Build_Rule.LoggingModelTransform)' == 'true' " Files="%(FLAMEGPU_Template_Build_Rule.ModelDir)logging_and_function_template.c"/>
-    <Delete Condition=" '%(FLAMEGPU_Template_Build_Rule.FunctionTemplateTransform)' == 'true' " Files="%(FLAMEGPU_Template_Build_Rule.ModelDir)function_template.c"/>
+    <Delete Condition=" '%(FLAMEGPU_Experiment_Build_Rule.ExperimentLoggingTransform)' == 'true' " Files="%(FLAMEGPU_Template_Build_Rule.ExperimentDir)logging_and_function_template.c"/>
+    <Delete Condition=" '%(FLAMEGPU_Experiment_Build_Rule.ModelLoggingTransform)' == 'true' " Files="%(FLAMEGPU_Template_Build_Rule.ModelDir)logging_and_function_template.c"/>
+    <Delete Condition=" '%(FLAMEGPU_Experiment_Build_Rule.FunctionTemplateTransform)' == 'true' " Files="%(FLAMEGPU_Template_Build_Rule.ModelDir)function_template.c"/>
+    <Delete Condition=" '%(FLAMEGPU_Experiment_Build_Rule.ExperimentTransform)' == 'true' " Files="%(FLAMEGPU_Template_Build_Rule.ExperimentDir)experiment.py;%(FLAMEGPU_Template_Build_Rule.ExperimentDir)run_experiment.bat;%(FLAMEGPU_Template_Build_Rule.ExperimentDir)run_experiment.sh;"/>
   </Target>
   
   
@@ -80,7 +81,7 @@
     <FLAMEGPU_Template_Build_Rule
 		
       Condition="'@(FLAMEGPU_Template_Build_Rule)' != '' and '%(FLAMEGPU_Template_Build_Rule.ExcludedFromBuild)' != 'true'"
-      CommandLineTemplate="$(HeadTransformOut)  $(FLAMEGPUKernalsTransformOut)  $(IOTransformOut)  $(SimulationTransformOut)  $(MainTransformOut)  $(VisualisationTransformOut) $(LoggingModelTransformOut) $(LoggingExperimentTransformOut) $(FunctionTemplateTransformOut)"
+      CommandLineTemplate="$(HeadTransformOut)  $(FLAMEGPUKernalsTransformOut)  $(IOTransformOut)  $(SimulationTransformOut)  $(MainTransformOut)  $(VisualisationTransformOut)"
 	  
 	  Outputs = "$(AllBuildOutputs)"
 	  
@@ -89,16 +90,63 @@
       IOTransform="%(FLAMEGPU_Template_Build_Rule.IOTransform)"
       SimulationTransform="%(FLAMEGPU_Template_Build_Rule.SimulationTransform)"
       MainTransform="%(FLAMEGPU_Template_Build_Rule.MainTransform)"
-      VisualisationTransform="%(FLAMEGPU_Template_Build_Rule.VisualisationTransform)"
-      LoggingModelTransform="%(FLAMEGPU_Template_Build_Rule.LoggingModelTransform)"
-      LoggingExperimentTransform="%(FLAMEGPU_Template_Build_Rule.LoggingExperimentTransform)"
-      FunctionTemplateTransform="%(FLAMEGPU_Template_Build_Rule.FunctionTemplateTransform)"
+      VisualisationTransform="%(FLAMEGPU_Template_Build_Rule.VisualisationTransform)"      
       AdditionalOptions="%(FLAMEGPU_Template_Build_Rule.AdditionalOptions)"
       Inputs="@(FLAMEGPU_Template_Build_Rule)" 
 	  StandardOutputImportance="High"
 	  StandardErrorImportance="High"
       EchoOff="false"/>
   </Target>
+
+  <Target
+    Name="_FLAMEGPU_Experiment_Build_Rule"
+  BeforeTargets="$(FLAMEGPU_Experiment_Build_RuleBeforeTargets)"
+    AfterTargets="$(FLAMEGPU_Experiment_Build_RuleAfterTargets)"
+    Condition="'@(FLAMEGPU_Experiment_Build_Rule)' != ''"
+    DependsOnTargets="$(FLAMEGPU_Experiment_Build_RuleDependsOn);ComputeFLAMEGPU_Experiment_Build_RuleOutput"
+    Outputs="$(AllExperimentBuildOutputs)"
+    Inputs="@(FLAMEGPU_Experiment_Build_Rule);%(FLAMEGPU_Experiment_Build_Rule.AdditionalDependencies);$(MSBuildProjectFile)"
+    >
+  
+  <ItemGroup
+      Condition="'@(SelectedFiles)' != ''">
+      <FLAMEGPU_Experiment_Build_Rule
+        Remove="@(FLAMEGPU_Experiment_Build_Rule)"
+        Condition="'%(Identity)' != '@(SelectedFiles)'" />
+    </ItemGroup>
+  
+  <ItemGroup>
+      <FLAMEGPU_Experiment_Build_Rule_tlog
+        Include="$(AllExperimentBuildOutputs)"
+        Condition="'$(AllExperimentBuildOutputs)' != '' and '%(FLAMEGPU_Experiment_Build_Rule.ExcludedFromBuild)' != 'true'">
+        <Source>@(FLAMEGPU_Experiment_Build_Rule, '|')</Source>
+      </FLAMEGPU_Experiment_Build_Rule_tlog>
+    </ItemGroup>
+    <Message
+      Importance="High"
+      Text="%(FLAMEGPU_Experiment_Build_Rule.ExecutionDescription)" />
+    <WriteLinesToFile
+      Condition="'@(FLAMEGPU_Experiment_Build_Rule_tlog)' != '' and '%(FLAMEGPU_Experiment_Build_Rule_tlog.ExcludedFromBuild)' != 'true'"
+      File="$(TLogLocation)$(ProjectName)_experiment.write.1.tlog"
+      Lines="^%(FLAMEGPU_Experiment_Build_Rule_tlog.Source);@(FLAMEGPU_Experiment_Build_Rule_tlog-&gt;'%(Fullpath)')" />
+    <FLAMEGPU_Template_Build_Rule
+    
+      Condition="'@(FLAMEGPU_Experiment_Build_Rule_Rule)' != '' and '%(FLAMEGPU_Experiment_Build_Rule.ExcludedFromBuild)' != 'true'"
+      CommandLineTemplate="$(ModelLoggingTransformOut) $(ExperimentLoggingTransformOut) $(FunctionTemplateTransformOut) $(ExperimentTransformOut)"
+    
+    Outputs = "$(AllExperimentBuildOutputs)"
+    
+      ModelLoggingTransform="%(FLAMEGPU_Experiment_Build_Rule.ModelLoggingTransform)"
+      ExperimentLoggingTransform="%(FLAMEGPU_Experiment_Build_Rule.ExperimentLoggingTransform)"
+      FunctionTemplateTransform="%(FLAMEGPU_Experiment_Build_Rule.FunctionTemplateTransform)"
+      ExperimentTransform="%(FLAMEGPU_Experiment_Build_Rule.ExperimentTransform)"
+      AdditionalOptions="%(FLAMEGPU_Experiment_Build_Rule.AdditionalOptions)"
+      Inputs="@(FLAMEGPU_Experiment_Build_Rule)" 
+    StandardOutputImportance="High"
+    StandardErrorImportance="High"
+      EchoOff="false"/>
+  </Target>
+
   <PropertyGroup>
     <ComputeLinkInputsTargets>
             $(ComputeLinkInputsTargets);
@@ -137,22 +185,10 @@
 		<VisualisationTransformOut Condition=" '%(FLAMEGPU_Template_Build_Rule.VisualisationTransform)' == 'true' ">"%(FLAMEGPU_Template_Build_Rule.XSLTProcessorLocation)" "%(FullPath)" "%(FLAMEGPU_Template_Build_Rule.TemplateDir)\visualisation.xslt" "%(FLAMEGPU_Template_Build_Rule.OutputDir)\visualisation.cu" &#xA;</VisualisationTransformOut>
 		<VisualisationTransformOut Condition=" '%(FLAMEGPU_Template_Build_Rule.VisualisationTransform)' != 'true' "></VisualisationTransformOut>
 		<VisualisationTransformOutFile Condition=" '%(FLAMEGPU_Template_Build_Rule.VisualisationTransform)' == 'true' ">%(FLAMEGPU_Template_Build_Rule.OutputDir)\visualisation.cu ;</VisualisationTransformOutFile>
-
-    <LoggingModelTransformOut Condition=" '%(FLAMEGPU_Template_Build_Rule.LoggingModelTransform)' == 'true' ">"%(FLAMEGPU_Template_Build_Rule.XSLTProcessorLocation)" "%(FullPath)" "%(FLAMEGPU_Template_Build_Rule.TemplateDir)\logging_and_functions.xslt" "%(FLAMEGPU_Template_Build_Rule.ModelDir)\logging_and_function_template.c" &#xA;</LoggingModelTransformOut>
-    <LoggingModelTransformOut Condition=" '%(FLAMEGPU_Template_Build_Rule.LoggingModelTransform)' != 'true' "></LoggingModelTransformOut>
-    <LoggingModelTransformOutFile Condition=" '%(FLAMEGPU_Template_Build_Rule.LoggingModelTransform)' == 'true' ">%(FLAMEGPU_Template_Build_Rule.ModelDir)\logging_and_function_template.c ;</LoggingModelTransformOutFile>
-
-    <LoggingExperimentTransformOut Condition=" '%(FLAMEGPU_Template_Build_Rule.LoggingExperimentTransform)' == 'true' ">"%(FLAMEGPU_Template_Build_Rule.XSLTProcessorLocation)" "%(FLAMEGPU_Template_Build_Rule.ExperimentDir)\XMLExperimentFile.xml" "%(FLAMEGPU_Template_Build_Rule.TemplateDir)\logging_and_functions.xslt" "%(FLAMEGPU_Template_Build_Rule.ExperimentDir)\logging_and_function_template.c" &#xA;</LoggingExperimentTransformOut>
-    <LoggingExperimentTransformOut Condition=" '%(FLAMEGPU_Template_Build_Rule.LoggingExperimentTransform)' != 'true' "></LoggingExperimentTransformOut>
-    <LoggingExperimentTransformOutFile Condition=" '%(FLAMEGPU_Template_Build_Rule.LoggingExperimentTransform)' == 'true' ">%(FLAMEGPU_Template_Build_Rule.ExperimentDir)\logging_and_function_template.c ;</LoggingExperimentTransformOutFile>
-
-    <FunctionTemplateTransformOut Condition=" '%(FLAMEGPU_Template_Build_Rule.FunctionTemplateTransform)' == 'true' ">"%(FLAMEGPU_Template_Build_Rule.XSLTProcessorLocation)" "%(FullPath)" "%(FLAMEGPU_Template_Build_Rule.TemplateDir)\functions.xslt" "%(FLAMEGPU_Template_Build_Rule.ModelDir)\function_template.c" &#xA;</FunctionTemplateTransformOut>
-    <FunctionTemplateTransformOut Condition=" '%(FLAMEGPU_Template_Build_Rule.FunctionTemplateTransform)' != 'true' "></FunctionTemplateTransformOut>
-    <FunctionTemplateTransformOutFile Condition=" '%(FLAMEGPU_Template_Build_Rule.FunctionTemplateTransform)' == 'true' ">%(FLAMEGPU_Template_Build_Rule.ModelDir)\function_template.c ;</FunctionTemplateTransformOutFile>
 		
-		<AllBuildOutputs>$(HeadTransformOutFile) $(FLAMEGPUKernalsTransformOutFile) $(IOTransformOutFile) $(SimulationTransformOutFile) $(MainTransformOutFile) $(VisualisationTransformOutFile) $(LoggingModelTransformOutFile) $(LoggingExperimentTransformOutFile) $(FunctionTemplateTransformOutFile)</AllBuildOutputs>
+		<AllBuildOutputs>$(HeadTransformOutFile) $(FLAMEGPUKernalsTransformOutFile) $(IOTransformOutFile) $(SimulationTransformOutFile) $(MainTransformOutFile) $(VisualisationTransformOutFile)</AllBuildOutputs>
 	</PropertyGroup>
-	
+
     <ItemGroup>
       <FLAMEGPU_Template_Build_RuleDirsToMake
         Condition="'@(FLAMEGPU_Template_Build_Rule)' != '' and '%(FLAMEGPU_Template_Build_Rule.ExcludedFromBuild)' != 'true'"
@@ -172,5 +208,30 @@
       Directories="@(FLAMEGPU_Template_Build_RuleDirsToMake-&gt;'%(RootDir)%(Directory)')" />
 	  
 	  <Message Text="Outputting files: $(AllBuildOutputs)" />
+  </Target>
+
+  <Target
+    Name="ComputeFLAMEGPU_Experiment_Build_RuleOutput"
+    Condition="'@(FLAMEGPU_Experiment_Build_Rule)' != ''">
+  <PropertyGroup >
+    <ModelLoggingTransformOut Condition=" '%(FLAMEGPU_Experiment_Build_Rule.ModelLoggingTransform)' == 'true' ">"%(FLAMEGPU_Template_Build_Rule.XSLTProcessorLocation)" "%(FullPath)" "%(FLAMEGPU_Template_Build_Rule.TemplateDir)\logging_and_functions.xslt" "%(FLAMEGPU_Template_Build_Rule.ModelDir)\logging_and_function_template.c" &#xA;</ModelLoggingTransformOut>
+    <ModelLoggingTransformOut Condition=" '%(FLAMEGPU_Experiment_Build_Rule.ModelLoggingTransform)' != 'true' "></ModelLoggingTransformOut>
+    <ModelLoggingTransformOutFile Condition=" '%(FLAMEGPU_Experiment_Build_Rule.ModelLoggingTransform)' == 'true' ">%(FLAMEGPU_Template_Build_Rule.ModelDir)\logging_and_function_template.c ;</ModelLoggingTransformOutFile>
+
+    <ExperimentLoggingTransformOut Condition=" '%(FLAMEGPU_Experiment_Build_Rule.ExperimentLoggingTransform)' == 'true' ">"%(FLAMEGPU_Template_Build_Rule.XSLTProcessorLocation)" "%(FLAMEGPU_Template_Build_Rule.ExperimentDir)\XMLExperimentFile.xml" "%(FLAMEGPU_Template_Build_Rule.TemplateDir)\logging_and_functions.xslt" "%(FLAMEGPU_Template_Build_Rule.ExperimentDir)\logging_and_function_template.c" &#xA;</ExperimentLoggingTransformOut>
+    <ExperimentLoggingTransformOut Condition=" '%(FLAMEGPU_Experiment_Build_Rule.ExperimentLoggingTransform)' != 'true' "></ExperimentLoggingTransformOut>
+    <ExperimentLoggingTransformOutFile Condition=" '%(FLAMEGPU_Experiment_Build_Rule.ExperimentLoggingTransform)' == 'true' ">%(FLAMEGPU_Template_Build_Rule.ExperimentDir)\logging_and_function_template.c ;</ExperimentLoggingTransformOutFile>
+
+    <FunctionTemplateTransformOut Condition=" '%(FLAMEGPU_Experiment_Build_Rule.FunctionTemplateTransform)' == 'true' ">"%(FLAMEGPU_Template_Build_Rule.XSLTProcessorLocation)" "%(FullPath)" "%(FLAMEGPU_Template_Build_Rule.TemplateDir)\functions.xslt" "%(FLAMEGPU_Template_Build_Rule.ModelDir)\function_template.c" &#xA;</FunctionTemplateTransformOut>
+    <FunctionTemplateTransformOut Condition=" '%(FLAMEGPU_Experiment_Build_Rule.FunctionTemplateTransform)' != 'true' "></FunctionTemplateTransformOut>
+    <FunctionTemplateTransformOutFile Condition=" '%(FLAMEGPU_Experiment_Build_Rule.FunctionTemplateTransform)' == 'true' ">%(FLAMEGPU_Template_Build_Rule.ModelDir)\function_template.c ;</FunctionTemplateTransformOutFile>
+
+    <ExperimentTransformOut Condition=" '%(FLAMEGPU_Experiment_Build_Rule.ExperimentTransform)' == 'true' ">"%(FLAMEGPU_Template_Build_Rule.XSLTProcessorLocation)" "%(FLAMEGPU_Template_Build_Rule.ExperimentDir)\XMLExperimentFile.xml" "%(FLAMEGPU_Template_Build_Rule.TemplateDir)\experiment.xslt" "%(FLAMEGPU_Template_Build_Rule.ExperimentDir)\experiment.py" &#xA;</ExperimentTransformOut>
+    <ExperimentTransformOut Condition=" '%(FLAMEGPU_Experiment_Build_Rule.ExperimentTransform)' != 'true' "></ExperimentTransformOut>
+    <ExperimentTransformOutFile Condition=" '%(FLAMEGPU_Experiment_Build_Rule.ExperimentTransform)' == 'true' ">%(FLAMEGPU_Template_Build_Rule.ExperimentDir)\experiment.py ;</ExperimentTransformOutFile>
+    
+    <AllExperimentBuildOutputs>$(ModelLoggingTransformOutFile) $(ExperimentLoggingTransformOutFile) $(FunctionTemplateTransformOutFile) $(ExperimentTransformOutFile)</AllExperimentBuildOutputs>
+  </PropertyGroup>
+  <Message Text="Outputting files: $(AllExperimentBuildOutputs)" />
   </Target>
 </Project>
