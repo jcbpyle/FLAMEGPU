@@ -40,6 +40,8 @@
 	<StringProperty Name="XSLTProcessorLocation" DisplayName="XSLT Processor Location" Category="XSLT Options" />
 	<StringProperty Name="TemplateDir" DisplayName="Template Directory" Category="XSLT Options"  />
 	<StringProperty Name="OutputDir" DisplayName="Output Directory" Category="XSLT Options"  />
+  <StringProperty Name="ModelDir" DisplayName="Model Directory" Category="XSLT Options"  />
+  <StringProperty Name="ExperimentDir" DisplayName="Experiment Directory" Category="XSLT Options"  />
     <BoolProperty
       Name="HeaderTransform"
       Category="XSLT Options"
@@ -82,12 +84,19 @@
       DisplayName="Transform visualisation.xslt enabled"
       Description="Toggle XSLT Processing for the visualisation.xslt FLAMEGPU Template File"
        />
-    <BoolProperty
-      Name="LoggingTransform"
+       <BoolProperty
+      Name="ModelLoggingTransform"
       Category="XSLT Options"
       HelpContext="0"
       DisplayName="Transform logging.xslt enabled"
-      Description="Toggle XSLT Processing for the logging.xslt FLAMEGPU Template File"
+      Description="Toggle XSLT Processing for the logging_and_functions.xslt FLAMEGPU Template File in combination with XMLModelFile.xml"
+      />
+      <BoolProperty
+      Name="ExperimentLoggingTransform"
+      Category="XSLT Options"
+      HelpContext="0"
+      DisplayName="Transform logging.xslt enabled"
+      Description="Toggle XSLT Processing for the logging_and_functions.xslt FLAMEGPU Template File in combination with XMLExperimentFile.xml"
       />
     <BoolProperty
       Name="FunctionTemplateTransform"
@@ -95,6 +104,13 @@
       HelpContext="0"
       DisplayName="Transform functions.xslt enabled"
       Description="Toggle XSLT Processing for the functions.xslt FLAMEGPU Template File"
+      />
+      <BoolProperty
+      Name="ExperimentTemplateTransform"
+      Category="XSLT Options"
+      HelpContext="0"
+      DisplayName="Transform experiment.xslt enabled"
+      Description="Toggle XSLT Processing for the experiment.xslt FLAMEGPU simulation experiment Template File"
       />
     <StringProperty
       Name="CommandLineTemplate"

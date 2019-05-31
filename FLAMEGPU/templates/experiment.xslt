@@ -31,7 +31,7 @@ import pycuda.driver as cuda
 import pycuda.autoinit
 
 BASE_DIRECTORY = os.getcwd()
-<xsl:if test="gpu:experimentation/xmml:InitialState">
+<xsl:if test="xmml:experimentation/xmml:Experiment/xmml:InitialStateLocation">
 #Initial state file creation.
 def initial_state_creation(file_name,agent_information):
 	SAVE_DIRECTORY = BASE_DIRECTORY+"<xsl:value-of select="gpu:experimentation/xmml:InitialState/xmml:SaveLocation"/>"+"/"

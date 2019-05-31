@@ -12,7 +12,6 @@
 #define _FLAMEGPU_FUNCTIONS
 
 #include &lt;header.h&gt;
-#include &lt;logging.h&gt;
 
 <!-- Prototypes for Init functions -->
 <xsl:for-each select="gpu:xmodel/gpu:environment/gpu:initFunctions/gpu:initFunction">

@@ -9,34 +9,31 @@
     <FLAMEGPU_Template_Build_RuleDependsOn
       Condition="'$(ConfigurationType)' != 'Makefile'">_SelectedFiles;$(FLAMEGPU_Template_Build_RuleDependsOn)</FLAMEGPU_Template_Build_RuleDependsOn>
   </PropertyGroup>
+  
   <ItemDefinitionGroup>
+    
     <FLAMEGPU_Template_Build_Rule>
 		<XSLTProcessorLocation>..\..\tools\XSLTProcessor</XSLTProcessorLocation>
 		<TemplateDir>..\..\FLAMEGPU\templates\</TemplateDir>
 		<OutputDir>.\src\dynamic\</OutputDir>
+		<HeaderTransform>false</HeaderTransform>
+		<FLAMEGPUKernalsTransform>false</FLAMEGPUKernalsTransform>
+		<IOTransform>false</IOTransform>
+		<SimulationTransform>false</SimulationTransform>
+		<MainTransform>false</MainTransform>
+		<VisualisationTransform>false</VisualisationTransform>
     <ModelDir>.\src\model\</ModelDir>
     <ExperimentDir>.\src\experimentation\</ExperimentDir>
-		<HeaderTransform>true</HeaderTransform>
-		<FLAMEGPUKernalsTransform>true</FLAMEGPUKernalsTransform>
-		<IOTransform>true</IOTransform>
-		<SimulationTransform>true</SimulationTransform>
-		<MainTransform>true</MainTransform>
-		<VisualisationTransform>false</VisualisationTransform>
+    <ModelLoggingTransform>false</ModelLoggingTransform>
+    <ExperimentLoggingTransform>false</ExperimentLoggingTransform>
+    <FunctionTemplateTransform>false</FunctionTemplateTransform>
+    <ExperimentTemplateTransform>false</ExperimentTemplateTransform>
 		
-		<CommandLineTemplate>[HeaderTransform] [FLAMEGPUKernalsTransform] [IOTransform] [SimulationTransform] [MainTransform] [VisualisationTransform]</CommandLineTemplate>
-		<Outputs>.\src\dynamic\header.h;.\src\dynamic\FLAMEGPU_kernals.cu;.\src\dynamic\io.cu;.\src\dynamic\simulation.cu;.\src\dynamic\main.cu;.\src\dynamic\visualisation.cu;</Outputs>
+		<CommandLineTemplate>[HeaderTransform] [FLAMEGPUKernalsTransform] [IOTransform] [SimulationTransform] [MainTransform] [VisualisationTransform] [ModelLoggingTransform] [ExperimentLoggingTransform] [FunctionTemplateTransform] [ExperimentTemplateTransform]</CommandLineTemplate>
+		<Outputs>.\src\dynamic\header.h;.\src\dynamic\FLAMEGPU_kernals.cu;.\src\dynamic\io.cu;.\src\dynamic\simulation.cu;.\src\dynamic\main.cu;.\src\dynamic\visualisation.cu;.\src\model\logging_and_function_template.c;.\src\model\function_template.c;.\src\experimentation\logging_and_function_template.c;.\src\experimentation\experiment.py;.\src\experimentation\run_experiment.bat;.\src\experimentation\run_experiment.sh;</Outputs>
       <ExecutionDescription>Generating Dynamic Code from FLAMEGPU Templates</ExecutionDescription>
     </FLAMEGPU_Template_Build_Rule>
+
     
-    <FLAMEGPU_Experiment_Build_Rule>
-    <ModelLoggingTransform>true</ModelLoggingTransform>
-    <ExperimentLoggingTransform>true</ExperimentLoggingTransform>
-    <FunctionTemplateTransform>true</FunctionTemplateTransform>
-    <VisualisationTransform>false</VisualisationTransform>
-    
-    <CommandLineTemplate>[ModelLoggingTransform] [ExperimentLoggingTransform] [FunctionTemplateTransform] [VisualisationTransform] [ExperimentTransform]</CommandLineTemplate>
-    <Outputs>.\src\dynamic\logging_and_function_template.c;.\src\model\function_template.c;.\src\experimentation\logging_and_function_template.c;.\src\experimentation\experiment.py;.\src\experimentation\run_experiment.bat;.\src\experimentation\run_experiment.sh;</Outputs>
-      <ExecutionDescription>Generating Dynamic Experiment Code from FLAMEGPU Templates</ExecutionDescription>
-    </FLAMEGPU_Experiment_Build_Rule>
   </ItemDefinitionGroup>
 </Project>

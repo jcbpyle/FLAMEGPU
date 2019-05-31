@@ -53,6 +53,12 @@
     <Xml Include="..\..\FLAMEGPU\templates\logging.xslt">
       <Filter>templates</Filter>
     </Xml>
+    <Xml Include="..\..\FLAMEGPU\templates\logging_and_functions.xslt">
+      <Filter>templates</Filter>
+    </Xml>
+    <Xml Include="..\..\FLAMEGPU\templates\experiment.xslt">
+      <Filter>templates</Filter>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="dynamic">
@@ -84,6 +90,9 @@
   <ItemGroup>
     <FLAMEGPU_Template_Build_Rule Include="src\model\XMLModelFile.xml">
       <Filter>model</Filter>
+    </FLAMEGPU_Template_Build_Rule>
+    <FLAMEGPU_Template_Build_Rule Include="src\experimentation\XMLExperimentFile.xml">
+      <Filter>experiment</Filter>
     </FLAMEGPU_Template_Build_Rule>
   </ItemGroup>
   <ItemGroup>
