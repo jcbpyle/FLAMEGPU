@@ -31,18 +31,18 @@ import pycuda.driver as cuda
 import pycuda.autoinit
 
 BASE_DIRECTORY = os.getcwd()
-<xsl:if test="xmml:experimentation/xmml:Experiment/xmml:InitialStateLocation">
+<xsl:if test="experimentation:Experimentation/experimentation:Experiment/experimentation:InitialState/experimentation:Location">
 #Initial state file creation.
 def initial_state_creation(file_name,agent_information):
-	SAVE_DIRECTORY = BASE_DIRECTORY+"<xsl:value-of select="gpu:experimentation/xmml:InitialState/xmml:SaveLocation"/>"+"/"
+	SAVE_DIRECTORY = BASE_DIRECTORY+"../../<xsl:value-of select="experimentation:Experimentation/experimentation:Experiment/experimentation:InitialState/experimentation:Location"/>"+"/"
 	SAVE_DIRECTORY = BASE_DIRECTORY+"/"
 	initial_state_file = open(SAVE_DIRECTORY+str(file_name)+".xml","w")
 	initial_state_file.write("&lt;states&gt;\n&lt;itno&gt;0&lt;/itno&gt;\n&lt;environment&gt;\n")
-	<xsl:if test="gpu:experimentation/xmml:InitialState/xmml:Globals">
-	<xsl:for-each select="gpu:experimentation/xmml:InitialState/xmml:Globals/xmml:global">
-	<xsl:if test="xmml:value/xmml:fixed_value">initial_state_file.write("&lt;<xsl:value-of select="xmml:name"/>&gt;"+str(<xsl:value-of select="xmml:value"/>)+"&lt;/<xsl:value-of select="xmml:name"/>&gt;\n")
+	<xsl:if test="experimentation:Experimentation/experimentation:Experiment/experimentation:Globals">
+	<xsl:for-each select="experimentation:Experimentation/experimentation:Experiment/experimentation:Globals/experimentation:global">
+	<xsl:if test="experimentation:value/experimentation:fixed_value">initial_state_file.write("&lt;<xsl:value-of select="experimentation:name"/>&gt;"+str(<xsl:value-of select="experimentation:value"/>)+"&lt;/<xsl:value-of select="experimentation:name"/>&gt;\n")
 	</xsl:if>
-	<xsl:if test="xmml:value/xmml:range">initial_state_file.write("&lt;<xsl:value-of select="xmml:name"/>&gt;"+str(<xsl:if test="xmml:value/xmml:type='int'">int(</xsl:if>random.uniform(<xsl:value-of select="xmml:value/xmml:range/xmml:min"/>,<xsl:value-of select="xmml:value/xmml:range/xmml:max"/><xsl:if test="xmml:value/xmml:type='int'">)</xsl:if>))+"&lt;/<xsl:value-of select="xmml:name"/>&gt;\n")
+	<xsl:if test="experimentation:value/experimentation:range">initial_state_file.write("&lt;<xsl:value-of select="experimentation:name"/>&gt;"+str(<xsl:if test="experimentation:value/experimentation:type='int'">int(</xsl:if>random.uniform(<xsl:value-of select="experimentation:value/experimentation:range/experimentation:min"/>,<xsl:value-of select="experimentation:value/experimentation:range/experimentation:max"/><xsl:if test="experimentation:value/experimentation:type='int'">)</xsl:if>))+"&lt;/<xsl:value-of select="experimentation:name"/>&gt;\n")
 	</xsl:if>
 	</xsl:for-each>
 	</xsl:if>
@@ -67,9 +67,10 @@ def initial_state_creation(file_name,agent_information):
 	initial_state_file.write("&lt;/states&gt;")
 	return
 
-base_agent_information = [<xsl:for-each select="gpu:experimentation/xmml:InitialState/xmml:Populations/xmml:population">["<xsl:value-of select="xmml:agent"/>",["initial_population",<xsl:if test="xmml:InitialPopulationCount/xmml:fixed_value"><xsl:value-of select="xmml:InitialPopulationCount/xmml:fixed_value"/>,<xsl:value-of select="xmml:InitialPopulationCount/xmml:fixed_value"/></xsl:if><xsl:if test="xmml:InitialPopulationCount/xmml:range"><xsl:value-of select="xmml:InitialPopulationCount/xmml:range/xmml:min"/>,<xsl:value-of select="xmml:InitialPopulationCount/xmml:range/xmml:max"/></xsl:if>],<xsl:for-each select="xmml:Variables/xmml:variable">["<xsl:value-of select="xmml:name"/>",<xsl:if test="xmml:value/xmml:fixed_value"><xsl:value-of select="xmml:value/xmml:fixed_value"/>,<xsl:value-of select="xmml:value/xmml:fixed_value"/></xsl:if><xsl:if test="xmml:value/xmml:range"><xsl:value-of select="xmml:value/xmml:range/xmml:min"/>,<xsl:value-of select="xmml:value/xmml:range/xmml:max"/></xsl:if>],</xsl:for-each>],</xsl:for-each>]
+base_agent_information = [<xsl:for-each select="experimentation:Experimentation/experimentation:Experiment/experimentation:Populations/experimentation:population">
+["<xsl:value-of select="experimentation:agent"/>",["initial_population",<xsl:if test="experimentation:InitialPopulationCount/experimentation:fixed_value"><xsl:value-of select="experimentation:InitialPopulationCount/experimentation:fixed_value"/>,<xsl:value-of select="experimentation:InitialPopulationCount/experimentation:fixed_value"/></xsl:if><xsl:if test="experimentation:InitialPopulationCount/experimentation:range"><xsl:value-of select="experimentation:InitialPopulationCount/experimentation:range/experimentation:min"/>,<xsl:value-of select="experimentation:InitialPopulationCount/experimentation:range/experimentation:max"/></xsl:if>],<xsl:for-each select="experimentation:Variables/experimentation:variable">["<xsl:value-of select="experimentation:name"/>",<xsl:if test="experimentation:value/experimentation:fixed_value"><xsl:value-of select="experimentation:value/experimentation:fixed_value"/>,<xsl:value-of select="experimentation:value/experimentation:fixed_value"/></xsl:if><xsl:if test="experimentation:value/experimentation:range"><xsl:value-of select="experimentation:value/experimentation:range/experimentation:min"/>,<xsl:value-of select="experimentation:value/experimentation:range/experimentation:max"/></xsl:if>],</xsl:for-each>],</xsl:for-each>]
 
-initial_state_creation("<xsl:value-of select="gpu:experimentation/xmml:InitialState/xmml:DefaultName"/>,base_agent_information)
+initial_state_creation("<xsl:value-of select="experimentation:Experimentation/experimentation:Experiment/experimentation:InitialState/experimentation:DefaultName"/>",base_agent_information)
 <!-- def create_x_initial_states(x):
 	for i in range(x):
 		new_agent_information = []
