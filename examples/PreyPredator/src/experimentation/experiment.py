@@ -15,30 +15,23 @@
 #
 
 import os
-import sys
 import threading
+import sys
 import queue
 import random
 import datetime
+
 import pycuda.driver as cuda
 import pycuda.autoinit
 
 BASE_DIRECTORY = os.getcwd()
 
-#Yoooooooo
-
 #Initial state file creation.
-def initial_state_creation(file_name,agent_information):
-	SAVE_DIRECTORY = BASE_DIRECTORY+"../..//iterations"+"/"
+def initial_state_creation_test1(file_name,agent_information):
+	SAVE_DIRECTORY = BASE_DIRECTORY+"../../"+"/"
 	SAVE_DIRECTORY = BASE_DIRECTORY+"/"
 	initial_state_file = open(SAVE_DIRECTORY+str(file_name)+".xml","w")
 	initial_state_file.write("<states>\n<itno>0</itno>\n<environment>\n")
-	initial_state_file.write("<INTERACTION_DISTANCE_TEST_VARIABLE>"+str(0.12345)+"</INTERACTION_DISTANCE_TEST_VARIABLE>\n")
-	initial_state_file.write("<REPRODUCE_PREY_PROB>"+str(random.uniform(0,0.25))+"</REPRODUCE_PREY_PROB>\n")
-	initial_state_file.write("<REPRODUCE_PREDATOR_PROB>"+str(random.uniform(0,0.25))+"</REPRODUCE_PREDATOR_PROB>\n")
-	initial_state_file.write("<GAIN_FROM_FOOD_PREY>"+str(int(random.uniform(0,500)))+"</GAIN_FROM_FOOD_PREY>\n")
-	initial_state_file.write("<GAIN_FROM_FOOD_PREDATOR>"+str(int(random.uniform(0,500)))+"</GAIN_FROM_FOOD_PREDATOR>\n")
-	initial_state_file.write("<GRASS_REGROW_CYCLES>"+str(int(random.uniform(0,500)))+"</GRASS_REGROW_CYCLES>\n")
 	
 	initial_state_file.write("</environment>\n")
 	for i in range(len(agent_information)):
@@ -61,9 +54,6 @@ def initial_state_creation(file_name,agent_information):
 	initial_state_file.write("</states>")
 	return
 
-base_agent_information = [
-["prey",["initial_population",0,5000],["x",-1.0,1.0],["y",-1.0,1.0],["type",1,1],["fx",-1.0,1.0],["fy",-1.0,1.0],["steer_x",0.0,0.0],["steer_y",0.0,0.0],["life",1,50],],
-["predator",["initial_population",0,5000],["x",-1.0,1.0],["y",-1.0,1.0],["type",1,1],["fx",-1.0,1.0],["fy",-1.0,1.0],["steer_x",0.0,0.0],["steer_y",0.0,0.0],["life",1,50],],
-["grass",["initial_population",0,5000],["x",-1.0,1.0],["y",-1.0,1.0],["type",2,2],["dead_cycles",0,0],["available",1,1],],]
+base_agent_information = []
 
-initial_state_creation("0",base_agent_information)
+initial_state_creation("",base_agent_information)
