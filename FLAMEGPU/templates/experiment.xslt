@@ -27,16 +27,17 @@ import pycuda.autoinit
 
 BASE_DIRECTORY = os.getcwd()
 GPUS_AVAILABLE = cuda.Device(0).count()
-<xsl:for-each select="exp:Experimentation/exp:Experiment">
-<xsl:if test="exp:Experimentation/exp:Experiment/exp:InitialState">
-#Initial state file creation<xsl:if test="exp:ExperimentName"> for experiment <xsl:value-of select="exp:ExperimentName"/></xsl:if>.
-def initial_state_creation<xsl:if test="exp:ExperimentName">_<xsl:value-of select="exp:ExperimentName"/></xsl:if>(file_name,agent_information):
-	SAVE_DIRECTORY = BASE_DIRECTORY+"../../<xsl:value-of select="exp:Experimentation/exp:Experiment/exp:InitialState/exp:Location"/>"+"/"
+<xsl:if test="exp:Experimentation/exp:InitialStates">
+#InitialStates
+<xsl:for-each select="exp:Experimentation/exp:InitialStates/exp:InitialState">
+#Initial state file creation<xsl:if test="exp:ConfigurationName"> for experiment <xsl:value-of select="exp:ConfigurationName"/></xsl:if>.
+def initial_state_creation<xsl:if test="exp:ConfigurationName">_<xsl:value-of select="exp:ConfigurationName"/></xsl:if>(file_name,agent_information):
+	SAVE_DIRECTORY = BASE_DIRECTORY+"../../<xsl:value-of select="exp:Location"/>"+"/"
 	SAVE_DIRECTORY = BASE_DIRECTORY+"/"
 	initial_state_file = open(SAVE_DIRECTORY+str(file_name)+".xml","w")
 	initial_state_file.write("&lt;states&gt;\n&lt;itno&gt;0&lt;/itno&gt;\n&lt;environment&gt;\n")
-	<xsl:if test="exp:Experimentation/exp:Experiment/exp:Globals">
-	<xsl:for-each select="exp:Experimentation/exp:Experiment/exp:Globals/exp:global">
+	<xsl:if test="exp:Globals">
+	<xsl:for-each select="exp:Globals/exp:global">
 	<xsl:if test="exp:value/exp:fixed_value">initial_state_file.write("&lt;<xsl:value-of select="exp:name"/>&gt;"+str(<xsl:value-of select="exp:value"/>)+"&lt;/<xsl:value-of select="exp:name"/>&gt;\n")
 	</xsl:if>
 	<xsl:if test="exp:value/exp:range">initial_state_file.write("&lt;<xsl:value-of select="exp:name"/>&gt;"+str(<xsl:if test="exp:value/exp:type='int'">int(</xsl:if>random.uniform(<xsl:value-of select="exp:value/exp:range/exp:min"/>,<xsl:value-of select="exp:value/exp:range/exp:max"/><xsl:if test="exp:value/exp:type='int'">)</xsl:if>))+"&lt;/<xsl:value-of select="exp:name"/>&gt;\n")
@@ -65,18 +66,43 @@ def initial_state_creation<xsl:if test="exp:ExperimentName">_<xsl:value-of selec
 	return
 
 #Agent data stored in list of lists
-base_agent_information = [<xsl:for-each select="exp:Experimentation/exp:Experiment/exp:Populations/exp:population">
-["<xsl:value-of select="exp:agent"/>",["initial_population",<xsl:if test="exp:InitialPopulationCount/exp:fixed_value"><xsl:value-of select="exp:InitialPopulationCount/exp:fixed_value"/>,<xsl:value-of select="exp:InitialPopulationCount/exp:fixed_value"/></xsl:if><xsl:if test="exp:InitialPopulationCount/exp:range"><xsl:value-of select="exp:InitialPopulationCount/exp:range/exp:min"/>,<xsl:value-of select="exp:InitialPopulationCount/exp:range/exp:max"/></xsl:if>],<xsl:for-each select="exp:Variables/exp:variable">["<xsl:value-of select="exp:name"/>",<xsl:if test="exp:value/exp:fixed_value"><xsl:value-of select="exp:value/exp:fixed_value"/>,<xsl:value-of select="exp:value/exp:fixed_value"/></xsl:if><xsl:if test="exp:value/exp:range"><xsl:value-of select="exp:value/exp:range/exp:min"/>,<xsl:value-of select="exp:value/exp:range/exp:max"/></xsl:if>],</xsl:for-each>],</xsl:for-each>]
+base_agent_information = [<xsl:if test="exp:Populations"><xsl:for-each select="exp:Populations/exp:population">
+["<xsl:value-of select="exp:agent"/>",["initial_population",<xsl:if test="exp:InitialPopulationCount/exp:fixed_value"><xsl:value-of select="exp:InitialPopulationCount/exp:fixed_value"/>,<xsl:value-of select="exp:InitialPopulationCount/exp:fixed_value"/></xsl:if><xsl:if test="exp:InitialPopulationCount/exp:range"><xsl:value-of select="exp:InitialPopulationCount/exp:range/exp:min"/>,<xsl:value-of select="exp:InitialPopulationCount/exp:range/exp:max"/></xsl:if>],<xsl:for-each select="exp:Variables/exp:variable">["<xsl:value-of select="exp:name"/>",<xsl:if test="exp:value/exp:fixed_value"><xsl:value-of select="exp:value/exp:fixed_value"/>,<xsl:value-of select="exp:value/exp:fixed_value"/></xsl:if><xsl:if test="exp:value/exp:range"><xsl:value-of select="exp:value/exp:range/exp:min"/>,<xsl:value-of select="exp:value/exp:range/exp:max"/></xsl:if>],</xsl:for-each>],</xsl:for-each></xsl:if>]
 
 #Create initial state
-initial_state_creation("<xsl:value-of select="exp:Experimentation/exp:Experiment/exp:InitialState/exp:DefaultName"/>",base_agent_information)
+#initial_state_creation<xsl:if test="exp:ConfigurationName">_<xsl:value-of select="exp:ConfigurationName"/></xsl:if>("<xsl:value-of select="exp:FileName"/>",base_agent_information)
+</xsl:for-each>
+</xsl:if>
+
+
+<xsl:if test="exp:Experimentation/exp:ExperimentSet">
+#ExperimentSet
+<xsl:for-each select="exp:Experimentation/exp:ExperimentSet/exp:Experiment">
+############## <xsl:if test="exp:ExperimentName"><xsl:value-of select="exp:ExperimentName" /></xsl:if> ############
+#Model executable
+#winexe = ""+str(<xsl:value-of select="exp:Model/exp:ExecutableLocation" />)+str(<xsl:value-of select="exp:Model/exp:ModelName" />)+".exe"
+#unexe = "./"+str(<xsl:value-of select="exp:Model/exp:ExecutableLocation" />)+str(<xsl:value-of select="exp:Model/exp:ModelName" />)
+#Initial state creator
+#initial_state_creation_<xsl:value-of select="exp:InitialStateGenerator"/>(file_name,base_agent_information)
+<xsl:if test="exp:Configuration">
+<xsl:if test="exp:Configuration/exp:ExperimentVariables">
+<xsl:for-each select="exp:Configuration/exp:ExperimentVariables/exp:Variable">
+<xsl:value-of select="exp:Name" /> = <xsl:value-of select="exp:Type" />(<xsl:value-of select="exp:Value" />)
+</xsl:for-each>
+</xsl:if>
+
+<xsl:if test="exp:Configuration/exp:ExperimentFunctions">
+<xsl:for-each select="exp:Configuration/exp:ExperimentFunctions/exp:Function">
+def <xsl:value-of select="exp:Name" />(<xsl:for-each select="exp:Arguments/exp:Argument"><xsl:value-of select="text()"/>,</xsl:for-each>placeholder=None):
+	<xsl:if test="exp:GlobalVariables">global <xsl:for-each select="exp:GlobalVariables/exp:Global"><xsl:value-of select="text()"/>&#160;</xsl:for-each>&#xa;</xsl:if>
+	<xsl:if test="exp:Returns"><xsl:for-each select="exp:Returns/exp:Return"><xsl:value-of select="text()"/> = None&#xa;</xsl:for-each></xsl:if>
+	return <xsl:if test="exp:Returns"><xsl:for-each select="exp:Returns/exp:Return"><xsl:value-of select="text()"/>&#160;</xsl:for-each></xsl:if>
+&#xa;	
+</xsl:for-each>
+</xsl:if>
 </xsl:if>
 </xsl:for-each>
-
-batch_queue = None
-batch_queue_lock = threading.Lock()
-exit_batch_queue = 0
-batch_times = [0]*GPUS_AVAILABLE
+</xsl:if>
 
 </xsl:template>
 </xsl:stylesheet>

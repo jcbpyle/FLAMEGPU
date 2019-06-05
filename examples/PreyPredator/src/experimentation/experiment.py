@@ -25,13 +25,22 @@ import pycuda.driver as cuda
 import pycuda.autoinit
 
 BASE_DIRECTORY = os.getcwd()
+GPUS_AVAILABLE = cuda.Device(0).count()
 
-#Initial state file creation.
-def initial_state_creation_test1(file_name,agent_information):
-	SAVE_DIRECTORY = BASE_DIRECTORY+"../../"+"/"
+#InitialStates
+
+#Initial state file creation for experiment predprey.
+def initial_state_creation_predprey(file_name,agent_information):
+	SAVE_DIRECTORY = BASE_DIRECTORY+"../..//iterations"+"/"
 	SAVE_DIRECTORY = BASE_DIRECTORY+"/"
 	initial_state_file = open(SAVE_DIRECTORY+str(file_name)+".xml","w")
 	initial_state_file.write("<states>\n<itno>0</itno>\n<environment>\n")
+	initial_state_file.write("<INTERACTION_DISTANCE_TEST_VARIABLE>"+str(0.12345)+"</INTERACTION_DISTANCE_TEST_VARIABLE>\n")
+	initial_state_file.write("<REPRODUCE_PREY_PROB>"+str(random.uniform(0,0.25))+"</REPRODUCE_PREY_PROB>\n")
+	initial_state_file.write("<REPRODUCE_PREDATOR_PROB>"+str(random.uniform(0,0.25))+"</REPRODUCE_PREDATOR_PROB>\n")
+	initial_state_file.write("<GAIN_FROM_FOOD_PREY>"+str(int(random.uniform(0,500)))+"</GAIN_FROM_FOOD_PREY>\n")
+	initial_state_file.write("<GAIN_FROM_FOOD_PREDATOR>"+str(int(random.uniform(0,500)))+"</GAIN_FROM_FOOD_PREDATOR>\n")
+	initial_state_file.write("<GRASS_REGROW_CYCLES>"+str(int(random.uniform(0,500)))+"</GRASS_REGROW_CYCLES>\n")
 	
 	initial_state_file.write("</environment>\n")
 	for i in range(len(agent_information)):
@@ -54,6 +63,66 @@ def initial_state_creation_test1(file_name,agent_information):
 	initial_state_file.write("</states>")
 	return
 
-base_agent_information = []
+#Agent data stored in list of lists
+base_agent_information = [
+["prey",["initial_population",0,5000],["x",-1.0,1.0],["y",-1.0,1.0],["type",1,1],["fx",-1.0,1.0],["fy",-1.0,1.0],["steer_x",0.0,0.0],["steer_y",0.0,0.0],["life",1,50],],
+["predator",["initial_population",0,5000],["x",-1.0,1.0],["y",-1.0,1.0],["type",1,1],["fx",-1.0,1.0],["fy",-1.0,1.0],["steer_x",0.0,0.0],["steer_y",0.0,0.0],["life",1,50],],
+["grass",["initial_population",0,5000],["x",-1.0,1.0],["y",-1.0,1.0],["type",2,2],["dead_cycles",0,0],["available",1,1],],]
 
-initial_state_creation("",base_agent_information)
+#Create initial state
+#initial_state_creation_predprey("0",base_agent_information)
+
+#ExperimentSet
+
+############## testing_initial_state ############
+#Model executable
+#winexe = ""+str(../../../bin/x64/Release_Console/)+str(PreyPredator_api_test)+".exe"
+#unexe = "./"+str(../../../bin/x64/Release_Console/)+str(PreyPredator_api_test)
+#Initial state creator
+#initial_state_creation_predprey(file_name,base_agent_information)
+
+############## testing_batch_simulation ############
+#Model executable
+#winexe = ""+str(../../../bin/x64/Release_Console/)+str(PreyPredator_api_test)+".exe"
+#unexe = "./"+str(../../../bin/x64/Release_Console/)+str(PreyPredator_api_test)
+#Initial state creator
+#initial_state_creation_predprey(file_name,base_agent_information)
+
+############## testing_ga_experiment ############
+#Model executable
+#winexe = ""+str(../../../bin/x64/Release_Console/)+str(PreyPredator_api_test)+".exe"
+#unexe = "./"+str(../../../bin/x64/Release_Console/)+str(PreyPredator_api_test)
+#Initial state creator
+#initial_state_creation_predprey(file_name,base_agent_information)
+mu = int(100)
+LAMBDA = int(10)
+max_time = int(60)
+max_generations = int(10)
+mutation = float(0.25)
+crossover = float(0.5)
+
+def fitness_function(primary,secondary,tertiary,placeholder=None):
+	fitness = None
+
+	return fitness 
+def run_ga(mu,lamb,gen,time,start,evals,placeholder=None):
+	global curr_pop population = None
+
+	return population 
+############## testing_surrogate_experiment ############
+#Model executable
+#winexe = ""+str(../../../bin/x64/Release_Console/)+str(PreyPredator_api_test)+".exe"
+#unexe = "./"+str(../../../bin/x64/Release_Console/)+str(PreyPredator_api_test)
+#Initial state creator
+#initial_state_creation_predprey(file_name,base_agent_information)
+hidden_layers = tuple(100,100)
+error = float(1e-9)
+max_time = int(60)
+max_training_generations = int(2000)
+mutation = float(0.25)
+crossover = float(0.5)
+
+def fitness_function(primary,secondary,tertiary,placeholder=None):
+	fitness = None
+
+	return fitness 
