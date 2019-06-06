@@ -21,6 +21,7 @@ import queue
 import random
 import datetime
 
+import os
 import pycuda.driver as cuda
 import pycuda.autoinit
 
@@ -75,25 +76,20 @@ base_agent_information = [
 #ExperimentSet
 
 ############## testing_initial_state ############
-#Model executable
-#winexe = ""+str(../../../bin/x64/Release_Console/)+str(PreyPredator_api_test)+".exe"
-#unexe = "./"+str(../../../bin/x64/Release_Console/)+str(PreyPredator_api_test)
-#Initial state creator
-#initial_state_creation_predprey(file_name,base_agent_information)
 
 ############## testing_batch_simulation ############
-#Model executable
-#winexe = ""+str(../../../bin/x64/Release_Console/)+str(PreyPredator_api_test)+".exe"
-#unexe = "./"+str(../../../bin/x64/Release_Console/)+str(PreyPredator_api_test)
-#Initial state creator
-#initial_state_creation_predprey(file_name,base_agent_information)
+
+#Run for desired number of repeats
+#for i in range(10):
+	#initial_state_creation_predprey(file_name,base_agent_information)
+	#Run simulation
+	#os.system(simulation_command)
+	#Parse results
+	#results_file = open("../..//iterations","r")
+	#results = results_file.readlines()
+	#results_file.close()
 
 ############## testing_ga_experiment ############
-#Model executable
-#winexe = ""+str(../../../bin/x64/Release_Console/)+str(PreyPredator_api_test)+".exe"
-#unexe = "./"+str(../../../bin/x64/Release_Console/)+str(PreyPredator_api_test)
-#Initial state creator
-#initial_state_creation_predprey(file_name,base_agent_information)
 mu = int(100)
 LAMBDA = int(10)
 max_time = int(60)
@@ -104,17 +100,65 @@ crossover = float(0.5)
 def fitness_function(primary,secondary,tertiary,placeholder=None):
 	fitness = None
 
-	return fitness 
-def run_ga(mu,lamb,gen,time,start,evals,placeholder=None):
-	global curr_pop population = None
+	#Model executable
+	#executable = ""
+	#simulation_command = ""
+	#if os.name=='nt':
+	#	executable = "../../../../../bin/x64/Release_Console//PreyPredator_api_test.exe"
+	#	simulation_command = executable+" ../..//iterations/0.xml 1000"
+	#else:
+	#	executable = "./../../../../../bin/x64/Release_Console//PreyPredator_api_test"
+	#	simulation_command = executable+" ../..//iterations/0.xml 1000"
 
+	
+	#Initial state creator
+	
+	#Run for desired number of repeats
+	#for i in range(1):
+		#initial_state_creation_predprey(file_name,base_agent_information)
+		#Run simulation
+		#os.system(simulation_command)
+		#Parse results
+		#results_file = open("../..//iterations","r")
+		#results = results_file.readlines()
+		#results_file.close()
+	
+
+	
+	return fitness 
+
+def run_ga(mu,lamb,gen,time,start,evals,placeholder=None):
+	global curr_pop, 
+	population = None
+
+	#Model executable
+	#executable = ""
+	#simulation_command = ""
+	#if os.name=='nt':
+	#	executable = "../../../../../bin/x64/Release_Console//PreyPredator_api_test.exe"
+	#	simulation_command = executable+" ../..//iterations/0.xml 1000"
+	#else:
+	#	executable = "./../../../../../bin/x64/Release_Console//PreyPredator_api_test"
+	#	simulation_command = executable+" ../..//iterations/0.xml 1000"
+
+	
+	#Initial state creator
+	
+	#Run for desired number of repeats
+	#for i in range(1):
+		#initial_state_creation_predprey(file_name,base_agent_information)
+		#Run simulation
+		#os.system(simulation_command)
+		#Parse results
+		#results_file = open("../..//iterations","r")
+		#results = results_file.readlines()
+		#results_file.close()
+	
+
+	
 	return population 
+
 ############## testing_surrogate_experiment ############
-#Model executable
-#winexe = ""+str(../../../bin/x64/Release_Console/)+str(PreyPredator_api_test)+".exe"
-#unexe = "./"+str(../../../bin/x64/Release_Console/)+str(PreyPredator_api_test)
-#Initial state creator
-#initial_state_creation_predprey(file_name,base_agent_information)
 hidden_layers = tuple(100,100)
 error = float(1e-9)
 max_time = int(60)
@@ -125,4 +169,24 @@ crossover = float(0.5)
 def fitness_function(primary,secondary,tertiary,placeholder=None):
 	fitness = None
 
+	#Model executable
+	#executable = ""
+	#simulation_command = ""
+	#if os.name=='nt':
+	#	executable = "../../../../../bin/x64/Release_Console//PreyPredator_api_test.exe"
+	#	simulation_command = executable+" ../..//.xml 1000"
+	#else:
+	#	executable = "./../../../../../bin/x64/Release_Console//PreyPredator_api_test"
+	#	simulation_command = executable+" ../..//.xml 1000"
+
+	
+	#Run simulation
+	#os.system(simulation_command)
+	#Parse results
+	#results_file = open("../../","r")
+	#results = results_file.readlines()
+	#results_file.close()
+	
+
+	
 	return fitness 

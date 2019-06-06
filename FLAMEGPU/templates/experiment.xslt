@@ -22,6 +22,7 @@
 #
 
 <xsl:if test="exp:Experimentation/exp:Imports"><xsl:for-each select="exp:Experimentation/exp:Imports/exp:Import"><xsl:if test="exp:From">from <xsl:value-of select="exp:From" />&#160;</xsl:if>import <xsl:value-of select="exp:Module" /><xsl:text>&#xa;</xsl:text></xsl:for-each></xsl:if>
+import os
 import pycuda.driver as cuda
 import pycuda.autoinit
 
@@ -79,11 +80,6 @@ base_agent_information = [<xsl:if test="exp:Populations"><xsl:for-each select="e
 #ExperimentSet
 <xsl:for-each select="exp:Experimentation/exp:ExperimentSet/exp:Experiment">
 ############## <xsl:if test="exp:ExperimentName"><xsl:value-of select="exp:ExperimentName" /></xsl:if> ############
-#Model executable
-#winexe = ""+str(<xsl:value-of select="exp:Model/exp:ExecutableLocation" />)+str(<xsl:value-of select="exp:Model/exp:ModelName" />)+".exe"
-#unexe = "./"+str(<xsl:value-of select="exp:Model/exp:ExecutableLocation" />)+str(<xsl:value-of select="exp:Model/exp:ModelName" />)
-#Initial state creator
-#initial_state_creation_<xsl:value-of select="exp:InitialStateGenerator"/>(file_name,base_agent_information)
 <xsl:if test="exp:Configuration">
 <xsl:if test="exp:Configuration/exp:ExperimentVariables">
 <xsl:for-each select="exp:Configuration/exp:ExperimentVariables/exp:Variable">
@@ -94,11 +90,54 @@ base_agent_information = [<xsl:if test="exp:Populations"><xsl:for-each select="e
 <xsl:if test="exp:Configuration/exp:ExperimentFunctions">
 <xsl:for-each select="exp:Configuration/exp:ExperimentFunctions/exp:Function">
 def <xsl:value-of select="exp:Name" />(<xsl:for-each select="exp:Arguments/exp:Argument"><xsl:value-of select="text()"/>,</xsl:for-each>placeholder=None):
-	<xsl:if test="exp:GlobalVariables">global <xsl:for-each select="exp:GlobalVariables/exp:Global"><xsl:value-of select="text()"/>&#160;</xsl:for-each>&#xa;</xsl:if>
-	<xsl:if test="exp:Returns"><xsl:for-each select="exp:Returns/exp:Return"><xsl:value-of select="text()"/> = None&#xa;</xsl:for-each></xsl:if>
-	return <xsl:if test="exp:Returns"><xsl:for-each select="exp:Returns/exp:Return"><xsl:value-of select="text()"/>&#160;</xsl:for-each></xsl:if>
-&#xa;	
+	<xsl:if test="exp:GlobalVariables">global <xsl:for-each select="exp:GlobalVariables/exp:Global"><xsl:value-of select="text()"/>,&#160;</xsl:for-each><xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text></xsl:if>
+	<xsl:if test="exp:Returns"><xsl:for-each select="exp:Returns/exp:Return"><xsl:value-of select="text()"/> = None<xsl:text>&#xa;</xsl:text></xsl:for-each></xsl:if>
+	#Model executable
+	#executable = ""
+	#simulation_command = ""
+	#if os.name=='nt':
+	#	executable = "../../<xsl:value-of select="../../../exp:Model/exp:ExecutableLocation" />/<xsl:value-of select="../../../exp:Model/exp:ModelName" />.exe"
+	#	simulation_command = executable+" ../../<xsl:value-of select="../../../exp:InitialState/exp:Location"/>/<xsl:if test="../../../exp:InitialState/exp:File"><xsl:value-of select="../../../exp:InitialState/exp:File"/></xsl:if><xsl:if test="../../../exp:InitialState/exp:Generator"><xsl:if test="../../../../../exp:InitialStates/exp:InitialState/exp:ConfigurationName = ../../../exp:InitialState/exp:Generator"><xsl:value-of select="../../../../../exp:InitialStates/exp:InitialState/exp:FileName"/></xsl:if></xsl:if>.xml <xsl:value-of select="../../exp:Iterations"/>"
+	#else:
+	#	executable = "./../../<xsl:value-of select="../../../exp:Model/exp:ExecutableLocation" />/<xsl:value-of select="../../../exp:Model/exp:ModelName" />"
+	#	simulation_command = executable+" ../../<xsl:value-of select="../../../exp:InitialState/exp:Location"/>/<xsl:if test="../../../exp:InitialState/exp:File"><xsl:value-of select="../../../exp:InitialState/exp:File"/></xsl:if><xsl:if test="../../../exp:InitialState/exp:Generator"><xsl:if test="../../../../../exp:InitialStates/exp:InitialState/exp:ConfigurationName = ../../../exp:InitialState/exp:Generator"><xsl:value-of select="../../../../../exp:InitialStates/exp:InitialState/exp:FileName"/></xsl:if></xsl:if>.xml <xsl:value-of select="../../exp:Iterations"/>"
+
+	<xsl:if test="not(../../../exp:InitialState/exp:Generator)">
+	#Run simulation
+	#os.system(simulation_command)
+	#Parse results
+	#results_file = open("../../<xsl:value-of select="../../../exp:InitialState/exp:SimulationOutputLocation"/>","r")
+	#results = results_file.readlines()
+	#results_file.close()
+	</xsl:if>
+
+	<xsl:if test="../../../exp:InitialState/exp:Generator">
+	#Initial state creator
+	<xsl:if test="../../exp:Repeats">
+	#Run for desired number of repeats
+	#for i in range(<xsl:value-of select="../../exp:Repeats"/>):
+		</xsl:if>#initial_state_creation_<xsl:value-of select="../../../exp:InitialState/exp:Generator"/>(file_name,base_agent_information)
+		#Run simulation
+		#os.system(simulation_command)
+		#Parse results
+		#results_file = open("../../<xsl:value-of select="../../../exp:InitialState/exp:SimulationOutputLocation"/>","r")
+		#results = results_file.readlines()
+		#results_file.close()
+	</xsl:if>
+	
+	return <xsl:if test="exp:Returns"><xsl:for-each select="exp:Returns/exp:Return"><xsl:value-of select="text()"/>&#160;</xsl:for-each></xsl:if><xsl:text>&#xa;</xsl:text>	
 </xsl:for-each>
+</xsl:if>
+<xsl:if test="not(exp:Configuration/exp:ExperimentFunctions) and exp:Configuration"><xsl:if test="exp:Configuration/exp:Repeats">
+#Run for desired number of repeats
+#for i in range(<xsl:value-of select="exp:Configuration/exp:Repeats"/>):
+	</xsl:if>#initial_state_creation_<xsl:value-of select="exp:InitialState/exp:Generator"/>(file_name,base_agent_information)
+	#Run simulation
+	#os.system(simulation_command)
+	#Parse results
+	#results_file = open("../../<xsl:value-of select="exp:InitialState/exp:SimulationOutputLocation"/>","r")
+	#results = results_file.readlines()
+	#results_file.close()
 </xsl:if>
 </xsl:if>
 </xsl:for-each>

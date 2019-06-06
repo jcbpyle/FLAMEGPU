@@ -320,7 +320,11 @@
                 <exp:ExecutableLocation>../../../bin/x64/Release_Console/</exp:ExecutableLocation>
                 <exp:ModelName>PreyPredator_api_test</exp:ModelName>
             </exp:Model>
-            <exp:InitialStateGenerator>predprey</exp:InitialStateGenerator>
+            <exp:InitialState>
+                <exp:Generator>predprey</exp:Generator>
+                <exp:Location>/iterations</exp:Location>
+                <exp:SimulationOutputLocation>/iterations</exp:SimulationOutputLocation>
+            </exp:InitialState>
         </exp:Experiment>
 
 
@@ -330,7 +334,11 @@
                 <exp:ExecutableLocation>../../../bin/x64/Release_Console/</exp:ExecutableLocation>
                 <exp:ModelName>PreyPredator_api_test</exp:ModelName>
             </exp:Model>
-            <exp:InitialStateGenerator>predprey</exp:InitialStateGenerator>
+            <exp:InitialState>
+                <exp:Generator>predprey</exp:Generator>
+                <exp:Location>/iterations</exp:Location>
+                <exp:SimulationOutputLocation>/iterations</exp:SimulationOutputLocation>
+            </exp:InitialState>
             <exp:Configuration>
                 <exp:Iterations>1000</exp:Iterations>
                 <exp:Repeats>10</exp:Repeats>
@@ -344,7 +352,11 @@
                 <exp:ExecutableLocation>../../../bin/x64/Release_Console/</exp:ExecutableLocation>
                 <exp:ModelName>PreyPredator_api_test</exp:ModelName>
             </exp:Model>
-            <exp:InitialStateGenerator>predprey</exp:InitialStateGenerator>
+            <exp:InitialState>
+                <exp:Generator>predprey</exp:Generator>
+                <exp:Location>/iterations</exp:Location>
+                <exp:SimulationOutputLocation>/iterations</exp:SimulationOutputLocation>
+            </exp:InitialState>
             <exp:Configuration>
                 <exp:ExperimentVariables>
                     <exp:Variable>
