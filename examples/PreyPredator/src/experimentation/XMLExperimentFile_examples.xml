@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet Type="text/xsl" href="FLAMEGPU_vcproj.xslt"?>
+
+<!--Strituvad
+Run many repeats, differing seeds
+
+5 initial state files with different things (globals and stuff). Run each with many seeds
+
+Spits out pop curves. Do some mathsy stuff (in python)
+
+Some sort of python post simulation function (move files around). Parameters which identify that this step should be included-->
+
+<exp:Experimentation xmlns:exp="https://jcbpyle.github.io/XMMLExperiment" xmlns:gpu="http://www.dcs.shef.ac.uk/~paul/XMMLGPU" xmlns="http://www.dcs.shef.ac.uk/~paul/XMML">
+    <exp:Imports>
+        <exp:Import>
+            <exp:Module>sys</exp:Module>
+        </exp:Import>
+    </exp:Imports>
+
+    <exp:InitialStates baseDirectory="example_iterations">
+        <exp:InitialStateFunction>
+            <exp:FunctionName>example_user_generator_function</exp:FunctionName>
+        </exp:InitialStateFunction>
+        <exp:InitialStateFile>
+            <exp:FileName>example</exp:FileName>
+            <exp:Location>example_iterations</exp:Location>
+        </exp:InitialStateFile>
+        <exp:InitialStateGenerator>
+            <exp:GeneratorName>example_generator</exp:GeneratorName>
+            <exp:Files>
+                <exp:BaseDirectory>example_iterations</exp:BaseDirectory>
+                <exp:InitialFileName>0</exp:InitialFileName>
+                <exp:Prefix>seed</exp:Prefix>
+                <exp:Alteration>+"seed"</exp:Alteration>
+            </exp:Files>
+        </exp:InitialStateGenerator>
+        <exp:InitialStateGenerator>
+            <exp:GeneratorName>example_generator_1param_list</exp:GeneratorName>
+            <exp:Files>
+                <exp:BaseDirectory>example_iterations</exp:BaseDirectory>
+                <exp:InitialFileName>0</exp:InitialFileName>
+                <exp:Prefix>1</exp:Prefix>
+                <exp:Alteration>+1</exp:Alteration>
+            </exp:Files>
+            <exp:Globals>
+                <exp:Global>
+                    <exp:Name>LIST_TEST_VARIABLE</exp:Name>
+                    <exp:Value>
+                        <exp:List>
+                            <exp:Items>1,2,3,4,5</exp:Items>
+                        </exp:List>
+                    </exp:Value>
+                </exp:Global>
+            </exp:Globals>
+        </exp:InitialStateGenerator>
+        <exp:InitialStateGenerator>
+            <exp:GeneratorName>example_generator_1param_range</exp:GeneratorName>
+            <exp:Files>
+                <exp:BaseDirectory>example_iterations</exp:BaseDirectory>
+                <exp:InitialFileName>0</exp:InitialFileName>
+                <exp:Prefix>1</exp:Prefix>
+                <exp:Alteration>+1</exp:Alteration>
+            </exp:Files>
+            <exp:Globals>
+                <exp:Global>
+                    <exp:Name>RANGE_TEST_VARIABLE</exp:Name>
+                    <exp:Value>
+                        <exp:Range>
+                            <exp:Min>1</exp:Min>
+                            <exp:Max>5</exp:Max>
+                            <exp:Step>1</exp:Step>
+                        </exp:Range>
+                    </exp:Value>
+                </exp:Global>
+            </exp:Globals>
+        </exp:InitialStateGenerator>
+        <exp:InitialStateGenerator>
+            <exp:GeneratorName>example_generator_1param_randomrange</exp:GeneratorName>
+            <exp:Files>
+                <exp:BaseDirectory>example_iterations</exp:BaseDirectory>
+                <exp:InitialFileName>0</exp:InitialFileName>
+                <exp:Prefix>1</exp:Prefix>
+                <exp:Alteration>+1</exp:Alteration>
+            </exp:Files>
+            <exp:Globals>
+                <exp:Global>
+                    <exp:Name>RANGE_CHOOSE_TEST_VARIABLE</exp:Name>
+                    <exp:Value>
+                        <exp:Range>
+                            <exp:Min>1</exp:Min>
+                            <exp:Max>5</exp:Max>
+                            <exp:Select>2</exp:Select>
+                            <exp:Distribution>uniform</exp:Distribution>
+                        </exp:Range>
+                    </exp:Value>
+                </exp:Global>
+            </exp:Globals>
+        </exp:InitialStateGenerator>
+        <exp:InitialStateGenerator>
+            <exp:GeneratorName>example_generator_1param_randomlist</exp:GeneratorName>
+            <exp:Files>
+                <exp:BaseDirectory>example_iterations</exp:BaseDirectory>
+                <exp:InitialFileName>0</exp:InitialFileName>
+                <exp:Prefix>1</exp:Prefix>
+                <exp:Alteration>+1</exp:Alteration>
+            </exp:Files>
+            <exp:Globals>
+                <exp:Global>
+                    <exp:Name>LIST_CHOOSE_TEST_VARIABLE</exp:Name>
+                    <exp:Value>
+                        <exp:Range>
+                            <exp:List>
+                                <exp:Items>1,2,3,4,5</exp:Items>
+                                <exp:Select>2</exp:Select>
+                                <exp:Distribution>uniform</exp:Distribution>
+                            </exp:List>
+                        </exp:Range>
+                    </exp:Value>
+                </exp:Global>
+            </exp:Globals>
+        </exp:InitialStateGenerator>
+        <exp:InitialStateGenerator>
+            <exp:GeneratorName>example_generator_2param_list</exp:GeneratorName>
+            <exp:Files>
+                <exp:BaseDirectory>example_iterations</exp:BaseDirectory>
+                <exp:InitialFileName>0</exp:InitialFileName>
+                <exp:Prefix>1</exp:Prefix>
+                <exp:Alteration>+1</exp:Alteration>
+            </exp:Files>
+            <exp:Globals>
+                <exp:Global>
+                    <exp:Name>LIST_TEST_VARIABLE</exp:Name>
+                    <exp:Value>
+                        <exp:List>
+                            <exp:Items>1,2,3,4,5</exp:Items>
+                        </exp:List>
+                    </exp:Value>
+                </exp:Global>
+                <exp:Global>
+                    <exp:Name>SECOND_LIST_TEST_VARIABLE</exp:Name>
+                    <exp:Value>
+                        <exp:List>
+                            <exp:Items>99,98,97,96,95</exp:Items>
+                        </exp:List>
+                    </exp:Value>
+                </exp:Global>
+            </exp:Globals>
+        </exp:InitialStateGenerator>
+    </exp:InitialStates>
+
+    <exp:ExperimentSet>
+        <exp:Experiment>
+
+        </exp:Experiment>
+    </exp:ExperimentSet>
+</exp:Experimentation>

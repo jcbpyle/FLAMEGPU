@@ -14,35 +14,34 @@
 # on www.flamegpu.com website.
 #
 
-import os
 import threading
 import sys
 import queue
-import random
 import datetime
 
 import os
+import random
 import pycuda.driver as cuda
 import pycuda.autoinit
 
-BASE_DIRECTORY = os.getcwd()
+BASE_DIRECTORY = os.getcwd()+"/"
+PROJECT_DIRECTORY = BASE_DIRECTORY+"../../"
 GPUS_AVAILABLE = cuda.Device(0).count()
 
 #InitialStates
 
-#Initial state file creation for experiment predprey.
-def initial_state_creation_predprey(file_name,agent_information):
-	SAVE_DIRECTORY = BASE_DIRECTORY+"../..//iterations"+"/"
-	SAVE_DIRECTORY = BASE_DIRECTORY+"/"
+
+initial_state_files = []
+
+initial_state_files += ["/iterations/0.xml"]
+
+#Initial state file creation.
+def initial_state(save_location,file_name,global_information,agent_information):
+	SAVE_DIRECTORY = PROJECT_DIRECTORY+"iterations"+"/"
 	initial_state_file = open(SAVE_DIRECTORY+str(file_name)+".xml","w")
 	initial_state_file.write("<states>\n<itno>0</itno>\n<environment>\n")
-	initial_state_file.write("<INTERACTION_DISTANCE_TEST_VARIABLE>"+str(0.12345)+"</INTERACTION_DISTANCE_TEST_VARIABLE>\n")
-	initial_state_file.write("<REPRODUCE_PREY_PROB>"+str(random.uniform(0,0.25))+"</REPRODUCE_PREY_PROB>\n")
-	initial_state_file.write("<REPRODUCE_PREDATOR_PROB>"+str(random.uniform(0,0.25))+"</REPRODUCE_PREDATOR_PROB>\n")
-	initial_state_file.write("<GAIN_FROM_FOOD_PREY>"+str(int(random.uniform(0,500)))+"</GAIN_FROM_FOOD_PREY>\n")
-	initial_state_file.write("<GAIN_FROM_FOOD_PREDATOR>"+str(int(random.uniform(0,500)))+"</GAIN_FROM_FOOD_PREDATOR>\n")
-	initial_state_file.write("<GRASS_REGROW_CYCLES>"+str(int(random.uniform(0,500)))+"</GRASS_REGROW_CYCLES>\n")
-	
+	for g in range(len(global_information)):
+		initial_state_file.write("<"+str(global_information[g][0])+">"+str(gloabl_information[g][1])+"</"+str(global_information[g][0])+">\n")
 	initial_state_file.write("</environment>\n")
 	for i in range(len(agent_information)):
 		ind = [x[0] for x in agent_information[i]].index("initial_population")
@@ -64,109 +63,56 @@ def initial_state_creation_predprey(file_name,agent_information):
 	initial_state_file.write("</states>")
 	return
 
+#Generate initial states based on defined ranges/lists/values for all global and agent population variables for experiment predprey.
+def generate_initial_states_predprey():
+	global_data = []
+	agent_data = []
+	INTERACTION_DISTANCE_TEST_VARIABLE = 0.12345
+	LIST_TEST_VARIABLE = [1,2,3,4,5]
+	LIST_TEST_VARIABLE_2 = [1,2,3,4,5]
+	LIST_TEST_VARIABLE_3 = random.choice([1,2,3,4,5,10],2)
+	DISTRIBUTION_TEST_VARIABLE = random.uniform(1,10)
+	DISTRIBUTION_TEST_VARIABLE_2 = random.sample(1,10,5)
+	DISTRIBUTION_TEST_VARIABLE_3 = random.randRange(1,10,2)
+	REPRODUCE_PREY_PROB = [random.uniform(0,0.25) for i in range(1)]
+	REPRODUCE_PREDATOR_PROB = [random.uniform(0,0.25) for i in range(1)]
+	GAIN_FROM_FOOD_PREY = [random.uniform(0,500) for i in range(1)]
+	GAIN_FROM_FOOD_PREDATOR = [random.uniform(0,500) for i in range(1)]
+	GRASS_REGROW_CYCLES = [random.uniform(0,500) for i in range(1)]
+	
+	return global_data,agent_data
+
 #Agent data stored in list of lists
-base_agent_information = [
-["prey",["initial_population",0,5000],["x",-1.0,1.0],["y",-1.0,1.0],["type",1,1],["fx",-1.0,1.0],["fy",-1.0,1.0],["steer_x",0.0,0.0],["steer_y",0.0,0.0],["life",1,50],],
-["predator",["initial_population",0,5000],["x",-1.0,1.0],["y",-1.0,1.0],["type",1,1],["fx",-1.0,1.0],["fy",-1.0,1.0],["steer_x",0.0,0.0],["steer_y",0.0,0.0],["life",1,50],],
-["grass",["initial_population",0,5000],["x",-1.0,1.0],["y",-1.0,1.0],["type",2,2],["dead_cycles",0,0],["available",1,1],],]
+base_agent_information = []
 
 #Create initial state
-#initial_state_creation_predprey("0",base_agent_information)
+#initial_state_creation_predprey("",base_agent_information)
 
 #ExperimentSet
 
-############## testing_initial_state ############
+############## testing_initial_State ############
 
 ############## testing_batch_simulation ############
 
 #Run for desired number of repeats
 #for i in range(10):
-	#initial_state_creation_predprey(file_name,base_agent_information)
+	#initial_state_creation_(file_name,base_agent_information)
 	#Run simulation
 	#os.system(simulation_command)
 	#Parse results
-	#results_file = open("../..//iterations","r")
+	#results_file = open("../../","r")
 	#results = results_file.readlines()
 	#results_file.close()
 
 ############## testing_ga_experiment ############
 mu = int(100)
 LAMBDA = int(10)
-max_time = int(60)
-max_generations = int(10)
+Max_time = int(60)
+Max_generations = int(10)
 mutation = float(0.25)
 crossover = float(0.5)
 
-def fitness_function(primary,secondary,tertiary,placeholder=None):
-	fitness = None
-
-	#Model executable
-	#executable = ""
-	#simulation_command = ""
-	#if os.name=='nt':
-	#	executable = "../../../../../bin/x64/Release_Console//PreyPredator_api_test.exe"
-	#	simulation_command = executable+" ../..//iterations/0.xml 1000"
-	#else:
-	#	executable = "./../../../../../bin/x64/Release_Console//PreyPredator_api_test"
-	#	simulation_command = executable+" ../..//iterations/0.xml 1000"
-
-	
-	#Initial state creator
-	
-	#Run for desired number of repeats
-	#for i in range(1):
-		#initial_state_creation_predprey(file_name,base_agent_information)
-		#Run simulation
-		#os.system(simulation_command)
-		#Parse results
-		#results_file = open("../..//iterations","r")
-		#results = results_file.readlines()
-		#results_file.close()
-	
-
-	
-	return fitness 
-
-def run_ga(mu,lamb,gen,time,start,evals,placeholder=None):
-	global curr_pop, 
-	population = None
-
-	#Model executable
-	#executable = ""
-	#simulation_command = ""
-	#if os.name=='nt':
-	#	executable = "../../../../../bin/x64/Release_Console//PreyPredator_api_test.exe"
-	#	simulation_command = executable+" ../..//iterations/0.xml 1000"
-	#else:
-	#	executable = "./../../../../../bin/x64/Release_Console//PreyPredator_api_test"
-	#	simulation_command = executable+" ../..//iterations/0.xml 1000"
-
-	
-	#Initial state creator
-	
-	#Run for desired number of repeats
-	#for i in range(1):
-		#initial_state_creation_predprey(file_name,base_agent_information)
-		#Run simulation
-		#os.system(simulation_command)
-		#Parse results
-		#results_file = open("../..//iterations","r")
-		#results = results_file.readlines()
-		#results_file.close()
-	
-
-	
-	return population 
-
-############## testing_surrogate_experiment ############
-hidden_layers = tuple(100,100)
-error = float(1e-9)
-max_time = int(60)
-max_training_generations = int(2000)
-mutation = float(0.25)
-crossover = float(0.5)
-
-def fitness_function(primary,secondary,tertiary,placeholder=None):
+def fitness_function(primary,secondary,tertiary):
 	fitness = None
 
 	#Model executable
@@ -187,6 +133,62 @@ def fitness_function(primary,secondary,tertiary,placeholder=None):
 	#results = results_file.readlines()
 	#results_file.close()
 	
+	
+	return fitness 
 
+def run_ga(mu,lamb,gen,time,start,evals):
+	global curr_pop
+	Population = None
+
+	#Model executable
+	#executable = ""
+	#simulation_command = ""
+	#if os.name=='nt':
+	#	executable = "../../../../../bin/x64/Release_Console//PreyPredator_api_test.exe"
+	#	simulation_command = executable+" ../..//.xml 1000"
+	#else:
+	#	executable = "./../../../../../bin/x64/Release_Console//PreyPredator_api_test"
+	#	simulation_command = executable+" ../..//.xml 1000"
+
+	
+	#Run simulation
+	#os.system(simulation_command)
+	#Parse results
+	#results_file = open("../../","r")
+	#results = results_file.readlines()
+	#results_file.close()
+	
+	
+	return Population 
+
+############## testing_surrogate_experiment ############
+hidden_layers = tuple(100,100)
+error = float(1e-9)
+Max_time = int(60)
+Max_training_generations = int(2000)
+mutation = float(0.25)
+crossover = float(0.5)
+
+def fitness_function(primary,secondary,tertiary):
+	fitness = None
+
+	#Model executable
+	#executable = ""
+	#simulation_command = ""
+	#if os.name=='nt':
+	#	executable = "../../../../../bin/x64/Release_Console//PreyPredator_api_test.exe"
+	#	simulation_command = executable+" ../..//.xml 1000"
+	#else:
+	#	executable = "./../../../../../bin/x64/Release_Console//PreyPredator_api_test"
+	#	simulation_command = executable+" ../..//.xml 1000"
+
+	
+	#Run simulation
+	#os.system(simulation_command)
+	#Parse results
+	#results_file = open("../../","r")
+	#results = results_file.readlines()
+	#results_file.close()
+	
 	
 	return fitness 
