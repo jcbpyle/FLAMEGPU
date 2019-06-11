@@ -173,6 +173,8 @@
                         <exp:Range>
                             <exp:Min>0</exp:Min>
                             <exp:Max>5000</exp:Max>
+                            <exp:Select>1</exp:Select>
+                            <exp:Distribution>uniform</exp:Distribution>
                         </exp:Range>
                     </exp:InitialPopulationCount>                                   
                     <exp:Variables>                                         
@@ -182,6 +184,8 @@
                                 <exp:Range>
                                     <exp:Min>-1.0</exp:Min>
                                     <exp:Max>1.0</exp:Max>
+                                    <exp:Select>1</exp:Select>
+                                    <exp:Distribution>uniform</exp:Distribution>
                                 </exp:Range>
                                 <exp:Type>float</exp:Type>
                             </exp:Value>
@@ -192,12 +196,14 @@
                                 <exp:Range>
                                     <exp:Min>-1.0</exp:Min>
                                     <exp:Max>1.0</exp:Max>
+                                    <exp:Select>1</exp:Select>
+                                    <exp:Distribution>uniform</exp:Distribution>
                                 </exp:Range>
                                 <exp:Type>float</exp:Type>
                             </exp:Value>
                         </exp:Variable>
                         <exp:Variable>
-                            <exp:Name>Type</exp:Name>
+                            <exp:Name>type</exp:Name>
                             <exp:Value>
                                 <exp:FixedValue>1</exp:FixedValue>
                             </exp:Value>
@@ -209,6 +215,8 @@
                                 <exp:Range>
                                     <exp:Min>-1.0</exp:Min>
                                     <exp:Max>1.0</exp:Max>
+                                    <exp:Select>1</exp:Select>
+                                    <exp:Distribution>uniform</exp:Distribution>
                                 </exp:Range>
                                 <exp:Type>float</exp:Type>
                             </exp:Value>
@@ -219,6 +227,8 @@
                                 <exp:Range>
                                     <exp:Min>-1.0</exp:Min>
                                     <exp:Max>1.0</exp:Max>
+                                    <exp:Select>1</exp:Select>
+                                    <exp:Distribution>uniform</exp:Distribution>
                                 </exp:Range>
                                 <exp:Type>float</exp:Type>
                             </exp:Value>
@@ -243,6 +253,8 @@
                                 <exp:Range>
                                     <exp:Min>1</exp:Min>
                                     <exp:Max>50</exp:Max>
+                                    <exp:Select>1</exp:Select>
+                                    <exp:Distribution>uniform</exp:Distribution>
                                 </exp:Range>
                                 <exp:Type>int</exp:Type>
                             </exp:Value>
@@ -257,6 +269,8 @@
                         <exp:Range>
                             <exp:Min>0</exp:Min>
                             <exp:Max>5000</exp:Max>
+                            <exp:Select>1</exp:Select>
+                            <exp:Distribution>uniform</exp:Distribution>
                         </exp:Range>
                     </exp:InitialPopulationCount>                                   
                     <exp:Variables>                                         
@@ -266,6 +280,8 @@
                                 <exp:Range>
                                     <exp:Min>-1.0</exp:Min>
                                     <exp:Max>1.0</exp:Max>
+                                    <exp:Select>1</exp:Select>
+                                    <exp:Distribution>uniform</exp:Distribution>
                                 </exp:Range>
                                 <exp:Type>float</exp:Type>
                             </exp:Value>
@@ -276,12 +292,14 @@
                                 <exp:Range>
                                     <exp:Min>-1.0</exp:Min>
                                     <exp:Max>1.0</exp:Max>
+                                    <exp:Select>1</exp:Select>
+                                    <exp:Distribution>uniform</exp:Distribution>
                                 </exp:Range>
                                 <exp:Type>float</exp:Type>
                             </exp:Value>
                         </exp:Variable>
                         <exp:Variable>
-                            <exp:Name>Type</exp:Name>
+                            <exp:Name>type</exp:Name>
                             <exp:Value>
                                 <exp:FixedValue>1</exp:FixedValue>
                             </exp:Value>
@@ -293,6 +311,8 @@
                                 <exp:Range>
                                     <exp:Min>-1.0</exp:Min>
                                     <exp:Max>1.0</exp:Max>
+                                    <exp:Select>1</exp:Select>
+                                    <exp:Distribution>uniform</exp:Distribution>
                                 </exp:Range>
                                 <exp:Type>float</exp:Type>
                             </exp:Value>
@@ -303,6 +323,8 @@
                                 <exp:Range>
                                     <exp:Min>-1.0</exp:Min>
                                     <exp:Max>1.0</exp:Max>
+                                    <exp:Select>1</exp:Select>
+                                    <exp:Distribution>uniform</exp:Distribution>
                                 </exp:Range>
                                 <exp:Type>float</exp:Type>
                             </exp:Value>
@@ -327,6 +349,8 @@
                                 <exp:Range>
                                     <exp:Min>1</exp:Min>
                                     <exp:Max>50</exp:Max>
+                                    <exp:Select>1</exp:Select>
+                                    <exp:Distribution>uniform</exp:Distribution>
                                 </exp:Range>
                                 <exp:Type>int</exp:Type>
                             </exp:Value>
@@ -341,6 +365,8 @@
                         <exp:Range>
                             <exp:Min>0</exp:Min>
                             <exp:Max>5000</exp:Max>
+                            <exp:Select>1</exp:Select>
+                            <exp:Distribution>uniform</exp:Distribution>
                         </exp:Range>
                     </exp:InitialPopulationCount>                                   
                     <exp:Variables>                                         
@@ -350,6 +376,8 @@
                                 <exp:Range>
                                     <exp:Min>-1.0</exp:Min>
                                     <exp:Max>1.0</exp:Max>
+                                    <exp:Select>1</exp:Select>
+                                    <exp:Distribution>uniform</exp:Distribution>
                                 </exp:Range>
                                 <exp:Type>float</exp:Type>
                             </exp:Value>
@@ -360,12 +388,14 @@
                                 <exp:Range>
                                     <exp:Min>-1.0</exp:Min>
                                     <exp:Max>1.0</exp:Max>
+                                    <exp:Select>1</exp:Select>
+                                    <exp:Distribution>uniform</exp:Distribution>
                                 </exp:Range>
                                 <exp:Type>float</exp:Type>
                             </exp:Value>
                         </exp:Variable>
                         <exp:Variable>
-                            <exp:Name>Type</exp:Name>
+                            <exp:Name>type</exp:Name>
                             <exp:Value>
                                 <exp:FixedValue>2</exp:FixedValue>
                             </exp:Value>

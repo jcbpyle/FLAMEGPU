@@ -40,26 +40,28 @@ def initial_state(save_location,file_name,global_information,agent_information):
 	SAVE_DIRECTORY = PROJECT_DIRECTORY+"iterations"+"/"
 	initial_state_file = open(SAVE_DIRECTORY+str(file_name)+".xml","w")
 	initial_state_file.write("<states>\n<itno>0</itno>\n<environment>\n")
-	for g in range(len(global_information)):
-		initial_state_file.write("<"+str(global_information[g][0])+">"+str(gloabl_information[g][1])+"</"+str(global_information[g][0])+">\n")
+	if len(global_information)>0:
+		for g in range(len(global_information)):
+			initial_state_file.write("<"+str(global_information[g][0])+">"+str(gloabl_information[g][1])+"</"+str(global_information[g][0])+">\n")
 	initial_state_file.write("</environment>\n")
-	for i in range(len(agent_information)):
-		ind = [x[0] for x in agent_information[i]].index("initial_population")
-		num_agents = int(random.uniform(agent_information[i][ind][1],agent_information[i][ind][2]))
-		agent_id = 0
-		agent_name = agent_information[i][0]
-		for j in range(num_agents):
-			initial_state_file.write("<xagent>\n")
-			initial_state_file.write("<name>"+str(agent_name)+"</name>\n")
-			initial_state_file.write("<id>"+str(agent_id)+"</id>\n")
-			for k in agent_information[i]:
-				if not (k[0]=="initial_population" or k==agent_name):
-					if type(k[1])==type(int()):
-						initial_state_file.write("<"+str(k[0])+">"+str(int(random.uniform(k[1],k[2])))+"</"+str(k[0])+">\n")
-					elif type(k[1])==type(float()):
-						initial_state_file.write("<"+str(k[0])+">"+str(random.uniform(k[1],k[2]))+"</"+str(k[0])+">\n")
-			initial_state_file.write("</xagent>\n")
-			agent_id += 1
+	if len(agent_information)>0:
+		for i in range(len(agent_information)):
+			ind = [x[0] for x in agent_information[i]].index("initial_population")
+			num_agents = int(random.uniform(agent_information[i][ind][1],agent_information[i][ind][2]))
+			agent_id = 0
+			agent_name = agent_information[i][0]
+			for j in range(num_agents):
+				initial_state_file.write("<xagent>\n")
+				initial_state_file.write("<name>"+str(agent_name)+"</name>\n")
+				initial_state_file.write("<id>"+str(agent_id)+"</id>\n")
+				for k in agent_information[i]:
+					if not (k[0]=="initial_population" or k==agent_name):
+						if type(k[1])==type(int()):
+							initial_state_file.write("<"+str(k[0])+">"+str(int(random.uniform(k[1],k[2])))+"</"+str(k[0])+">\n")
+						elif type(k[1])==type(float()):
+							initial_state_file.write("<"+str(k[0])+">"+str(random.uniform(k[1],k[2]))+"</"+str(k[0])+">\n")
+				initial_state_file.write("</xagent>\n")
+				agent_id += 1
 	initial_state_file.write("</states>")
 	return
 
@@ -67,23 +69,50 @@ def initial_state(save_location,file_name,global_information,agent_information):
 def generate_initial_states_predprey():
 	global_data = []
 	agent_data = []
-	INTERACTION_DISTANCE_TEST_VARIABLE = 0.12345
-	LIST_TEST_VARIABLE = [1,2,3,4,5]
-	LIST_TEST_VARIABLE_2 = [1,2,3,4,5]
-	LIST_TEST_VARIABLE_3 = random.choice([1,2,3,4,5,10],2)
-	DISTRIBUTION_TEST_VARIABLE = random.uniform(1,10)
-	DISTRIBUTION_TEST_VARIABLE_2 = random.sample(1,10,5)
-	DISTRIBUTION_TEST_VARIABLE_3 = random.randRange(1,10,2)
-	REPRODUCE_PREY_PROB = [random.uniform(0,0.25) for i in range(1)]
-	REPRODUCE_PREDATOR_PROB = [random.uniform(0,0.25) for i in range(1)]
-	GAIN_FROM_FOOD_PREY = [random.uniform(0,500) for i in range(1)]
-	GAIN_FROM_FOOD_PREDATOR = [random.uniform(0,500) for i in range(1)]
-	GRASS_REGROW_CYCLES = [random.uniform(0,500) for i in range(1)]
+	global_data += ["INTERACTION_DISTANCE_TEST_VARIABLE", 0.12345]
+	global_data += ["LIST_TEST_VARIABLE", [1,2,3,4,5]]
+	global_data += ["LIST_TEST_VARIABLE_2", [1,2,3,4,5]]
+	global_data += ["LIST_TEST_VARIABLE_3", random.choice([1,2,3,4,5,10],2)]
+	global_data += ["DISTRIBUTION_TEST_VARIABLE", random.uniform(1,10)]
+	global_data += ["DISTRIBUTION_TEST_VARIABLE_2", random.sample(1,10,5)]
+	global_data += ["DISTRIBUTION_TEST_VARIABLE_3", random.randRange(1,10,2)]
+	global_data += ["REPRODUCE_PREY_PROB", [float(random.uniform(0,0.25)) for i in range(1)]]
+	global_data += ["REPRODUCE_PREDATOR_PROB", [float(random.uniform(0,0.25)) for i in range(1)]]
+	global_data += ["GAIN_FROM_FOOD_PREY", [int(random.uniform(0,500)) for i in range(1)]]
+	global_data += ["GAIN_FROM_FOOD_PREDATOR", [int(random.uniform(0,500)) for i in range(1)]]
+	global_data += ["GRASS_REGROW_CYCLES", [int(random.uniform(0,500)) for i in range(1)]]
+	agent_data += ["prey",["initial_population",[int(random.uniform(0,5000)) for i in range(1)]],
+					["x",[float(random.uniform(-1.0,1.0)) for i in range(1)]],
+					["y",[float(random.uniform(-1.0,1.0)) for i in range(1)]],
+					["type",1],
+					["fx",[float(random.uniform(-1.0,1.0)) for i in range(1)]],
+					["fy",[float(random.uniform(-1.0,1.0)) for i in range(1)]],
+					["steer_x",0.0],
+					["steer_y",0.0],
+					["life",[int(random.uniform(1,50)) for i in range(1)]]]
+	agent_data += ["predator",["initial_population",[int(random.uniform(0,5000)) for i in range(1)]],
+					["x",[float(random.uniform(-1.0,1.0)) for i in range(1)]],
+					["y",[float(random.uniform(-1.0,1.0)) for i in range(1)]],
+					["type",1],
+					["fx",[float(random.uniform(-1.0,1.0)) for i in range(1)]],
+					["fy",[float(random.uniform(-1.0,1.0)) for i in range(1)]],
+					["steer_x",0.0],
+					["steer_y",0.0],
+					["life",[int(random.uniform(1,50)) for i in range(1)]]]
+	agent_data += ["grass",["initial_population",[int(random.uniform(0,5000)) for i in range(1)]],
+					["x",[float(random.uniform(-1.0,1.0)) for i in range(1)]],
+					["y",[float(random.uniform(-1.0,1.0)) for i in range(1)]],
+					["type",2],
+					["dead_cycles",0],
+					["available",1]]
 	
 	return global_data,agent_data
 
 #Agent data stored in list of lists
-base_agent_information = []
+base_agent_information = [
+["prey",["initial_population",0,5000],["x",-1.0,1.0],["y",-1.0,1.0],["type",1,1],["fx",-1.0,1.0],["fy",-1.0,1.0],["steer_x",0.0,0.0],["steer_y",0.0,0.0],["life",1,50],],
+["predator",["initial_population",0,5000],["x",-1.0,1.0],["y",-1.0,1.0],["type",1,1],["fx",-1.0,1.0],["fy",-1.0,1.0],["steer_x",0.0,0.0],["steer_y",0.0,0.0],["life",1,50],],
+["grass",["initial_population",0,5000],["x",-1.0,1.0],["y",-1.0,1.0],["type",2,2],["dead_cycles",0,0],["available",1,1],],]
 
 #Create initial state
 #initial_state_creation_predprey("",base_agent_information)
