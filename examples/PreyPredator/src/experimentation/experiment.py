@@ -14,13 +14,11 @@
 # on www.flamegpu.com website.
 #
 
-import threading
 import sys
-import queue
-import datetime
 
 import os
 import random
+import itertools
 import pycuda.driver as cuda
 import pycuda.autoinit
 
@@ -33,12 +31,20 @@ GPUS_AVAILABLE = cuda.Device(0).count()
 
 initial_state_files = []
 
-initial_state_files += ["/iterations/0.xml"]
+initial_state_files += ["/example_iterations/example.xml"]
+
+#Initial state generator function to be created by the user
+def initial_state_generator_function_example_user_generator_function():
+
+	return
 
 #Initial state file creation.
 def initial_state(save_location,file_name,global_information,agent_information):
-	SAVE_DIRECTORY = PROJECT_DIRECTORY+"iterations"+"/"
-	initial_state_file = open(SAVE_DIRECTORY+str(file_name)+".xml","w")
+	SAVE_DIRECTORY = PROJECT_DIRECTORY+"example_iterations"+"/"
+	if not os.path.exists(SAVE_DIRECTORY+str(save_location)):
+		os.mkdir(SAVE_DIRECTORY+str(save_location))
+	print(SAVE_DIRECTORY,save_location,file_name)
+	initial_state_file = open(SAVE_DIRECTORY+str(save_location)+"/"+str(file_name)+".xml","w")
 	initial_state_file.write("<states>\n<itno>0</itno>\n<environment>\n")
 	if len(global_information)>0:
 		for g in range(len(global_information)):
@@ -65,159 +71,216 @@ def initial_state(save_location,file_name,global_information,agent_information):
 	initial_state_file.write("</states>")
 	return
 
-#Generate initial states based on defined ranges/lists/values for all global and agent population variables for experiment predprey.
-def generate_initial_states_predprey():
+#Generate initial states based on defined ranges/lists/values for all global and agent population variables for experiment example_generator.
+def generate_initial_states_example_generator():
 	global_data = []
 	agent_data = []
-	global_data += ["INTERACTION_DISTANCE_TEST_VARIABLE", 0.12345]
-	global_data += ["LIST_TEST_VARIABLE", [1,2,3,4,5]]
-	global_data += ["LIST_TEST_VARIABLE_2", [1,2,3,4,5]]
-	global_data += ["LIST_TEST_VARIABLE_3", random.choice([1,2,3,4,5,10],2)]
-	global_data += ["DISTRIBUTION_TEST_VARIABLE", random.uniform(1,10)]
-	global_data += ["DISTRIBUTION_TEST_VARIABLE_2", random.sample(1,10,5)]
-	global_data += ["DISTRIBUTION_TEST_VARIABLE_3", random.randRange(1,10,2)]
-	global_data += ["REPRODUCE_PREY_PROB", [float(random.uniform(0,0.25)) for i in range(1)]]
-	global_data += ["REPRODUCE_PREDATOR_PROB", [float(random.uniform(0,0.25)) for i in range(1)]]
-	global_data += ["GAIN_FROM_FOOD_PREY", [int(random.uniform(0,500)) for i in range(1)]]
-	global_data += ["GAIN_FROM_FOOD_PREDATOR", [int(random.uniform(0,500)) for i in range(1)]]
-	global_data += ["GRASS_REGROW_CYCLES", [int(random.uniform(0,500)) for i in range(1)]]
-	agent_data += ["prey",["initial_population",[int(random.uniform(0,5000)) for i in range(1)]],
-					["x",[float(random.uniform(-1.0,1.0)) for i in range(1)]],
-					["y",[float(random.uniform(-1.0,1.0)) for i in range(1)]],
-					["type",1],
-					["fx",[float(random.uniform(-1.0,1.0)) for i in range(1)]],
-					["fy",[float(random.uniform(-1.0,1.0)) for i in range(1)]],
-					["steer_x",0.0],
-					["steer_y",0.0],
-					["life",[int(random.uniform(1,50)) for i in range(1)]]]
-	agent_data += ["predator",["initial_population",[int(random.uniform(0,5000)) for i in range(1)]],
-					["x",[float(random.uniform(-1.0,1.0)) for i in range(1)]],
-					["y",[float(random.uniform(-1.0,1.0)) for i in range(1)]],
-					["type",1],
-					["fx",[float(random.uniform(-1.0,1.0)) for i in range(1)]],
-					["fy",[float(random.uniform(-1.0,1.0)) for i in range(1)]],
-					["steer_x",0.0],
-					["steer_y",0.0],
-					["life",[int(random.uniform(1,50)) for i in range(1)]]]
-	agent_data += ["grass",["initial_population",[int(random.uniform(0,5000)) for i in range(1)]],
-					["x",[float(random.uniform(-1.0,1.0)) for i in range(1)]],
-					["y",[float(random.uniform(-1.0,1.0)) for i in range(1)]],
-					["type",2],
-					["dead_cycles",0],
-					["available",1]]
 	
+	print("global_data",global_data)
+	print()
+	global_data.sort(key=len)
+	agent_data.sort(key=len)
+	prefix = "seed"
+	file_name = str(prefix)+"/0"
+	parameter_count = 0
+	if len(global_data)>0:
+		constructed_data = [x for y in global_data for x in y[1]]
+		for current,others in itertools.combinations(global_data,2):
+			print(current,others)
+			for i in current[1]:
+				for j in others[1]:
+					print("outer loop parameter",i,current)
+					print("inner loop parameter",j,others)
+					current_global = []
+					current_agent = []
+					#initial_state(str(prefix),"0",current_global,current_agent)
+					prefix = prefix+"seed"
+					print(prefix)
 	return global_data,agent_data
 
+generate_initial_states_example_generator()
 #Agent data stored in list of lists
-base_agent_information = [
-["prey",["initial_population",0,5000],["x",-1.0,1.0],["y",-1.0,1.0],["type",1,1],["fx",-1.0,1.0],["fy",-1.0,1.0],["steer_x",0.0,0.0],["steer_y",0.0,0.0],["life",1,50],],
-["predator",["initial_population",0,5000],["x",-1.0,1.0],["y",-1.0,1.0],["type",1,1],["fx",-1.0,1.0],["fy",-1.0,1.0],["steer_x",0.0,0.0],["steer_y",0.0,0.0],["life",1,50],],
-["grass",["initial_population",0,5000],["x",-1.0,1.0],["y",-1.0,1.0],["type",2,2],["dead_cycles",0,0],["available",1,1],],]
+base_agent_information = []
 
 #Create initial state
-#initial_state_creation_predprey("",base_agent_information)
+#initial_state_creation_example_generator("",base_agent_information)
+
+#Generate initial states based on defined ranges/lists/values for all global and agent population variables for experiment example_generator_1param_list.
+def generate_initial_states_example_generator_1param_list():
+	global_data = []
+	agent_data = []
+	global_data += [["LIST_TEST_VARIABLE", [1,2,3,4,5]]]
+	
+	print("global_data",global_data)
+	print()
+	global_data.sort(key=len)
+	agent_data.sort(key=len)
+	prefix = "1"
+	file_name = str(prefix)+"/0"
+	parameter_count = 0
+	if len(global_data)>0:
+		constructed_data = [x for y in global_data for x in y[1]]
+		for current,others in itertools.combinations(global_data,2):
+			print(current,others)
+			for i in current[1]:
+				for j in others[1]:
+					print("outer loop parameter",i,current)
+					print("inner loop parameter",j,others)
+					current_global = []
+					current_agent = []
+					#initial_state(str(prefix),"0",current_global,current_agent)
+					prefix = prefix+"1"
+					print(prefix)
+	return global_data,agent_data
+
+generate_initial_states_example_generator_1param_list()
+#Agent data stored in list of lists
+base_agent_information = []
+
+#Create initial state
+#initial_state_creation_example_generator_1param_list("",base_agent_information)
+
+#Generate initial states based on defined ranges/lists/values for all global and agent population variables for experiment example_generator_1param_range.
+def generate_initial_states_example_generator_1param_range():
+	global_data = []
+	agent_data = []
+	global_data += [["RANGE_TEST_VARIABLE", range(1,5,1)]]
+	
+	print("global_data",global_data)
+	print()
+	global_data.sort(key=len)
+	agent_data.sort(key=len)
+	prefix = "1"
+	file_name = str(prefix)+"/0"
+	parameter_count = 0
+	if len(global_data)>0:
+		constructed_data = [x for y in global_data for x in y[1]]
+		for current,others in itertools.combinations(global_data,2):
+			print(current,others)
+			for i in current[1]:
+				for j in others[1]:
+					print("outer loop parameter",i,current)
+					print("inner loop parameter",j,others)
+					current_global = []
+					current_agent = []
+					#initial_state(str(prefix),"0",current_global,current_agent)
+					prefix = prefix+"1"
+					print(prefix)
+	return global_data,agent_data
+
+generate_initial_states_example_generator_1param_range()
+#Agent data stored in list of lists
+base_agent_information = []
+
+#Create initial state
+#initial_state_creation_example_generator_1param_range("",base_agent_information)
+
+#Generate initial states based on defined ranges/lists/values for all global and agent population variables for experiment example_generator_1param_randomrange.
+def generate_initial_states_example_generator_1param_randomrange():
+	global_data = []
+	agent_data = []
+	global_data += [["RANGE_CHOOSE_TEST_VARIABLE", [(random.uniform(1,5)) for i in range(2)]]]
+	
+	print("global_data",global_data)
+	print()
+	global_data.sort(key=len)
+	agent_data.sort(key=len)
+	prefix = "1"
+	file_name = str(prefix)+"/0"
+	parameter_count = 0
+	if len(global_data)>0:
+		constructed_data = [x for y in global_data for x in y[1]]
+		for current,others in itertools.combinations(global_data,2):
+			print(current,others)
+			for i in current[1]:
+				for j in others[1]:
+					print("outer loop parameter",i,current)
+					print("inner loop parameter",j,others)
+					current_global = []
+					current_agent = []
+					#initial_state(str(prefix),"0",current_global,current_agent)
+					prefix = prefix+"1"
+					print(prefix)
+	return global_data,agent_data
+
+generate_initial_states_example_generator_1param_randomrange()
+#Agent data stored in list of lists
+base_agent_information = []
+
+#Create initial state
+#initial_state_creation_example_generator_1param_randomrange("",base_agent_information)
+
+#Generate initial states based on defined ranges/lists/values for all global and agent population variables for experiment example_generator_1param_randomlist.
+def generate_initial_states_example_generator_1param_randomlist():
+	global_data = []
+	agent_data = []
+	global_data += [["LIST_CHOOSE_TEST_VARIABLE", random.choices([1,2,3,4,5],k=2)]]
+	
+	print("global_data",global_data)
+	print()
+	global_data.sort(key=len)
+	agent_data.sort(key=len)
+	prefix = "1"
+	file_name = str(prefix)+"/0"
+	parameter_count = 0
+	if len(global_data)>0:
+		constructed_data = [x for y in global_data for x in y[1]]
+		for current,others in itertools.combinations(global_data,2):
+			print(current,others)
+			for i in current[1]:
+				for j in others[1]:
+					print("outer loop parameter",i,current)
+					print("inner loop parameter",j,others)
+					current_global = []
+					current_agent = []
+					#initial_state(str(prefix),"0",current_global,current_agent)
+					prefix = prefix+"1"
+					print(prefix)
+	return global_data,agent_data
+
+generate_initial_states_example_generator_1param_randomlist()
+#Agent data stored in list of lists
+base_agent_information = []
+
+#Create initial state
+#initial_state_creation_example_generator_1param_randomlist("",base_agent_information)
+
+#Generate initial states based on defined ranges/lists/values for all global and agent population variables for experiment example_generator_2param_list.
+def generate_initial_states_example_generator_2param_list():
+	global_data = []
+	agent_data = []
+	global_data += [["LIST_TEST_VARIABLE", [1,2,3,4,5]]]
+	global_data += [["SECOND_LIST_TEST_VARIABLE", [99,98,97,96,95]]]
+	
+	print("global_data",global_data)
+	print()
+	global_data.sort(key=len)
+	agent_data.sort(key=len)
+	prefix = "1"
+	file_name = str(prefix)+"/0"
+	parameter_count = 0
+	if len(global_data)>0:
+		constructed_data = [x for y in global_data for x in y[1]]
+		for current,others in itertools.combinations(global_data,2):
+			print(current,others)
+			for i in current[1]:
+				for j in others[1]:
+					print("outer loop parameter",i,current)
+					print("inner loop parameter",j,others)
+					current_global = []
+					current_agent = []
+					#initial_state(str(prefix),"0",current_global,current_agent)
+					prefix = prefix+"1"
+					print(prefix)
+	return global_data,agent_data
+
+generate_initial_states_example_generator_2param_list()
+#Agent data stored in list of lists
+base_agent_information = []
+
+#Create initial state
+#initial_state_creation_example_generator_2param_list("",base_agent_information)
 
 #ExperimentSet
 
-############## testing_initial_State ############
-
-############## testing_batch_simulation ############
-
-#Run for desired number of repeats
-#for i in range(10):
-	#initial_state_creation_(file_name,base_agent_information)
-	#Run simulation
-	#os.system(simulation_command)
-	#Parse results
-	#results_file = open("../../","r")
-	#results = results_file.readlines()
-	#results_file.close()
-
-############## testing_ga_experiment ############
-mu = int(100)
-LAMBDA = int(10)
-Max_time = int(60)
-Max_generations = int(10)
-mutation = float(0.25)
-crossover = float(0.5)
-
-def fitness_function(primary,secondary,tertiary):
-	fitness = None
-
-	#Model executable
-	#executable = ""
-	#simulation_command = ""
-	#if os.name=='nt':
-	#	executable = "../../../../../bin/x64/Release_Console//PreyPredator_api_test.exe"
-	#	simulation_command = executable+" ../..//.xml 1000"
-	#else:
-	#	executable = "./../../../../../bin/x64/Release_Console//PreyPredator_api_test"
-	#	simulation_command = executable+" ../..//.xml 1000"
-
-	
-	#Run simulation
-	#os.system(simulation_command)
-	#Parse results
-	#results_file = open("../../","r")
-	#results = results_file.readlines()
-	#results_file.close()
-	
-	
-	return fitness 
-
-def run_ga(mu,lamb,gen,time,start,evals):
-	global curr_pop
-	Population = None
-
-	#Model executable
-	#executable = ""
-	#simulation_command = ""
-	#if os.name=='nt':
-	#	executable = "../../../../../bin/x64/Release_Console//PreyPredator_api_test.exe"
-	#	simulation_command = executable+" ../..//.xml 1000"
-	#else:
-	#	executable = "./../../../../../bin/x64/Release_Console//PreyPredator_api_test"
-	#	simulation_command = executable+" ../..//.xml 1000"
-
-	
-	#Run simulation
-	#os.system(simulation_command)
-	#Parse results
-	#results_file = open("../../","r")
-	#results = results_file.readlines()
-	#results_file.close()
-	
-	
-	return Population 
-
-############## testing_surrogate_experiment ############
-hidden_layers = tuple(100,100)
-error = float(1e-9)
-Max_time = int(60)
-Max_training_generations = int(2000)
-mutation = float(0.25)
-crossover = float(0.5)
-
-def fitness_function(primary,secondary,tertiary):
-	fitness = None
-
-	#Model executable
-	#executable = ""
-	#simulation_command = ""
-	#if os.name=='nt':
-	#	executable = "../../../../../bin/x64/Release_Console//PreyPredator_api_test.exe"
-	#	simulation_command = executable+" ../..//.xml 1000"
-	#else:
-	#	executable = "./../../../../../bin/x64/Release_Console//PreyPredator_api_test"
-	#	simulation_command = executable+" ../..//.xml 1000"
-
-	
-	#Run simulation
-	#os.system(simulation_command)
-	#Parse results
-	#results_file = open("../../","r")
-	#results = results_file.readlines()
-	#results_file.close()
-	
-	
-	return fitness 
+##############  ############

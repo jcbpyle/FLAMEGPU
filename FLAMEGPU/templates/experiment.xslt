@@ -24,6 +24,7 @@
 <xsl:if test="exp:Experimentation/exp:Imports"><xsl:for-each select="exp:Experimentation/exp:Imports/exp:Import"><xsl:if test="exp:From">from <xsl:value-of select="exp:From" />&#160;</xsl:if>import <xsl:value-of select="exp:Module" /><xsl:text>&#xa;</xsl:text></xsl:for-each></xsl:if>
 import os
 import random
+import itertools
 import pycuda.driver as cuda
 import pycuda.autoinit
 
@@ -55,7 +56,10 @@ def initial_state_generator_function_<xsl:value-of select="exp:FunctionName"/>()
 #Initial state file creation.
 def initial_state(save_location,file_name,global_information,agent_information):
 	SAVE_DIRECTORY = PROJECT_DIRECTORY+"<xsl:value-of select="exp:Experimentation/exp:InitialStates/@baseDirectory"/>"+"/"
-	initial_state_file = open(SAVE_DIRECTORY+str(file_name)+".xml","w")
+	if not os.path.exists(SAVE_DIRECTORY+str(save_location)):
+		os.mkdir(SAVE_DIRECTORY+str(save_location))
+	print(SAVE_DIRECTORY,save_location,file_name)
+	initial_state_file = open(SAVE_DIRECTORY+str(save_location)+"/"+str(file_name)+".xml","w")
 	initial_state_file.write("&lt;states&gt;\n&lt;itno&gt;0&lt;/itno&gt;\n&lt;environment&gt;\n")
 	if len(global_information)>0:
 		for g in range(len(global_information)):
@@ -90,16 +94,37 @@ def generate_initial_states<xsl:if test="exp:GeneratorName">_<xsl:value-of selec
 	agent_data = []
 	<xsl:if test="exp:Globals">
 	<xsl:for-each select="exp:Globals/exp:Global">
-	<xsl:if test="exp:Value">global_data += ["<xsl:value-of select="exp:Name"/>", <xsl:choose><xsl:when test="exp:Value/exp:FixedValue"><xsl:value-of select="exp:Value/exp:FixedValue"/></xsl:when><xsl:when test="exp:Value/exp:List"><xsl:choose><xsl:when test="exp:Value/exp:List/exp:Select">random.choice([<xsl:value-of select="exp:Value/exp:List/exp:Items"/>],<xsl:value-of select="exp:Value/exp:List/exp:Select"/>)</xsl:when><xsl:otherwise>[<xsl:value-of select="exp:Value/exp:List/exp:Items"/>]</xsl:otherwise></xsl:choose></xsl:when><xsl:when test="exp:Value/exp:Range"><xsl:choose><xsl:when test="exp:Value/exp:Range/exp:Select">[<xsl:value-of select="exp:Value/exp:Type"/>(random.<xsl:value-of select="exp:Value/exp:Range/exp:Distribution"/>(<xsl:value-of select="exp:Value/exp:Range/exp:Min"/>,<xsl:value-of select="exp:Value/exp:Range/exp:Max"/>)) for i in range(<xsl:value-of select="exp:Value/exp:Range/exp:Select"/>)]</xsl:when><xsl:otherwise>range(<xsl:value-of select="exp:Value/exp:Range/exp:Min"/>,<xsl:value-of select="exp:Value/exp:Range/exp:Max"/><xsl:if test="exp:Value/exp:Range/exp:Step">,<xsl:value-of select="exp:Value/exp:Range/exp:Step"/></xsl:if>)</xsl:otherwise></xsl:choose></xsl:when><xsl:when test="exp:Value/exp:Random">random.<xsl:value-of select="exp:Value/exp:Random/exp:Function"/>(<xsl:value-of select="exp:Value/exp:Random/exp:Arguments"/>)</xsl:when><xsl:otherwise>[]</xsl:otherwise></xsl:choose>]<xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text></xsl:if>
+	<xsl:if test="exp:Value">global_data += [["<xsl:value-of select="exp:Name"/>", <xsl:choose><xsl:when test="exp:Value/exp:FixedValue"><xsl:value-of select="exp:Value/exp:FixedValue"/></xsl:when><xsl:when test="exp:Value/exp:List"><xsl:choose><xsl:when test="exp:Value/exp:List/exp:Select">random.choices([<xsl:value-of select="exp:Value/exp:List/exp:Items"/>],k=<xsl:value-of select="exp:Value/exp:List/exp:Select"/>)</xsl:when><xsl:otherwise>[<xsl:value-of select="exp:Value/exp:List/exp:Items"/>]</xsl:otherwise></xsl:choose></xsl:when><xsl:when test="exp:Value/exp:Range"><xsl:choose><xsl:when test="exp:Value/exp:Range/exp:Select">[<xsl:value-of select="exp:Value/exp:Type"/>(random.<xsl:value-of select="exp:Value/exp:Range/exp:Distribution"/>(<xsl:value-of select="exp:Value/exp:Range/exp:Min"/>,<xsl:value-of select="exp:Value/exp:Range/exp:Max"/>)) for i in range(<xsl:value-of select="exp:Value/exp:Range/exp:Select"/>)]</xsl:when><xsl:otherwise>range(<xsl:value-of select="exp:Value/exp:Range/exp:Min"/>,<xsl:value-of select="exp:Value/exp:Range/exp:Max"/><xsl:if test="exp:Value/exp:Range/exp:Step">,<xsl:value-of select="exp:Value/exp:Range/exp:Step"/></xsl:if>)</xsl:otherwise></xsl:choose></xsl:when><xsl:when test="exp:Value/exp:Random">random.<xsl:value-of select="exp:Value/exp:Random/exp:Function"/>(<xsl:value-of select="exp:Value/exp:Random/exp:Arguments"/>)</xsl:when><xsl:otherwise>[]</xsl:otherwise></xsl:choose>]]<xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text></xsl:if>
 	</xsl:for-each>
 	</xsl:if>
 	<xsl:if test="exp:Populations">
 	<xsl:for-each select="exp:Populations/exp:Population">
-	<xsl:if test="exp:Agent">agent_data += ["<xsl:value-of select="exp:Agent"/>",["initial_population",<xsl:if test="exp:InitialPopulationCount/exp:FixedValue"><xsl:value-of select="exp:InitialPopulationCount/exp:FixedValue"/>,<xsl:value-of select="exp:InitialPopulationCount/exp:FixedValue"/></xsl:if><xsl:if test="exp:InitialPopulationCount/exp:Range"><xsl:choose><xsl:when test="exp:InitialPopulationCount/exp:Range/exp:Select">[int(random.<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Distribution"/>(<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Min"/>,<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Max"/>)) for i in range(<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Select"/>)]</xsl:when><xsl:otherwise>range(<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Min"/>,<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Max"/><xsl:if test="exp:InitialPopulationCount/exp:Range/exp:Step">,<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Step"/></xsl:if>)</xsl:otherwise></xsl:choose></xsl:if>],<xsl:for-each select="exp:Variables/exp:Variable"><xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:text>&#x9;</xsl:text>["<xsl:value-of select="exp:Name"/>",<xsl:if test="exp:Value/exp:FixedValue"><xsl:value-of select="exp:Value/exp:FixedValue"/></xsl:if><xsl:if test="exp:Value/exp:Range"><xsl:choose><xsl:when test="exp:Value/exp:Range/exp:Select">[<xsl:value-of select="exp:Value/exp:Type"/>(random.<xsl:value-of select="exp:Value/exp:Range/exp:Distribution"/>(<xsl:value-of select="exp:Value/exp:Range/exp:Min"/>,<xsl:value-of select="exp:Value/exp:Range/exp:Max"/>)) for i in range(<xsl:value-of select="exp:Value/exp:Range/exp:Select"/>)]</xsl:when><xsl:otherwise>range(<xsl:value-of select="exp:Value/exp:Range/exp:Min"/>,<xsl:value-of select="exp:Value/exp:Range/exp:Max"/><xsl:if test="exp:Value/exp:Range/exp:Step">,<xsl:value-of select="exp:Value/exp:Range/exp:Step"/></xsl:if>)</xsl:otherwise></xsl:choose></xsl:if>]<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>]<xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text></xsl:if>
+	<xsl:if test="exp:Agent">agent_data += [["<xsl:value-of select="exp:Agent"/>",["initial_population",<xsl:if test="exp:InitialPopulationCount/exp:FixedValue"><xsl:value-of select="exp:InitialPopulationCount/exp:FixedValue"/>,<xsl:value-of select="exp:InitialPopulationCount/exp:FixedValue"/></xsl:if><xsl:if test="exp:InitialPopulationCount/exp:Range"><xsl:choose><xsl:when test="exp:InitialPopulationCount/exp:Range/exp:Select">[int(random.<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Distribution"/>(<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Min"/>,<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Max"/>)) for i in range(<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Select"/>)]</xsl:when><xsl:otherwise>range(<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Min"/>,<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Max"/><xsl:if test="exp:InitialPopulationCount/exp:Range/exp:Step">,<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Step"/></xsl:if>)</xsl:otherwise></xsl:choose></xsl:if>],<xsl:for-each select="exp:Variables/exp:Variable"><xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:text>&#x9;</xsl:text>["<xsl:value-of select="exp:Name"/>",<xsl:if test="exp:Value/exp:FixedValue"><xsl:value-of select="exp:Value/exp:FixedValue"/></xsl:if><xsl:if test="exp:Value/exp:Range"><xsl:choose><xsl:when test="exp:Value/exp:Range/exp:Select">[<xsl:value-of select="exp:Value/exp:Type"/>(random.<xsl:value-of select="exp:Value/exp:Range/exp:Distribution"/>(<xsl:value-of select="exp:Value/exp:Range/exp:Min"/>,<xsl:value-of select="exp:Value/exp:Range/exp:Max"/>)) for i in range(<xsl:value-of select="exp:Value/exp:Range/exp:Select"/>)]</xsl:when><xsl:otherwise>range(<xsl:value-of select="exp:Value/exp:Range/exp:Min"/>,<xsl:value-of select="exp:Value/exp:Range/exp:Max"/><xsl:if test="exp:Value/exp:Range/exp:Step">,<xsl:value-of select="exp:Value/exp:Range/exp:Step"/></xsl:if>)</xsl:otherwise></xsl:choose></xsl:if>]<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>]]<xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text></xsl:if>
 	</xsl:for-each>
 	</xsl:if>
+	print("global_data",global_data)
+	print()
+	global_data.sort(key=len)
+	agent_data.sort(key=len)
+	prefix = "<xsl:value-of select="exp:Files/exp:Prefix"/>"
+	file_name = str(prefix)+"/<xsl:value-of select="exp:Files/exp:InitialFileName"/>"
+	parameter_count = 0
+	if len(global_data)>0:
+		constructed_data = [x for y in global_data for x in y[1]]
+		for current,others in itertools.combinations(global_data,2):
+			print(current,others)
+			for i in current[1]:
+				for j in others[1]:
+					print("outer loop parameter",i,current)
+					print("inner loop parameter",j,others)
+					current_global = []
+					current_agent = []
+					#initial_state(str(prefix),"<xsl:value-of select="exp:Files/exp:InitialFileName"/>",current_global,current_agent)
+					prefix = prefix<xsl:value-of select="exp:Files/exp:Alteration"/>
+					print(prefix)
 	return global_data,agent_data
 
+generate_initial_states<xsl:if test="exp:GeneratorName">_<xsl:value-of select="exp:GeneratorName"/></xsl:if>()
 #Agent data stored in list of lists
 base_agent_information = [<xsl:if test="exp:Populations"><xsl:for-each select="exp:Populations/exp:Population">
 ["<xsl:value-of select="exp:Agent"/>",["initial_population",<xsl:if test="exp:InitialPopulationCount/exp:FixedValue"><xsl:value-of select="exp:InitialPopulationCount/exp:FixedValue"/>,<xsl:value-of select="exp:InitialPopulationCount/exp:FixedValue"/></xsl:if><xsl:if test="exp:InitialPopulationCount/exp:Range"><xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Min"/>,<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Max"/></xsl:if>],<xsl:for-each select="exp:Variables/exp:Variable">["<xsl:value-of select="exp:Name"/>",<xsl:if test="exp:Value/exp:FixedValue"><xsl:value-of select="exp:Value/exp:FixedValue"/>,<xsl:value-of select="exp:Value/exp:FixedValue"/></xsl:if><xsl:if test="exp:Value/exp:Range"><xsl:value-of select="exp:Value/exp:Range/exp:Min"/>,<xsl:value-of select="exp:Value/exp:Range/exp:Max"/></xsl:if>],</xsl:for-each>],</xsl:for-each></xsl:if>]
@@ -120,7 +145,7 @@ base_agent_information = [<xsl:if test="exp:Populations"><xsl:for-each select="e
 <xsl:if test="exp:Configuration">
 <xsl:if test="exp:Configuration/exp:ExperimentVariables">
 <xsl:for-each select="exp:Configuration/exp:ExperimentVariables/exp:Variable">
-<xsl:value-of select="exp:Name" /> = <xsl:value-of select="exp:Type" />(<xsl:value-of select="exp:Value" />)
+<xsl:value-of select="exp:Name" /> = <xsl:if test="not(exp:Type='tuple')"><xsl:value-of select="exp:Type" /></xsl:if>(<xsl:value-of select="exp:Value" />)
 </xsl:for-each>
 </xsl:if>
 
@@ -162,7 +187,7 @@ def <xsl:value-of select="exp:Name" />(<xsl:for-each select="exp:Arguments/exp:A
 		#results_file.close()
 	</xsl:if>
 	
-	return <xsl:if test="exp:Returns"><xsl:for-each select="exp:Returns/exp:Return"><xsl:value-of select="text()"/>&#160;</xsl:for-each></xsl:if><xsl:text>&#xa;</xsl:text>	
+	return <xsl:if test="exp:Returns"><xsl:for-each select="exp:Returns/exp:Return"><xsl:value-of select="text()"/><xsl:if test="not(position()=last())">&#160;</xsl:if></xsl:for-each></xsl:if><xsl:text>&#xa;</xsl:text>	
 </xsl:for-each>
 </xsl:if>
 <xsl:if test="not(exp:Configuration/exp:ExperimentFunctions) and exp:Configuration"><xsl:if test="exp:Configuration/exp:Repeats">
