@@ -77,11 +77,20 @@ def generate_initial_states_example_generator():
 	agent_data = []
 	
 	print("global_data",global_data)
-	print()
+	#print()
 	global_data.sort(key=len)
 	agent_data.sort(key=len)
-	prefix = "seed"
-	file_name = str(prefix)+"/0"
+	
+	prefix_components = []
+	prefix_components += [["LIST_TEST_VARIABLE",[x[1][0] for x in global_data if x[0]=="LIST_TEST_VARIABLE"][0] if len(global_data)>0 else "N/A"]]
+	prefix_components += [["test_var", "seed"]]
+	
+	print(prefix_components)
+	prefix_strings = [str(y) for x in prefix_components for y in x]
+	print(prefix_strings)
+	prefix = "_".join(prefix_strings)
+	print(prefix)
+	
 	parameter_count = 0
 	if len(global_data)>0:
 		constructed_data = [x for y in global_data for x in y[1]]
@@ -89,13 +98,22 @@ def generate_initial_states_example_generator():
 			print(current,others)
 			for i in current[1]:
 				for j in others[1]:
-					print("outer loop parameter",i,current)
-					print("inner loop parameter",j,others)
+					#print("outer loop parameter",i,current)
+					#print("inner loop parameter",j,others)
 					current_global = []
 					current_agent = []
+					
 					#initial_state(str(prefix),"0",current_global,current_agent)
-					prefix = prefix+"seed"
+					print("prefix components",prefix_components)
+					print("current",current[0],current)
+					print("others",others[0],others)
+					prefix_components = [x if (not x[0]==current[0] and not x[0]==others[0]) else [x[0],i] if x[0]==current[0]  else [x[0],j] for x in prefix_components]
+					prefix_components = [x if not x[0]=="test_var" else [x[0],x[1]+"seed"] for x in prefix_components]
+ 
+					prefix_strings = [str(y) for x in prefix_components for y in x]
+					prefix = "_".join(prefix_strings)
 					print(prefix)
+					
 	return global_data,agent_data
 
 generate_initial_states_example_generator()
@@ -112,11 +130,20 @@ def generate_initial_states_example_generator_1param_list():
 	global_data += [["LIST_TEST_VARIABLE", [1,2,3,4,5]]]
 	
 	print("global_data",global_data)
-	print()
+	#print()
 	global_data.sort(key=len)
 	agent_data.sort(key=len)
-	prefix = "1"
-	file_name = str(prefix)+"/0"
+	
+	prefix_components = []
+	prefix_components += [["LIST_TEST_VARIABLE",[x[1][0] for x in global_data if x[0]=="LIST_TEST_VARIABLE"][0] if len(global_data)>0 else "N/A"]]
+	prefix_components += [["test_var", 0]]
+	
+	print(prefix_components)
+	prefix_strings = [str(y) for x in prefix_components for y in x]
+	print(prefix_strings)
+	prefix = "_".join(prefix_strings)
+	print(prefix)
+	
 	parameter_count = 0
 	if len(global_data)>0:
 		constructed_data = [x for y in global_data for x in y[1]]
@@ -124,13 +151,22 @@ def generate_initial_states_example_generator_1param_list():
 			print(current,others)
 			for i in current[1]:
 				for j in others[1]:
-					print("outer loop parameter",i,current)
-					print("inner loop parameter",j,others)
+					#print("outer loop parameter",i,current)
+					#print("inner loop parameter",j,others)
 					current_global = []
 					current_agent = []
+					
 					#initial_state(str(prefix),"0",current_global,current_agent)
-					prefix = prefix+"1"
+					print("prefix components",prefix_components)
+					print("current",current[0],current)
+					print("others",others[0],others)
+					prefix_components = [x if (not x[0]==current[0] and not x[0]==others[0]) else [x[0],i] if x[0]==current[0]  else [x[0],j] for x in prefix_components]
+					prefix_components = [x if not x[0]=="test_var" else [x[0],x[1]+int(1)] for x in prefix_components]
+ 
+					prefix_strings = [str(y) for x in prefix_components for y in x]
+					prefix = "_".join(prefix_strings)
 					print(prefix)
+					
 	return global_data,agent_data
 
 generate_initial_states_example_generator_1param_list()
@@ -147,11 +183,19 @@ def generate_initial_states_example_generator_1param_range():
 	global_data += [["RANGE_TEST_VARIABLE", range(1,5,1)]]
 	
 	print("global_data",global_data)
-	print()
+	#print()
 	global_data.sort(key=len)
 	agent_data.sort(key=len)
-	prefix = "1"
-	file_name = str(prefix)+"/0"
+	
+	prefix_components = []
+	prefix_components += [["test_var", 0]]
+	
+	print(prefix_components)
+	prefix_strings = [str(y) for x in prefix_components for y in x]
+	print(prefix_strings)
+	prefix = "_".join(prefix_strings)
+	print(prefix)
+	
 	parameter_count = 0
 	if len(global_data)>0:
 		constructed_data = [x for y in global_data for x in y[1]]
@@ -159,13 +203,22 @@ def generate_initial_states_example_generator_1param_range():
 			print(current,others)
 			for i in current[1]:
 				for j in others[1]:
-					print("outer loop parameter",i,current)
-					print("inner loop parameter",j,others)
+					#print("outer loop parameter",i,current)
+					#print("inner loop parameter",j,others)
 					current_global = []
 					current_agent = []
+					
 					#initial_state(str(prefix),"0",current_global,current_agent)
-					prefix = prefix+"1"
+					print("prefix components",prefix_components)
+					print("current",current[0],current)
+					print("others",others[0],others)
+					prefix_components = [x if (not x[0]==current[0] and not x[0]==others[0]) else [x[0],i] if x[0]==current[0]  else [x[0],j] for x in prefix_components]
+					prefix_components = [x if not x[0]=="test_var" else [x[0],x[1]+int(1)] for x in prefix_components]
+ 
+					prefix_strings = [str(y) for x in prefix_components for y in x]
+					prefix = "_".join(prefix_strings)
 					print(prefix)
+					
 	return global_data,agent_data
 
 generate_initial_states_example_generator_1param_range()
@@ -182,11 +235,19 @@ def generate_initial_states_example_generator_1param_randomrange():
 	global_data += [["RANGE_CHOOSE_TEST_VARIABLE", [(random.uniform(1,5)) for i in range(2)]]]
 	
 	print("global_data",global_data)
-	print()
+	#print()
 	global_data.sort(key=len)
 	agent_data.sort(key=len)
-	prefix = "1"
-	file_name = str(prefix)+"/0"
+	
+	prefix_components = []
+	prefix_components += [["test_var", 0]]
+	
+	print(prefix_components)
+	prefix_strings = [str(y) for x in prefix_components for y in x]
+	print(prefix_strings)
+	prefix = "_".join(prefix_strings)
+	print(prefix)
+	
 	parameter_count = 0
 	if len(global_data)>0:
 		constructed_data = [x for y in global_data for x in y[1]]
@@ -194,13 +255,22 @@ def generate_initial_states_example_generator_1param_randomrange():
 			print(current,others)
 			for i in current[1]:
 				for j in others[1]:
-					print("outer loop parameter",i,current)
-					print("inner loop parameter",j,others)
+					#print("outer loop parameter",i,current)
+					#print("inner loop parameter",j,others)
 					current_global = []
 					current_agent = []
+					
 					#initial_state(str(prefix),"0",current_global,current_agent)
-					prefix = prefix+"1"
+					print("prefix components",prefix_components)
+					print("current",current[0],current)
+					print("others",others[0],others)
+					prefix_components = [x if (not x[0]==current[0] and not x[0]==others[0]) else [x[0],i] if x[0]==current[0]  else [x[0],j] for x in prefix_components]
+					prefix_components = [x if not x[0]=="test_var" else [x[0],x[1]+int(1)] for x in prefix_components]
+ 
+					prefix_strings = [str(y) for x in prefix_components for y in x]
+					prefix = "_".join(prefix_strings)
 					print(prefix)
+					
 	return global_data,agent_data
 
 generate_initial_states_example_generator_1param_randomrange()
@@ -217,11 +287,19 @@ def generate_initial_states_example_generator_1param_randomlist():
 	global_data += [["LIST_CHOOSE_TEST_VARIABLE", random.choices([1,2,3,4,5],k=2)]]
 	
 	print("global_data",global_data)
-	print()
+	#print()
 	global_data.sort(key=len)
 	agent_data.sort(key=len)
-	prefix = "1"
-	file_name = str(prefix)+"/0"
+	
+	prefix_components = []
+	prefix_components += [["test_var", 0]]
+	
+	print(prefix_components)
+	prefix_strings = [str(y) for x in prefix_components for y in x]
+	print(prefix_strings)
+	prefix = "_".join(prefix_strings)
+	print(prefix)
+	
 	parameter_count = 0
 	if len(global_data)>0:
 		constructed_data = [x for y in global_data for x in y[1]]
@@ -229,13 +307,22 @@ def generate_initial_states_example_generator_1param_randomlist():
 			print(current,others)
 			for i in current[1]:
 				for j in others[1]:
-					print("outer loop parameter",i,current)
-					print("inner loop parameter",j,others)
+					#print("outer loop parameter",i,current)
+					#print("inner loop parameter",j,others)
 					current_global = []
 					current_agent = []
+					
 					#initial_state(str(prefix),"0",current_global,current_agent)
-					prefix = prefix+"1"
+					print("prefix components",prefix_components)
+					print("current",current[0],current)
+					print("others",others[0],others)
+					prefix_components = [x if (not x[0]==current[0] and not x[0]==others[0]) else [x[0],i] if x[0]==current[0]  else [x[0],j] for x in prefix_components]
+					prefix_components = [x if not x[0]=="test_var" else [x[0],x[1]+int(1)] for x in prefix_components]
+ 
+					prefix_strings = [str(y) for x in prefix_components for y in x]
+					prefix = "_".join(prefix_strings)
 					print(prefix)
+					
 	return global_data,agent_data
 
 generate_initial_states_example_generator_1param_randomlist()
@@ -253,11 +340,20 @@ def generate_initial_states_example_generator_2param_list():
 	global_data += [["SECOND_LIST_TEST_VARIABLE", [99,98,97,96,95]]]
 	
 	print("global_data",global_data)
-	print()
+	#print()
 	global_data.sort(key=len)
 	agent_data.sort(key=len)
-	prefix = "1"
-	file_name = str(prefix)+"/0"
+	
+	prefix_components = []
+	prefix_components += [["LIST_TEST_VARIABLE",[x[1][0] for x in global_data if x[0]=="LIST_TEST_VARIABLE"][0] if len(global_data)>0 else "N/A"]]
+	prefix_components += [["test_var", 0]]
+	
+	print(prefix_components)
+	prefix_strings = [str(y) for x in prefix_components for y in x]
+	print(prefix_strings)
+	prefix = "_".join(prefix_strings)
+	print(prefix)
+	
 	parameter_count = 0
 	if len(global_data)>0:
 		constructed_data = [x for y in global_data for x in y[1]]
@@ -265,13 +361,22 @@ def generate_initial_states_example_generator_2param_list():
 			print(current,others)
 			for i in current[1]:
 				for j in others[1]:
-					print("outer loop parameter",i,current)
-					print("inner loop parameter",j,others)
+					#print("outer loop parameter",i,current)
+					#print("inner loop parameter",j,others)
 					current_global = []
 					current_agent = []
+					
 					#initial_state(str(prefix),"0",current_global,current_agent)
-					prefix = prefix+"1"
+					print("prefix components",prefix_components)
+					print("current",current[0],current)
+					print("others",others[0],others)
+					prefix_components = [x if (not x[0]==current[0] and not x[0]==others[0]) else [x[0],i] if x[0]==current[0]  else [x[0],j] for x in prefix_components]
+					prefix_components = [x if not x[0]=="test_var" else [x[0],x[1]+int(1)] for x in prefix_components]
+ 
+					prefix_strings = [str(y) for x in prefix_components for y in x]
+					prefix = "_".join(prefix_strings)
 					print(prefix)
+					
 	return global_data,agent_data
 
 generate_initial_states_example_generator_2param_list()

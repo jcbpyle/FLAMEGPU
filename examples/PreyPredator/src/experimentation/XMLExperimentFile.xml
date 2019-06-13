@@ -30,8 +30,18 @@ Some sort of python post simulation function (move files around). Parameters whi
             <exp:Files>
                 <exp:BaseDirectory>example_iterations</exp:BaseDirectory>
                 <exp:InitialFileName>0</exp:InitialFileName>
-                <exp:Prefix>seed</exp:Prefix>
-                <exp:Alteration>+"seed"</exp:Alteration>
+                <exp:Prefix>
+                    <exp:Delimiter>_</exp:Delimiter>
+                    <exp:AltersWith>LIST_TEST_VARIABLE</exp:AltersWith>
+                    <exp:Alteration>
+                        <exp:Variable>
+                            <exp:Name>test_var</exp:Name>
+                            <exp:Initial>seed</exp:Initial>
+                            <exp:Type>str</exp:Type>
+                            <exp:Update>seed</exp:Update>
+                        </exp:Variable>
+                    </exp:Alteration>
+                </exp:Prefix>
             </exp:Files>
         </exp:InitialStateGenerator>
         <exp:InitialStateGenerator>
@@ -39,8 +49,18 @@ Some sort of python post simulation function (move files around). Parameters whi
             <exp:Files>
                 <exp:BaseDirectory>example_iterations</exp:BaseDirectory>
                 <exp:InitialFileName>0</exp:InitialFileName>
-                <exp:Prefix>1</exp:Prefix>
-                <exp:Alteration>+"1"</exp:Alteration>
+                <exp:Prefix>
+                    <exp:Delimiter>_</exp:Delimiter>
+                    <exp:AltersWith>LIST_TEST_VARIABLE</exp:AltersWith>
+                    <exp:Alteration>
+                        <exp:Variable>
+                            <exp:Name>test_var</exp:Name>
+                            <exp:Initial>0</exp:Initial>
+                            <exp:Type>int</exp:Type>
+                            <exp:Update>1</exp:Update>
+                        </exp:Variable>
+                    </exp:Alteration>
+                </exp:Prefix>
             </exp:Files>
             <exp:Globals>
                 <exp:Global>
@@ -58,8 +78,17 @@ Some sort of python post simulation function (move files around). Parameters whi
             <exp:Files>
                 <exp:BaseDirectory>example_iterations</exp:BaseDirectory>
                 <exp:InitialFileName>0</exp:InitialFileName>
-                <exp:Prefix>1</exp:Prefix>
-                <exp:Alteration>+"1"</exp:Alteration>
+                <exp:Prefix>
+                    <exp:Delimiter>_</exp:Delimiter>
+                    <exp:Alteration>
+                        <exp:Variable>
+                            <exp:Name>test_var</exp:Name>
+                            <exp:Initial>0</exp:Initial>
+                            <exp:Type>int</exp:Type>
+                            <exp:Update>1</exp:Update>
+                        </exp:Variable>
+                    </exp:Alteration>
+                </exp:Prefix>
             </exp:Files>
             <exp:Globals>
                 <exp:Global>
@@ -79,8 +108,17 @@ Some sort of python post simulation function (move files around). Parameters whi
             <exp:Files>
                 <exp:BaseDirectory>example_iterations</exp:BaseDirectory>
                 <exp:InitialFileName>0</exp:InitialFileName>
-                <exp:Prefix>1</exp:Prefix>
-                <exp:Alteration>+"1"</exp:Alteration>
+                <exp:Prefix>
+                    <exp:Delimiter>_</exp:Delimiter>
+                    <exp:Alteration>
+                        <exp:Variable>
+                            <exp:Name>test_var</exp:Name>
+                            <exp:Initial>0</exp:Initial>
+                            <exp:Type>int</exp:Type>
+                            <exp:Update>1</exp:Update>
+                        </exp:Variable>
+                    </exp:Alteration>
+                </exp:Prefix>
             </exp:Files>
             <exp:Globals>
                 <exp:Global>
@@ -101,8 +139,17 @@ Some sort of python post simulation function (move files around). Parameters whi
             <exp:Files>
                 <exp:BaseDirectory>example_iterations</exp:BaseDirectory>
                 <exp:InitialFileName>0</exp:InitialFileName>
-                <exp:Prefix>1</exp:Prefix>
-                <exp:Alteration>+"1"</exp:Alteration>
+                <exp:Prefix>
+                    <exp:Delimiter>_</exp:Delimiter>
+                    <exp:Alteration>
+                        <exp:Variable>
+                            <exp:Name>test_var</exp:Name>
+                            <exp:Initial>0</exp:Initial>
+                            <exp:Type>int</exp:Type>
+                            <exp:Update>1</exp:Update>
+                        </exp:Variable>
+                    </exp:Alteration>
+                </exp:Prefix>
             </exp:Files>
             <exp:Globals>
                 <exp:Global>
@@ -122,8 +169,18 @@ Some sort of python post simulation function (move files around). Parameters whi
             <exp:Files>
                 <exp:BaseDirectory>example_iterations</exp:BaseDirectory>
                 <exp:InitialFileName>0</exp:InitialFileName>
-                <exp:Prefix>1</exp:Prefix>
-                <exp:Alteration>+"1"</exp:Alteration>
+                <exp:Prefix>
+                    <exp:Delimiter>_</exp:Delimiter>
+                    <exp:AltersWith>LIST_TEST_VARIABLE</exp:AltersWith>
+                    <exp:Alteration>
+                        <exp:Variable>
+                            <exp:Name>test_var</exp:Name>
+                            <exp:Initial>0</exp:Initial>
+                            <exp:Type>int</exp:Type>
+                            <exp:Update>1</exp:Update>
+                        </exp:Variable>
+                    </exp:Alteration>
+                </exp:Prefix>
             </exp:Files>
             <exp:Globals>
                 <exp:Global>

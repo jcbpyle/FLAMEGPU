@@ -103,11 +103,19 @@ def generate_initial_states<xsl:if test="exp:GeneratorName">_<xsl:value-of selec
 	</xsl:for-each>
 	</xsl:if>
 	print("global_data",global_data)
-	print()
+	#print()
 	global_data.sort(key=len)
 	agent_data.sort(key=len)
-	prefix = "<xsl:value-of select="exp:Files/exp:Prefix"/>"
-	file_name = str(prefix)+"/<xsl:value-of select="exp:Files/exp:InitialFileName"/>"
+	<xsl:if test="exp:Files/exp:Prefix">
+	prefix_components = []
+	<xsl:for-each select="exp:Files/exp:Prefix/exp:AltersWith">prefix_components += [["<xsl:value-of select="text()"/>",[x[1][0] for x in global_data if x[0]=="<xsl:value-of select="text()"/>"][0] if len(global_data)>0 else "N/A"]]<xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text></xsl:for-each>
+	<xsl:for-each select="exp:Files/exp:Prefix/exp:Alteration">prefix_components += [["<xsl:value-of select="exp:Variable/exp:Name"/>", <xsl:if test="exp:Variable/exp:Type = 'str'">"</xsl:if><xsl:value-of select="exp:Variable/exp:Initial"/><xsl:if test="exp:Variable/exp:Type = 'str'">"</xsl:if>]]<xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text></xsl:for-each>
+	print(prefix_components)
+	prefix_strings = [str(y) for x in prefix_components for y in x]
+	print(prefix_strings)
+	prefix = <xsl:choose><xsl:when test="exp:Files/exp:Prefix/exp:Delimiter">"<xsl:value-of select="exp:Files/exp:Prefix/exp:Delimiter"/>"</xsl:when><xsl:otherwise>"_"</xsl:otherwise></xsl:choose>.join(prefix_strings)
+	print(prefix)
+	</xsl:if>
 	parameter_count = 0
 	if len(global_data)>0:
 		constructed_data = [x for y in global_data for x in y[1]]
@@ -115,13 +123,24 @@ def generate_initial_states<xsl:if test="exp:GeneratorName">_<xsl:value-of selec
 			print(current,others)
 			for i in current[1]:
 				for j in others[1]:
-					print("outer loop parameter",i,current)
-					print("inner loop parameter",j,others)
+					#print("outer loop parameter",i,current)
+					#print("inner loop parameter",j,others)
 					current_global = []
 					current_agent = []
+					<xsl:choose>
+					<xsl:when test="exp:Files/exp:Prefix">
 					#initial_state(str(prefix),"<xsl:value-of select="exp:Files/exp:InitialFileName"/>",current_global,current_agent)
-					prefix = prefix<xsl:value-of select="exp:Files/exp:Alteration"/>
+					print("prefix components",prefix_components)
+					print("current",current[0],current)
+					print("others",others[0],others)
+					prefix_components = [x if (not x[0]==current[0] and not x[0]==others[0]) else [x[0],i] if x[0]==current[0]  else [x[0],j] for x in prefix_components]
+					<xsl:for-each select="exp:Files/exp:Prefix/exp:Alteration">prefix_components = [x if not x[0]=="<xsl:value-of select="exp:Variable/exp:Name"/>" else [x[0],x[1]+<xsl:choose><xsl:when test="exp:Variable/exp:Type = 'str'">"</xsl:when><xsl:otherwise><xsl:value-of select="exp:Variable/exp:Type"/>(</xsl:otherwise></xsl:choose><xsl:value-of select="exp:Variable/exp:Update"/><xsl:choose><xsl:when test="exp:Variable/exp:Type = 'str'">"</xsl:when><xsl:otherwise>)</xsl:otherwise></xsl:choose>] for x in prefix_components]<xsl:text>&#xa;</xsl:text></xsl:for-each> 
+					prefix_strings = [str(y) for x in prefix_components for y in x]
+					prefix = <xsl:choose><xsl:when test="exp:Files/exp:Prefix/exp:Delimiter">"<xsl:value-of select="exp:Files/exp:Prefix/exp:Delimiter"/>"</xsl:when><xsl:otherwise>"_"</xsl:otherwise></xsl:choose>.join(prefix_strings)
 					print(prefix)
+					</xsl:when>
+					<xsl:otherwise>#initial_state("","<xsl:value-of select="exp:Files/exp:InitialFileName"/>",current_global,current_agent)</xsl:otherwise>
+					</xsl:choose>
 	return global_data,agent_data
 
 generate_initial_states<xsl:if test="exp:GeneratorName">_<xsl:value-of select="exp:GeneratorName"/></xsl:if>()
