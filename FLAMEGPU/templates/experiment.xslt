@@ -117,30 +117,29 @@ def generate_initial_states<xsl:if test="exp:GeneratorName">_<xsl:value-of selec
 	print(prefix)
 	</xsl:if>
 	parameter_count = 0
-	if len(global_data)>0:
-		constructed_data = [x for y in global_data for x in y[1]]
-		for current,others in itertools.combinations(global_data,2):
-			print(current,others)
-			for i in current[1]:
-				for j in others[1]:
-					#print("outer loop parameter",i,current)
-					#print("inner loop parameter",j,others)
-					current_global = []
-					current_agent = []
-					<xsl:choose>
-					<xsl:when test="exp:Files/exp:Prefix">
-					#initial_state(str(prefix),"<xsl:value-of select="exp:Files/exp:InitialFileName"/>",current_global,current_agent)
-					print("prefix components",prefix_components)
-					print("current",current[0],current)
-					print("others",others[0],others)
-					prefix_components = [x if (not x[0]==current[0] and not x[0]==others[0]) else [x[0],i] if x[0]==current[0]  else [x[0],j] for x in prefix_components]
-					<xsl:for-each select="exp:Files/exp:Prefix/exp:Alteration">prefix_components = [x if not x[0]=="<xsl:value-of select="exp:Variable/exp:Name"/>" else [x[0],x[1]+<xsl:choose><xsl:when test="exp:Variable/exp:Type = 'str'">"</xsl:when><xsl:otherwise><xsl:value-of select="exp:Variable/exp:Type"/>(</xsl:otherwise></xsl:choose><xsl:value-of select="exp:Variable/exp:Update"/><xsl:choose><xsl:when test="exp:Variable/exp:Type = 'str'">"</xsl:when><xsl:otherwise>)</xsl:otherwise></xsl:choose>] for x in prefix_components]<xsl:text>&#xa;</xsl:text></xsl:for-each> 
-					prefix_strings = [str(y) for x in prefix_components for y in x]
-					prefix = <xsl:choose><xsl:when test="exp:Files/exp:Prefix/exp:Delimiter">"<xsl:value-of select="exp:Files/exp:Prefix/exp:Delimiter"/>"</xsl:when><xsl:otherwise>"_"</xsl:otherwise></xsl:choose>.join(prefix_strings)
-					print(prefix)
-					</xsl:when>
-					<xsl:otherwise>#initial_state("","<xsl:value-of select="exp:Files/exp:InitialFileName"/>",current_global,current_agent)</xsl:otherwise>
-					</xsl:choose>
+	global_parameter_names = [x[0] for x in global_data]
+	combinations = list(itertools.product(*[x[1] for x in global_data]))
+	print("combinations",combinations)
+	testing = list(zip([global_parameter_names for x in range(len(combinations))],combinations))
+	print("testing",testing)
+	for var_names,var_values in testing:
+		print("potential combination",var_names,var_values)
+		
+		current_global_data = []
+		current_agent_data = []
+		<xsl:choose>
+		<xsl:when test="exp:Files/exp:Prefix">
+		#initial_state(str(prefix),"<xsl:value-of select="exp:Files/exp:InitialFileName"/>",current_global_data,current_agent_data)
+		print("prefix components",prefix_components)
+
+		prefix_components = [x if (not x[0] in var_names) else [x[0],var_values[var_names.index(x[0])]] for x in prefix_components]
+		<xsl:for-each select="exp:Files/exp:Prefix/exp:Alteration">prefix_components = [x if not x[0]=="<xsl:value-of select="exp:Variable/exp:Name"/>" else [x[0],x[1]+<xsl:choose><xsl:when test="exp:Variable/exp:Type = 'str'">"</xsl:when><xsl:otherwise><xsl:value-of select="exp:Variable/exp:Type"/>(</xsl:otherwise></xsl:choose><xsl:value-of select="exp:Variable/exp:Update"/><xsl:choose><xsl:when test="exp:Variable/exp:Type = 'str'">"</xsl:when><xsl:otherwise>)</xsl:otherwise></xsl:choose>] for x in prefix_components]<xsl:text>&#xa;</xsl:text></xsl:for-each> 
+		prefix_strings = [str(y) for x in prefix_components for y in x]
+		prefix = <xsl:choose><xsl:when test="exp:Files/exp:Prefix/exp:Delimiter">"<xsl:value-of select="exp:Files/exp:Prefix/exp:Delimiter"/>"</xsl:when><xsl:otherwise>"_"</xsl:otherwise></xsl:choose>.join(prefix_strings)
+		print(prefix)
+		</xsl:when>
+		<xsl:otherwise>#initial_state("","<xsl:value-of select="exp:Files/exp:InitialFileName"/>",current_global_data,current_agent_data)</xsl:otherwise>
+		</xsl:choose>
 	return global_data,agent_data
 
 generate_initial_states<xsl:if test="exp:GeneratorName">_<xsl:value-of select="exp:GeneratorName"/></xsl:if>()
@@ -154,7 +153,38 @@ base_agent_information = [<xsl:if test="exp:Populations"><xsl:for-each select="e
 </xsl:if>
 </xsl:if>
 
+<xsl:if test="exp:placholder_text">
+	if len(global_data)>0:
+		<xsl:if test="exp:Globals/exp:Global">
+		for g in global_data:
+			altering_parameters = [x[0] for x in global_data if not x==g]
+			potential_parameter_values = [y for x in global_data for y in x[1] if not x==g]
+			for current_value in g[1]:
+				#print("len combinations",len(itertools.combinations(potential_parameter_values,len(global_data)-1)))
+				for ap in itertools.combinations(potential_parameter_values,len(global_data)-1):
+					print("current stff",g,current_value,ap)
+				print("actual combinations",list(itertools.combinations(potential_parameter_values,len(global_data)-1)))
+		</xsl:if>
+		#for c,o,s in itertools.combinations([y for x in global_data for y in x[1] ],3):
+			#print("combinations",c,o,s)
+		constructed_data = [x for y in global_data for x in y[1]]
+		for current_global,other_global in itertools.combinations(global_data,2):
+			print(current_global,other_global)
+			<!-- for current_agent,other_agent in itertools.combinations(agent_data,2):
+				for i in current_global[1]:
+					for j in other_global[1]:
+						for a in current_agent[1]:
+							for b in other_agent[1] -->
+			for i in current_global[1]:
+				for j in other_global[1]:
+					#print("outer loop parameter",i,current_global)
+					#print("inner loop parameter",j,other_global)
+					#current_global = [x if not x[0]==current_global[0] for x in global_data]
+					current_global_data = []
+					current_agent_data = []
+					
 
+</xsl:if>
 
 
 <xsl:if test="exp:Experimentation/exp:ExperimentSet">

@@ -199,6 +199,14 @@ Some sort of python post simulation function (move files around). Parameters whi
                         </exp:List>
                     </exp:Value>
                 </exp:Global>
+                <exp:Global>
+                    <exp:Name>THIRD_LIST_TEST_VARIABLE</exp:Name>
+                    <exp:Value>
+                        <exp:List>
+                            <exp:Items>51,62,73,84</exp:Items>
+                        </exp:List>
+                    </exp:Value>
+                </exp:Global>
             </exp:Globals>
         </exp:InitialStateGenerator>
     </exp:InitialStates>

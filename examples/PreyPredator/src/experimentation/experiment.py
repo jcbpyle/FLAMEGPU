@@ -92,28 +92,27 @@ def generate_initial_states_example_generator():
 	print(prefix)
 	
 	parameter_count = 0
-	if len(global_data)>0:
-		constructed_data = [x for y in global_data for x in y[1]]
-		for current,others in itertools.combinations(global_data,2):
-			print(current,others)
-			for i in current[1]:
-				for j in others[1]:
-					#print("outer loop parameter",i,current)
-					#print("inner loop parameter",j,others)
-					current_global = []
-					current_agent = []
-					
-					#initial_state(str(prefix),"0",current_global,current_agent)
-					print("prefix components",prefix_components)
-					print("current",current[0],current)
-					print("others",others[0],others)
-					prefix_components = [x if (not x[0]==current[0] and not x[0]==others[0]) else [x[0],i] if x[0]==current[0]  else [x[0],j] for x in prefix_components]
-					prefix_components = [x if not x[0]=="test_var" else [x[0],x[1]+"seed"] for x in prefix_components]
+	global_parameter_names = [x[0] for x in global_data]
+	combinations = list(itertools.product(*[x[1] for x in global_data]))
+	print("combinations",combinations)
+	testing = list(zip([global_parameter_names for x in range(len(combinations))],combinations))
+	print("testing",testing)
+	for var_names,var_values in testing:
+		print("potential combination",var_names,var_values)
+		
+		current_global_data = []
+		current_agent_data = []
+		
+		#initial_state(str(prefix),"0",current_global_data,current_agent_data)
+		print("prefix components",prefix_components)
+
+		prefix_components = [x if (not x[0] in var_names) else [x[0],var_values[var_names.index(x[0])]] for x in prefix_components]
+		prefix_components = [x if not x[0]=="test_var" else [x[0],x[1]+"seed"] for x in prefix_components]
  
-					prefix_strings = [str(y) for x in prefix_components for y in x]
-					prefix = "_".join(prefix_strings)
-					print(prefix)
-					
+		prefix_strings = [str(y) for x in prefix_components for y in x]
+		prefix = "_".join(prefix_strings)
+		print(prefix)
+		
 	return global_data,agent_data
 
 generate_initial_states_example_generator()
@@ -145,28 +144,27 @@ def generate_initial_states_example_generator_1param_list():
 	print(prefix)
 	
 	parameter_count = 0
-	if len(global_data)>0:
-		constructed_data = [x for y in global_data for x in y[1]]
-		for current,others in itertools.combinations(global_data,2):
-			print(current,others)
-			for i in current[1]:
-				for j in others[1]:
-					#print("outer loop parameter",i,current)
-					#print("inner loop parameter",j,others)
-					current_global = []
-					current_agent = []
-					
-					#initial_state(str(prefix),"0",current_global,current_agent)
-					print("prefix components",prefix_components)
-					print("current",current[0],current)
-					print("others",others[0],others)
-					prefix_components = [x if (not x[0]==current[0] and not x[0]==others[0]) else [x[0],i] if x[0]==current[0]  else [x[0],j] for x in prefix_components]
-					prefix_components = [x if not x[0]=="test_var" else [x[0],x[1]+int(1)] for x in prefix_components]
+	global_parameter_names = [x[0] for x in global_data]
+	combinations = list(itertools.product(*[x[1] for x in global_data]))
+	print("combinations",combinations)
+	testing = list(zip([global_parameter_names for x in range(len(combinations))],combinations))
+	print("testing",testing)
+	for var_names,var_values in testing:
+		print("potential combination",var_names,var_values)
+		
+		current_global_data = []
+		current_agent_data = []
+		
+		#initial_state(str(prefix),"0",current_global_data,current_agent_data)
+		print("prefix components",prefix_components)
+
+		prefix_components = [x if (not x[0] in var_names) else [x[0],var_values[var_names.index(x[0])]] for x in prefix_components]
+		prefix_components = [x if not x[0]=="test_var" else [x[0],x[1]+int(1)] for x in prefix_components]
  
-					prefix_strings = [str(y) for x in prefix_components for y in x]
-					prefix = "_".join(prefix_strings)
-					print(prefix)
-					
+		prefix_strings = [str(y) for x in prefix_components for y in x]
+		prefix = "_".join(prefix_strings)
+		print(prefix)
+		
 	return global_data,agent_data
 
 generate_initial_states_example_generator_1param_list()
@@ -197,28 +195,27 @@ def generate_initial_states_example_generator_1param_range():
 	print(prefix)
 	
 	parameter_count = 0
-	if len(global_data)>0:
-		constructed_data = [x for y in global_data for x in y[1]]
-		for current,others in itertools.combinations(global_data,2):
-			print(current,others)
-			for i in current[1]:
-				for j in others[1]:
-					#print("outer loop parameter",i,current)
-					#print("inner loop parameter",j,others)
-					current_global = []
-					current_agent = []
-					
-					#initial_state(str(prefix),"0",current_global,current_agent)
-					print("prefix components",prefix_components)
-					print("current",current[0],current)
-					print("others",others[0],others)
-					prefix_components = [x if (not x[0]==current[0] and not x[0]==others[0]) else [x[0],i] if x[0]==current[0]  else [x[0],j] for x in prefix_components]
-					prefix_components = [x if not x[0]=="test_var" else [x[0],x[1]+int(1)] for x in prefix_components]
+	global_parameter_names = [x[0] for x in global_data]
+	combinations = list(itertools.product(*[x[1] for x in global_data]))
+	print("combinations",combinations)
+	testing = list(zip([global_parameter_names for x in range(len(combinations))],combinations))
+	print("testing",testing)
+	for var_names,var_values in testing:
+		print("potential combination",var_names,var_values)
+		
+		current_global_data = []
+		current_agent_data = []
+		
+		#initial_state(str(prefix),"0",current_global_data,current_agent_data)
+		print("prefix components",prefix_components)
+
+		prefix_components = [x if (not x[0] in var_names) else [x[0],var_values[var_names.index(x[0])]] for x in prefix_components]
+		prefix_components = [x if not x[0]=="test_var" else [x[0],x[1]+int(1)] for x in prefix_components]
  
-					prefix_strings = [str(y) for x in prefix_components for y in x]
-					prefix = "_".join(prefix_strings)
-					print(prefix)
-					
+		prefix_strings = [str(y) for x in prefix_components for y in x]
+		prefix = "_".join(prefix_strings)
+		print(prefix)
+		
 	return global_data,agent_data
 
 generate_initial_states_example_generator_1param_range()
@@ -249,28 +246,27 @@ def generate_initial_states_example_generator_1param_randomrange():
 	print(prefix)
 	
 	parameter_count = 0
-	if len(global_data)>0:
-		constructed_data = [x for y in global_data for x in y[1]]
-		for current,others in itertools.combinations(global_data,2):
-			print(current,others)
-			for i in current[1]:
-				for j in others[1]:
-					#print("outer loop parameter",i,current)
-					#print("inner loop parameter",j,others)
-					current_global = []
-					current_agent = []
-					
-					#initial_state(str(prefix),"0",current_global,current_agent)
-					print("prefix components",prefix_components)
-					print("current",current[0],current)
-					print("others",others[0],others)
-					prefix_components = [x if (not x[0]==current[0] and not x[0]==others[0]) else [x[0],i] if x[0]==current[0]  else [x[0],j] for x in prefix_components]
-					prefix_components = [x if not x[0]=="test_var" else [x[0],x[1]+int(1)] for x in prefix_components]
+	global_parameter_names = [x[0] for x in global_data]
+	combinations = list(itertools.product(*[x[1] for x in global_data]))
+	print("combinations",combinations)
+	testing = list(zip([global_parameter_names for x in range(len(combinations))],combinations))
+	print("testing",testing)
+	for var_names,var_values in testing:
+		print("potential combination",var_names,var_values)
+		
+		current_global_data = []
+		current_agent_data = []
+		
+		#initial_state(str(prefix),"0",current_global_data,current_agent_data)
+		print("prefix components",prefix_components)
+
+		prefix_components = [x if (not x[0] in var_names) else [x[0],var_values[var_names.index(x[0])]] for x in prefix_components]
+		prefix_components = [x if not x[0]=="test_var" else [x[0],x[1]+int(1)] for x in prefix_components]
  
-					prefix_strings = [str(y) for x in prefix_components for y in x]
-					prefix = "_".join(prefix_strings)
-					print(prefix)
-					
+		prefix_strings = [str(y) for x in prefix_components for y in x]
+		prefix = "_".join(prefix_strings)
+		print(prefix)
+		
 	return global_data,agent_data
 
 generate_initial_states_example_generator_1param_randomrange()
@@ -301,28 +297,27 @@ def generate_initial_states_example_generator_1param_randomlist():
 	print(prefix)
 	
 	parameter_count = 0
-	if len(global_data)>0:
-		constructed_data = [x for y in global_data for x in y[1]]
-		for current,others in itertools.combinations(global_data,2):
-			print(current,others)
-			for i in current[1]:
-				for j in others[1]:
-					#print("outer loop parameter",i,current)
-					#print("inner loop parameter",j,others)
-					current_global = []
-					current_agent = []
-					
-					#initial_state(str(prefix),"0",current_global,current_agent)
-					print("prefix components",prefix_components)
-					print("current",current[0],current)
-					print("others",others[0],others)
-					prefix_components = [x if (not x[0]==current[0] and not x[0]==others[0]) else [x[0],i] if x[0]==current[0]  else [x[0],j] for x in prefix_components]
-					prefix_components = [x if not x[0]=="test_var" else [x[0],x[1]+int(1)] for x in prefix_components]
+	global_parameter_names = [x[0] for x in global_data]
+	combinations = list(itertools.product(*[x[1] for x in global_data]))
+	print("combinations",combinations)
+	testing = list(zip([global_parameter_names for x in range(len(combinations))],combinations))
+	print("testing",testing)
+	for var_names,var_values in testing:
+		print("potential combination",var_names,var_values)
+		
+		current_global_data = []
+		current_agent_data = []
+		
+		#initial_state(str(prefix),"0",current_global_data,current_agent_data)
+		print("prefix components",prefix_components)
+
+		prefix_components = [x if (not x[0] in var_names) else [x[0],var_values[var_names.index(x[0])]] for x in prefix_components]
+		prefix_components = [x if not x[0]=="test_var" else [x[0],x[1]+int(1)] for x in prefix_components]
  
-					prefix_strings = [str(y) for x in prefix_components for y in x]
-					prefix = "_".join(prefix_strings)
-					print(prefix)
-					
+		prefix_strings = [str(y) for x in prefix_components for y in x]
+		prefix = "_".join(prefix_strings)
+		print(prefix)
+		
 	return global_data,agent_data
 
 generate_initial_states_example_generator_1param_randomlist()
@@ -338,6 +333,7 @@ def generate_initial_states_example_generator_2param_list():
 	agent_data = []
 	global_data += [["LIST_TEST_VARIABLE", [1,2,3,4,5]]]
 	global_data += [["SECOND_LIST_TEST_VARIABLE", [99,98,97,96,95]]]
+	global_data += [["THIRD_LIST_TEST_VARIABLE", [51,62,73,84]]]
 	
 	print("global_data",global_data)
 	#print()
@@ -355,28 +351,27 @@ def generate_initial_states_example_generator_2param_list():
 	print(prefix)
 	
 	parameter_count = 0
-	if len(global_data)>0:
-		constructed_data = [x for y in global_data for x in y[1]]
-		for current,others in itertools.combinations(global_data,2):
-			print(current,others)
-			for i in current[1]:
-				for j in others[1]:
-					#print("outer loop parameter",i,current)
-					#print("inner loop parameter",j,others)
-					current_global = []
-					current_agent = []
-					
-					#initial_state(str(prefix),"0",current_global,current_agent)
-					print("prefix components",prefix_components)
-					print("current",current[0],current)
-					print("others",others[0],others)
-					prefix_components = [x if (not x[0]==current[0] and not x[0]==others[0]) else [x[0],i] if x[0]==current[0]  else [x[0],j] for x in prefix_components]
-					prefix_components = [x if not x[0]=="test_var" else [x[0],x[1]+int(1)] for x in prefix_components]
+	global_parameter_names = [x[0] for x in global_data]
+	combinations = list(itertools.product(*[x[1] for x in global_data]))
+	print("combinations",combinations)
+	testing = list(zip([global_parameter_names for x in range(len(combinations))],combinations))
+	print("testing",testing)
+	for var_names,var_values in testing:
+		print("potential combination",var_names,var_values)
+		
+		current_global_data = []
+		current_agent_data = []
+		
+		#initial_state(str(prefix),"0",current_global_data,current_agent_data)
+		print("prefix components",prefix_components)
+
+		prefix_components = [x if (not x[0] in var_names) else [x[0],var_values[var_names.index(x[0])]] for x in prefix_components]
+		prefix_components = [x if not x[0]=="test_var" else [x[0],x[1]+int(1)] for x in prefix_components]
  
-					prefix_strings = [str(y) for x in prefix_components for y in x]
-					prefix = "_".join(prefix_strings)
-					print(prefix)
-					
+		prefix_strings = [str(y) for x in prefix_components for y in x]
+		prefix = "_".join(prefix_strings)
+		print(prefix)
+		
 	return global_data,agent_data
 
 generate_initial_states_example_generator_2param_list()
