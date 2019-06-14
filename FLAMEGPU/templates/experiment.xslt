@@ -99,34 +99,43 @@ def generate_initial_states<xsl:if test="exp:GeneratorName">_<xsl:value-of selec
 	</xsl:if>
 	<xsl:if test="exp:Populations">
 	<xsl:for-each select="exp:Populations/exp:Population">
-	<xsl:if test="exp:Agent">agent_data += [["<xsl:value-of select="exp:Agent"/>",["initial_population",<xsl:if test="exp:InitialPopulationCount/exp:FixedValue"><xsl:value-of select="exp:InitialPopulationCount/exp:FixedValue"/>,<xsl:value-of select="exp:InitialPopulationCount/exp:FixedValue"/></xsl:if><xsl:if test="exp:InitialPopulationCount/exp:Range"><xsl:choose><xsl:when test="exp:InitialPopulationCount/exp:Range/exp:Select">[int(random.<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Distribution"/>(<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Min"/>,<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Max"/>)) for i in range(<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Select"/>)]</xsl:when><xsl:otherwise>range(<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Min"/>,<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Max"/><xsl:if test="exp:InitialPopulationCount/exp:Range/exp:Step">,<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Step"/></xsl:if>)</xsl:otherwise></xsl:choose></xsl:if>],<xsl:for-each select="exp:Variables/exp:Variable"><xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:text>&#x9;</xsl:text>["<xsl:value-of select="exp:Name"/>",<xsl:if test="exp:Value/exp:FixedValue"><xsl:value-of select="exp:Value/exp:FixedValue"/></xsl:if><xsl:if test="exp:Value/exp:Range"><xsl:choose><xsl:when test="exp:Value/exp:Range/exp:Select">[<xsl:value-of select="exp:Value/exp:Type"/>(random.<xsl:value-of select="exp:Value/exp:Range/exp:Distribution"/>(<xsl:value-of select="exp:Value/exp:Range/exp:Min"/>,<xsl:value-of select="exp:Value/exp:Range/exp:Max"/>)) for i in range(<xsl:value-of select="exp:Value/exp:Range/exp:Select"/>)]</xsl:when><xsl:otherwise>range(<xsl:value-of select="exp:Value/exp:Range/exp:Min"/>,<xsl:value-of select="exp:Value/exp:Range/exp:Max"/><xsl:if test="exp:Value/exp:Range/exp:Step">,<xsl:value-of select="exp:Value/exp:Range/exp:Step"/></xsl:if>)</xsl:otherwise></xsl:choose></xsl:if>]<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>]]<xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text></xsl:if>
+	<xsl:if test="exp:Agent">agent_data += [["<xsl:value-of select="exp:Agent"/>",["initial_population",<xsl:if test="exp:InitialPopulationCount/exp:FixedValue">[<xsl:value-of select="exp:InitialPopulationCount/exp:FixedValue"/>]</xsl:if><xsl:if test="exp:InitialPopulationCount/exp:Range"><xsl:choose><xsl:when test="exp:InitialPopulationCount/exp:Range/exp:Select">[int(random.<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Distribution"/>(<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Min"/>,<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Max"/>)) for i in range(<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Select"/>)]</xsl:when><xsl:otherwise>range(<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Min"/>,<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Max"/><xsl:if test="exp:InitialPopulationCount/exp:Range/exp:Step">,<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Step"/></xsl:if>)</xsl:otherwise></xsl:choose></xsl:if>],<xsl:for-each select="exp:Variables/exp:Variable"><xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:text>&#x9;</xsl:text>["<xsl:value-of select="exp:Name"/>",<xsl:if test="exp:Value/exp:FixedValue">[<xsl:value-of select="exp:Value/exp:FixedValue"/>]</xsl:if><xsl:if test="exp:Value/exp:Range"><xsl:choose><xsl:when test="exp:Value/exp:Range/exp:Select">[<xsl:value-of select="exp:Value/exp:Type"/>(random.<xsl:value-of select="exp:Value/exp:Range/exp:Distribution"/>(<xsl:value-of select="exp:Value/exp:Range/exp:Min"/>,<xsl:value-of select="exp:Value/exp:Range/exp:Max"/>)) for i in range(<xsl:value-of select="exp:Value/exp:Range/exp:Select"/>)]</xsl:when><xsl:otherwise>range(<xsl:value-of select="exp:Value/exp:Range/exp:Min"/>,<xsl:value-of select="exp:Value/exp:Range/exp:Max"/><xsl:if test="exp:Value/exp:Range/exp:Step">,<xsl:value-of select="exp:Value/exp:Range/exp:Step"/></xsl:if>)</xsl:otherwise></xsl:choose></xsl:if>]<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>]]<xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text></xsl:if>
 	</xsl:for-each>
 	</xsl:if>
-	print("global_data",global_data)
-	#print()
 	global_data.sort(key=len)
 	agent_data.sort(key=len)
 	<xsl:if test="exp:Files/exp:Prefix">
 	prefix_components = []
 	<xsl:for-each select="exp:Files/exp:Prefix/exp:AltersWith">prefix_components += [["<xsl:value-of select="text()"/>",[x[1][0] for x in global_data if x[0]=="<xsl:value-of select="text()"/>"][0] if len(global_data)>0 else "N/A"]]<xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text></xsl:for-each>
 	<xsl:for-each select="exp:Files/exp:Prefix/exp:Alteration">prefix_components += [["<xsl:value-of select="exp:Variable/exp:Name"/>", <xsl:if test="exp:Variable/exp:Type = 'str'">"</xsl:if><xsl:value-of select="exp:Variable/exp:Initial"/><xsl:if test="exp:Variable/exp:Type = 'str'">"</xsl:if>]]<xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text></xsl:for-each>
-	print(prefix_components)
 	prefix_strings = [str(y) for x in prefix_components for y in x]
-	print(prefix_strings)
 	prefix = <xsl:choose><xsl:when test="exp:Files/exp:Prefix/exp:Delimiter">"<xsl:value-of select="exp:Files/exp:Prefix/exp:Delimiter"/>"</xsl:when><xsl:otherwise>"_"</xsl:otherwise></xsl:choose>.join(prefix_strings)
-	print(prefix)
 	</xsl:if>
 	parameter_count = 0
-	global_parameter_names = [x[0] for x in global_data]
-	combinations = list(itertools.product(*[x[1] for x in global_data]))
-	print("combinations",combinations)
-	testing = list(zip([global_parameter_names for x in range(len(combinations))],combinations))
-	print("testing",testing)
-	for var_names,var_values in testing:
+	testing_agent = []
+	if len(global_data)>0:
+		global_parameter_names = [x[0] for x in global_data]
+		global_combinations = list(itertools.product(*[x[1] for x in global_data]))
+		testing = list(zip([global_parameter_names for x in range(len(global_combinations))],global_combinations))
+	if len(agent_data)>0:
+		print(agent_data)
+		print("ad0",agent_data[0][0],"ad1",agent_data[0][1])
+		print([[y[0] for y in x[1:]] for x in agent_data])
+		agent_parameter_names = [[x[0],[y[0] for y in x[1:]]] for x in agent_data]
+		print("apn",agent_parameter_names)
+		print([y[1] for x in agent_data for y in x[1:]])
+		agent_combinations = list(itertools.product(*[y[1] for x in agent_data for y in x[1:]]))
+		print("combinations",agent_combinations)
+		testing_agent = list(zip([[x for i in range(len(agent_parameter_names)) for x in agent_parameter_names[i][1]] for x in range(len(agent_combinations))],agent_combinations))
+		print("testing",testing_agent)
+	for var_names,var_values in testing_agent:
 		print("potential combination",var_names,var_values)
 		
-		current_global_data = []
-		current_agent_data = []
+		current_global_data = [x if len(x[1])==0 else [x[0],var_values[var_names.index(x[0])]] for x in global_data]
+		print("current global",current_global_data)
+		print("param values",[[y if len(y[1])==1 else [y[0],var_values[var_names.index(y[0])]]] for x in agent_data for y in x[1:]])
+		current_agent_data = [[x[0],[y if len(y[1])==1 else [y[0],var_values[var_names.index(y[0])]] for x in agent_data for y in x[1:]]] for x in agent_data]
+		print("current agent data",current_agent_data)
 		<xsl:choose>
 		<xsl:when test="exp:Files/exp:Prefix">
 		#initial_state(str(prefix),"<xsl:value-of select="exp:Files/exp:InitialFileName"/>",current_global_data,current_agent_data)

@@ -75,9 +75,25 @@ def initial_state(save_location,file_name,global_information,agent_information):
 def generate_initial_states_example_generator():
 	global_data = []
 	agent_data = []
+	agent_data += [["prey",["initial_population",[int(random.uniform(0,5000)) for i in range(1)]],
+					["x",[float(random.uniform(-1.0,1.0)) for i in range(1)]],
+					["y",[float(random.uniform(-1.0,1.0)) for i in range(1)]],
+					["type",[1]],
+					["fx",[float(random.uniform(-1.0,1.0)) for i in range(1)]],
+					["fy",[float(random.uniform(-1.0,1.0)) for i in range(1)]],
+					["steer_x",[0.0]],
+					["steer_y",[0.0]],
+					["life",range(1,50,10)]]]
+	agent_data += [["predator",["initial_population",[int(random.uniform(0,5000)) for i in range(1)]],
+					["x",[float(random.uniform(-1.0,1.0)) for i in range(1)]],
+					["y",[float(random.uniform(-1.0,1.0)) for i in range(1)]],
+					["type",[1]],
+					["fx",[float(random.uniform(-1.0,1.0)) for i in range(1)]],
+					["fy",[float(random.uniform(-1.0,1.0)) for i in range(1)]],
+					["steer_x",[0.0]],
+					["steer_y",[0.0]],
+					["life",range(1,50,10)]]]
 	
-	print("global_data",global_data)
-	#print()
 	global_data.sort(key=len)
 	agent_data.sort(key=len)
 	
@@ -85,23 +101,34 @@ def generate_initial_states_example_generator():
 	prefix_components += [["LIST_TEST_VARIABLE",[x[1][0] for x in global_data if x[0]=="LIST_TEST_VARIABLE"][0] if len(global_data)>0 else "N/A"]]
 	prefix_components += [["test_var", "seed"]]
 	
-	print(prefix_components)
 	prefix_strings = [str(y) for x in prefix_components for y in x]
-	print(prefix_strings)
 	prefix = "_".join(prefix_strings)
-	print(prefix)
 	
 	parameter_count = 0
-	global_parameter_names = [x[0] for x in global_data]
-	combinations = list(itertools.product(*[x[1] for x in global_data]))
-	print("combinations",combinations)
-	testing = list(zip([global_parameter_names for x in range(len(combinations))],combinations))
-	print("testing",testing)
-	for var_names,var_values in testing:
+	testing_agent = []
+	if len(global_data)>0:
+		global_parameter_names = [x[0] for x in global_data]
+		global_combinations = list(itertools.product(*[x[1] for x in global_data]))
+		testing = list(zip([global_parameter_names for x in range(len(global_combinations))],global_combinations))
+	if len(agent_data)>0:
+		print(agent_data)
+		print("ad0",agent_data[0][0],"ad1",agent_data[0][1])
+		print([[y[0] for y in x[1:]] for x in agent_data])
+		agent_parameter_names = [[x[0],[y[0] for y in x[1:]]] for x in agent_data]
+		print("apn",agent_parameter_names)
+		print([y[1] for x in agent_data for y in x[1:]])
+		agent_combinations = list(itertools.product(*[y[1] for x in agent_data for y in x[1:]]))
+		print("combinations",agent_combinations)
+		testing_agent = list(zip([[x for i in range(len(agent_parameter_names)) for x in agent_parameter_names[i][1]] for x in range(len(agent_combinations))],agent_combinations))
+		print("testing",testing_agent)
+	for var_names,var_values in testing_agent:
 		print("potential combination",var_names,var_values)
 		
-		current_global_data = []
-		current_agent_data = []
+		current_global_data = [x if len(x[1])==0 else [x[0],var_values[var_names.index(x[0])]] for x in global_data]
+		print("current global",current_global_data)
+		print("param values",[[y if len(y[1])==1 else [y[0],var_values[var_names.index(y[0])]]] for x in agent_data for y in x[1:]])
+		current_agent_data = [[x[0],[y if len(y[1])==1 else [y[0],var_values[var_names.index(y[0])]] for x in agent_data for y in x[1:]]] for x in agent_data]
+		print("current agent data",current_agent_data)
 		
 		#initial_state(str(prefix),"0",current_global_data,current_agent_data)
 		print("prefix components",prefix_components)
@@ -117,7 +144,9 @@ def generate_initial_states_example_generator():
 
 generate_initial_states_example_generator()
 #Agent data stored in list of lists
-base_agent_information = []
+base_agent_information = [
+["prey",["initial_population",0,5000],["x",-1.0,1.0],["y",-1.0,1.0],["type",1,1],["fx",-1.0,1.0],["fy",-1.0,1.0],["steer_x",0.0,0.0],["steer_y",0.0,0.0],["life",1,50],],
+["predator",["initial_population",0,5000],["x",-1.0,1.0],["y",-1.0,1.0],["type",1,1],["fx",-1.0,1.0],["fy",-1.0,1.0],["steer_x",0.0,0.0],["steer_y",0.0,0.0],["life",1,50],],]
 
 #Create initial state
 #initial_state_creation_example_generator("",base_agent_information)
@@ -128,8 +157,6 @@ def generate_initial_states_example_generator_1param_list():
 	agent_data = []
 	global_data += [["LIST_TEST_VARIABLE", [1,2,3,4,5]]]
 	
-	print("global_data",global_data)
-	#print()
 	global_data.sort(key=len)
 	agent_data.sort(key=len)
 	
@@ -137,23 +164,34 @@ def generate_initial_states_example_generator_1param_list():
 	prefix_components += [["LIST_TEST_VARIABLE",[x[1][0] for x in global_data if x[0]=="LIST_TEST_VARIABLE"][0] if len(global_data)>0 else "N/A"]]
 	prefix_components += [["test_var", 0]]
 	
-	print(prefix_components)
 	prefix_strings = [str(y) for x in prefix_components for y in x]
-	print(prefix_strings)
 	prefix = "_".join(prefix_strings)
-	print(prefix)
 	
 	parameter_count = 0
-	global_parameter_names = [x[0] for x in global_data]
-	combinations = list(itertools.product(*[x[1] for x in global_data]))
-	print("combinations",combinations)
-	testing = list(zip([global_parameter_names for x in range(len(combinations))],combinations))
-	print("testing",testing)
-	for var_names,var_values in testing:
+	testing_agent = []
+	if len(global_data)>0:
+		global_parameter_names = [x[0] for x in global_data]
+		global_combinations = list(itertools.product(*[x[1] for x in global_data]))
+		testing = list(zip([global_parameter_names for x in range(len(global_combinations))],global_combinations))
+	if len(agent_data)>0:
+		print(agent_data)
+		print("ad0",agent_data[0][0],"ad1",agent_data[0][1])
+		print([[y[0] for y in x[1:]] for x in agent_data])
+		agent_parameter_names = [[x[0],[y[0] for y in x[1:]]] for x in agent_data]
+		print("apn",agent_parameter_names)
+		print([y[1] for x in agent_data for y in x[1:]])
+		agent_combinations = list(itertools.product(*[y[1] for x in agent_data for y in x[1:]]))
+		print("combinations",agent_combinations)
+		testing_agent = list(zip([[x for i in range(len(agent_parameter_names)) for x in agent_parameter_names[i][1]] for x in range(len(agent_combinations))],agent_combinations))
+		print("testing",testing_agent)
+	for var_names,var_values in testing_agent:
 		print("potential combination",var_names,var_values)
 		
-		current_global_data = []
-		current_agent_data = []
+		current_global_data = [x if len(x[1])==0 else [x[0],var_values[var_names.index(x[0])]] for x in global_data]
+		print("current global",current_global_data)
+		print("param values",[[y if len(y[1])==1 else [y[0],var_values[var_names.index(y[0])]]] for x in agent_data for y in x[1:]])
+		current_agent_data = [[x[0],[y if len(y[1])==1 else [y[0],var_values[var_names.index(y[0])]] for x in agent_data for y in x[1:]]] for x in agent_data]
+		print("current agent data",current_agent_data)
 		
 		#initial_state(str(prefix),"0",current_global_data,current_agent_data)
 		print("prefix components",prefix_components)
@@ -180,31 +218,40 @@ def generate_initial_states_example_generator_1param_range():
 	agent_data = []
 	global_data += [["RANGE_TEST_VARIABLE", range(1,5,1)]]
 	
-	print("global_data",global_data)
-	#print()
 	global_data.sort(key=len)
 	agent_data.sort(key=len)
 	
 	prefix_components = []
 	prefix_components += [["test_var", 0]]
 	
-	print(prefix_components)
 	prefix_strings = [str(y) for x in prefix_components for y in x]
-	print(prefix_strings)
 	prefix = "_".join(prefix_strings)
-	print(prefix)
 	
 	parameter_count = 0
-	global_parameter_names = [x[0] for x in global_data]
-	combinations = list(itertools.product(*[x[1] for x in global_data]))
-	print("combinations",combinations)
-	testing = list(zip([global_parameter_names for x in range(len(combinations))],combinations))
-	print("testing",testing)
-	for var_names,var_values in testing:
+	testing_agent = []
+	if len(global_data)>0:
+		global_parameter_names = [x[0] for x in global_data]
+		global_combinations = list(itertools.product(*[x[1] for x in global_data]))
+		testing = list(zip([global_parameter_names for x in range(len(global_combinations))],global_combinations))
+	if len(agent_data)>0:
+		print(agent_data)
+		print("ad0",agent_data[0][0],"ad1",agent_data[0][1])
+		print([[y[0] for y in x[1:]] for x in agent_data])
+		agent_parameter_names = [[x[0],[y[0] for y in x[1:]]] for x in agent_data]
+		print("apn",agent_parameter_names)
+		print([y[1] for x in agent_data for y in x[1:]])
+		agent_combinations = list(itertools.product(*[y[1] for x in agent_data for y in x[1:]]))
+		print("combinations",agent_combinations)
+		testing_agent = list(zip([[x for i in range(len(agent_parameter_names)) for x in agent_parameter_names[i][1]] for x in range(len(agent_combinations))],agent_combinations))
+		print("testing",testing_agent)
+	for var_names,var_values in testing_agent:
 		print("potential combination",var_names,var_values)
 		
-		current_global_data = []
-		current_agent_data = []
+		current_global_data = [x if len(x[1])==0 else [x[0],var_values[var_names.index(x[0])]] for x in global_data]
+		print("current global",current_global_data)
+		print("param values",[[y if len(y[1])==1 else [y[0],var_values[var_names.index(y[0])]]] for x in agent_data for y in x[1:]])
+		current_agent_data = [[x[0],[y if len(y[1])==1 else [y[0],var_values[var_names.index(y[0])]] for x in agent_data for y in x[1:]]] for x in agent_data]
+		print("current agent data",current_agent_data)
 		
 		#initial_state(str(prefix),"0",current_global_data,current_agent_data)
 		print("prefix components",prefix_components)
@@ -231,31 +278,40 @@ def generate_initial_states_example_generator_1param_randomrange():
 	agent_data = []
 	global_data += [["RANGE_CHOOSE_TEST_VARIABLE", [(random.uniform(1,5)) for i in range(2)]]]
 	
-	print("global_data",global_data)
-	#print()
 	global_data.sort(key=len)
 	agent_data.sort(key=len)
 	
 	prefix_components = []
 	prefix_components += [["test_var", 0]]
 	
-	print(prefix_components)
 	prefix_strings = [str(y) for x in prefix_components for y in x]
-	print(prefix_strings)
 	prefix = "_".join(prefix_strings)
-	print(prefix)
 	
 	parameter_count = 0
-	global_parameter_names = [x[0] for x in global_data]
-	combinations = list(itertools.product(*[x[1] for x in global_data]))
-	print("combinations",combinations)
-	testing = list(zip([global_parameter_names for x in range(len(combinations))],combinations))
-	print("testing",testing)
-	for var_names,var_values in testing:
+	testing_agent = []
+	if len(global_data)>0:
+		global_parameter_names = [x[0] for x in global_data]
+		global_combinations = list(itertools.product(*[x[1] for x in global_data]))
+		testing = list(zip([global_parameter_names for x in range(len(global_combinations))],global_combinations))
+	if len(agent_data)>0:
+		print(agent_data)
+		print("ad0",agent_data[0][0],"ad1",agent_data[0][1])
+		print([[y[0] for y in x[1:]] for x in agent_data])
+		agent_parameter_names = [[x[0],[y[0] for y in x[1:]]] for x in agent_data]
+		print("apn",agent_parameter_names)
+		print([y[1] for x in agent_data for y in x[1:]])
+		agent_combinations = list(itertools.product(*[y[1] for x in agent_data for y in x[1:]]))
+		print("combinations",agent_combinations)
+		testing_agent = list(zip([[x for i in range(len(agent_parameter_names)) for x in agent_parameter_names[i][1]] for x in range(len(agent_combinations))],agent_combinations))
+		print("testing",testing_agent)
+	for var_names,var_values in testing_agent:
 		print("potential combination",var_names,var_values)
 		
-		current_global_data = []
-		current_agent_data = []
+		current_global_data = [x if len(x[1])==0 else [x[0],var_values[var_names.index(x[0])]] for x in global_data]
+		print("current global",current_global_data)
+		print("param values",[[y if len(y[1])==1 else [y[0],var_values[var_names.index(y[0])]]] for x in agent_data for y in x[1:]])
+		current_agent_data = [[x[0],[y if len(y[1])==1 else [y[0],var_values[var_names.index(y[0])]] for x in agent_data for y in x[1:]]] for x in agent_data]
+		print("current agent data",current_agent_data)
 		
 		#initial_state(str(prefix),"0",current_global_data,current_agent_data)
 		print("prefix components",prefix_components)
@@ -282,31 +338,40 @@ def generate_initial_states_example_generator_1param_randomlist():
 	agent_data = []
 	global_data += [["LIST_CHOOSE_TEST_VARIABLE", random.choices([1,2,3,4,5],k=2)]]
 	
-	print("global_data",global_data)
-	#print()
 	global_data.sort(key=len)
 	agent_data.sort(key=len)
 	
 	prefix_components = []
 	prefix_components += [["test_var", 0]]
 	
-	print(prefix_components)
 	prefix_strings = [str(y) for x in prefix_components for y in x]
-	print(prefix_strings)
 	prefix = "_".join(prefix_strings)
-	print(prefix)
 	
 	parameter_count = 0
-	global_parameter_names = [x[0] for x in global_data]
-	combinations = list(itertools.product(*[x[1] for x in global_data]))
-	print("combinations",combinations)
-	testing = list(zip([global_parameter_names for x in range(len(combinations))],combinations))
-	print("testing",testing)
-	for var_names,var_values in testing:
+	testing_agent = []
+	if len(global_data)>0:
+		global_parameter_names = [x[0] for x in global_data]
+		global_combinations = list(itertools.product(*[x[1] for x in global_data]))
+		testing = list(zip([global_parameter_names for x in range(len(global_combinations))],global_combinations))
+	if len(agent_data)>0:
+		print(agent_data)
+		print("ad0",agent_data[0][0],"ad1",agent_data[0][1])
+		print([[y[0] for y in x[1:]] for x in agent_data])
+		agent_parameter_names = [[x[0],[y[0] for y in x[1:]]] for x in agent_data]
+		print("apn",agent_parameter_names)
+		print([y[1] for x in agent_data for y in x[1:]])
+		agent_combinations = list(itertools.product(*[y[1] for x in agent_data for y in x[1:]]))
+		print("combinations",agent_combinations)
+		testing_agent = list(zip([[x for i in range(len(agent_parameter_names)) for x in agent_parameter_names[i][1]] for x in range(len(agent_combinations))],agent_combinations))
+		print("testing",testing_agent)
+	for var_names,var_values in testing_agent:
 		print("potential combination",var_names,var_values)
 		
-		current_global_data = []
-		current_agent_data = []
+		current_global_data = [x if len(x[1])==0 else [x[0],var_values[var_names.index(x[0])]] for x in global_data]
+		print("current global",current_global_data)
+		print("param values",[[y if len(y[1])==1 else [y[0],var_values[var_names.index(y[0])]]] for x in agent_data for y in x[1:]])
+		current_agent_data = [[x[0],[y if len(y[1])==1 else [y[0],var_values[var_names.index(y[0])]] for x in agent_data for y in x[1:]]] for x in agent_data]
+		print("current agent data",current_agent_data)
 		
 		#initial_state(str(prefix),"0",current_global_data,current_agent_data)
 		print("prefix components",prefix_components)
@@ -335,8 +400,6 @@ def generate_initial_states_example_generator_2param_list():
 	global_data += [["SECOND_LIST_TEST_VARIABLE", [99,98,97,96,95]]]
 	global_data += [["THIRD_LIST_TEST_VARIABLE", [51,62,73,84]]]
 	
-	print("global_data",global_data)
-	#print()
 	global_data.sort(key=len)
 	agent_data.sort(key=len)
 	
@@ -344,23 +407,34 @@ def generate_initial_states_example_generator_2param_list():
 	prefix_components += [["LIST_TEST_VARIABLE",[x[1][0] for x in global_data if x[0]=="LIST_TEST_VARIABLE"][0] if len(global_data)>0 else "N/A"]]
 	prefix_components += [["test_var", 0]]
 	
-	print(prefix_components)
 	prefix_strings = [str(y) for x in prefix_components for y in x]
-	print(prefix_strings)
 	prefix = "_".join(prefix_strings)
-	print(prefix)
 	
 	parameter_count = 0
-	global_parameter_names = [x[0] for x in global_data]
-	combinations = list(itertools.product(*[x[1] for x in global_data]))
-	print("combinations",combinations)
-	testing = list(zip([global_parameter_names for x in range(len(combinations))],combinations))
-	print("testing",testing)
-	for var_names,var_values in testing:
+	testing_agent = []
+	if len(global_data)>0:
+		global_parameter_names = [x[0] for x in global_data]
+		global_combinations = list(itertools.product(*[x[1] for x in global_data]))
+		testing = list(zip([global_parameter_names for x in range(len(global_combinations))],global_combinations))
+	if len(agent_data)>0:
+		print(agent_data)
+		print("ad0",agent_data[0][0],"ad1",agent_data[0][1])
+		print([[y[0] for y in x[1:]] for x in agent_data])
+		agent_parameter_names = [[x[0],[y[0] for y in x[1:]]] for x in agent_data]
+		print("apn",agent_parameter_names)
+		print([y[1] for x in agent_data for y in x[1:]])
+		agent_combinations = list(itertools.product(*[y[1] for x in agent_data for y in x[1:]]))
+		print("combinations",agent_combinations)
+		testing_agent = list(zip([[x for i in range(len(agent_parameter_names)) for x in agent_parameter_names[i][1]] for x in range(len(agent_combinations))],agent_combinations))
+		print("testing",testing_agent)
+	for var_names,var_values in testing_agent:
 		print("potential combination",var_names,var_values)
 		
-		current_global_data = []
-		current_agent_data = []
+		current_global_data = [x if len(x[1])==0 else [x[0],var_values[var_names.index(x[0])]] for x in global_data]
+		print("current global",current_global_data)
+		print("param values",[[y if len(y[1])==1 else [y[0],var_values[var_names.index(y[0])]]] for x in agent_data for y in x[1:]])
+		current_agent_data = [[x[0],[y if len(y[1])==1 else [y[0],var_values[var_names.index(y[0])]] for x in agent_data for y in x[1:]]] for x in agent_data]
+		print("current agent data",current_agent_data)
 		
 		#initial_state(str(prefix),"0",current_global_data,current_agent_data)
 		print("prefix components",prefix_components)
