@@ -44,6 +44,7 @@
     <Delete Files="%(FLAMEGPU_Template_Build_Rule.ModelDir)logging_and_function_template.c"/>
     <Delete Files="%(FLAMEGPU_Template_Build_Rule.ModelDir)function_template.c"/>
     <Delete Files="%(FLAMEGPU_Template_Build_Rule.ExperimentDir)experiment.py;%(FLAMEGPU_Template_Build_Rule.ExperimentDir)run_experiment.bat;%(FLAMEGPU_Template_Build_Rule.ExperimentDir)run_experiment.sh;"/>
+    <RemoveDir Directories="%(FLAMEGPU_Template_Build_Rule.ModelDir)../../example_iterations"/>
   </Target>
   
   

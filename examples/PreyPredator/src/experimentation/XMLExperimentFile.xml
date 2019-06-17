@@ -59,24 +59,22 @@ Some sort of python post simulation function (move files around). Parameters whi
                         <exp:Variable>
                             <exp:Name>x</exp:Name>
                             <exp:Value>
-                                <exp:Range>
+                                <exp:PerAgentRange>
                                     <exp:Min>-1.0</exp:Min>
                                     <exp:Max>1.0</exp:Max>
-                                    <exp:Select>1</exp:Select>
                                     <exp:Distribution>uniform</exp:Distribution>
-                                </exp:Range>
+                                </exp:PerAgentRange>
                                 <exp:Type>float</exp:Type>
                             </exp:Value>
                         </exp:Variable>
                         <exp:Variable>
                             <exp:Name>y</exp:Name>
                             <exp:Value>
-                                <exp:Range>
+                                <exp:PerAgentRange>
                                     <exp:Min>-1.0</exp:Min>
                                     <exp:Max>1.0</exp:Max>
-                                    <exp:Select>1</exp:Select>
                                     <exp:Distribution>uniform</exp:Distribution>
-                                </exp:Range>
+                                </exp:PerAgentRange>
                                 <exp:Type>float</exp:Type>
                             </exp:Value>
                         </exp:Variable>
@@ -90,24 +88,22 @@ Some sort of python post simulation function (move files around). Parameters whi
                         <exp:Variable>
                             <exp:Name>fx</exp:Name>
                             <exp:Value>
-                                <exp:Range>
+                                <exp:PerAgentRange>
                                     <exp:Min>-1.0</exp:Min>
                                     <exp:Max>1.0</exp:Max>
-                                    <exp:Select>1</exp:Select>
                                     <exp:Distribution>uniform</exp:Distribution>
-                                </exp:Range>
+                                </exp:PerAgentRange>
                                 <exp:Type>float</exp:Type>
                             </exp:Value>
                         </exp:Variable>
                         <exp:Variable>
                             <exp:Name>fy</exp:Name>
                             <exp:Value>
-                                <exp:Range>
+                                <exp:PerAgentRange>
                                     <exp:Min>-1.0</exp:Min>
                                     <exp:Max>1.0</exp:Max>
-                                    <exp:Select>1</exp:Select>
                                     <exp:Distribution>uniform</exp:Distribution>
-                                </exp:Range>
+                                </exp:PerAgentRange>
                                 <exp:Type>float</exp:Type>
                             </exp:Value>
                         </exp:Variable>
@@ -130,7 +126,7 @@ Some sort of python post simulation function (move files around). Parameters whi
                             <exp:Value>
                                 <exp:Range>
                                     <exp:Min>1</exp:Min>
-                                    <exp:Max>50</exp:Max>
+                                    <exp:Max>20</exp:Max>
                                     <exp:Step>10</exp:Step>
                                 </exp:Range>
                                 <exp:Type>int</exp:Type>
@@ -154,24 +150,22 @@ Some sort of python post simulation function (move files around). Parameters whi
                         <exp:Variable>
                             <exp:Name>x</exp:Name>
                             <exp:Value>
-                                <exp:Range>
+                                <exp:PerAgentRange>
                                     <exp:Min>-1.0</exp:Min>
                                     <exp:Max>1.0</exp:Max>
-                                    <exp:Select>1</exp:Select>
                                     <exp:Distribution>uniform</exp:Distribution>
-                                </exp:Range>
+                                </exp:PerAgentRange>
                                 <exp:Type>float</exp:Type>
                             </exp:Value>
                         </exp:Variable>
                         <exp:Variable>
                             <exp:Name>y</exp:Name>
                             <exp:Value>
-                                <exp:Range>
+                                <exp:PerAgentRange>
                                     <exp:Min>-1.0</exp:Min>
                                     <exp:Max>1.0</exp:Max>
-                                    <exp:Select>1</exp:Select>
                                     <exp:Distribution>uniform</exp:Distribution>
-                                </exp:Range>
+                                </exp:PerAgentRange>
                                 <exp:Type>float</exp:Type>
                             </exp:Value>
                         </exp:Variable>
@@ -185,24 +179,22 @@ Some sort of python post simulation function (move files around). Parameters whi
                         <exp:Variable>
                             <exp:Name>fx</exp:Name>
                             <exp:Value>
-                                <exp:Range>
+                                <exp:PerAgentRange>
                                     <exp:Min>-1.0</exp:Min>
                                     <exp:Max>1.0</exp:Max>
-                                    <exp:Select>1</exp:Select>
                                     <exp:Distribution>uniform</exp:Distribution>
-                                </exp:Range>
+                                </exp:PerAgentRange>
                                 <exp:Type>float</exp:Type>
                             </exp:Value>
                         </exp:Variable>
                         <exp:Variable>
                             <exp:Name>fy</exp:Name>
                             <exp:Value>
-                                <exp:Range>
+                                <exp:PerAgentRange>
                                     <exp:Min>-1.0</exp:Min>
                                     <exp:Max>1.0</exp:Max>
-                                    <exp:Select>1</exp:Select>
                                     <exp:Distribution>uniform</exp:Distribution>
-                                </exp:Range>
+                                </exp:PerAgentRange>
                                 <exp:Type>float</exp:Type>
                             </exp:Value>
                         </exp:Variable>
@@ -225,7 +217,7 @@ Some sort of python post simulation function (move files around). Parameters whi
                             <exp:Value>
                                 <exp:Range>
                                     <exp:Min>1</exp:Min>
-                                    <exp:Max>50</exp:Max>
+                                    <exp:Max>20</exp:Max>
                                     <exp:Step>10</exp:Step>
                                 </exp:Range>
                                 <exp:Type>int</exp:Type>
@@ -322,6 +314,7 @@ Some sort of python post simulation function (move files around). Parameters whi
                             <exp:Select>2</exp:Select>
                             <exp:Distribution>uniform</exp:Distribution>
                         </exp:Range>
+                        <exp:Type>int</exp:Type>
                     </exp:Value>
                 </exp:Global>
             </exp:Globals>
