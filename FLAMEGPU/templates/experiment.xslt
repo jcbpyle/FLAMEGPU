@@ -21,7 +21,7 @@
 # on www.flamegpu.com website.
 #
 
-<xsl:if test="exp:Experimentation/exp:Imports"><xsl:for-each select="exp:Experimentation/exp:Imports/exp:Import"><xsl:if test="exp:From">from <xsl:value-of select="exp:From" />&#160;</xsl:if>import <xsl:value-of select="exp:Module" /><xsl:text>&#xa;</xsl:text></xsl:for-each></xsl:if>
+<xsl:if test="exp:Experimentation/xmml:Imports"><xsl:for-each select="exp:Experimentation/xmml:Imports/xmml:Import"><xsl:if test="xmml:From">from <xsl:value-of select="xmml:From" /><xsl:text>&#x20;</xsl:text></xsl:if>import <xsl:value-of select="xmml:Module" /><xsl:text>&#xa;</xsl:text></xsl:for-each></xsl:if>
 import os
 import random
 import itertools
@@ -31,33 +31,128 @@ import pycuda.autoinit
 BASE_DIRECTORY = os.getcwd()+"/"
 PROJECT_DIRECTORY = BASE_DIRECTORY+"../../"
 GPUS_AVAILABLE = cuda.Device(0).count()
-<xsl:if test="exp:Experimentation/exp:InitialStates">
+OS_NAME = os.name
+<xsl:if test="exp:Experimentation/xmml:InitialStates">
 #InitialStates
-
-<xsl:if test="exp:Experimentation/exp:InitialStates/exp:InitialStateFile">
+<xsl:if test="exp:Experimentation/xmml:InitialStates/xmml:InitialStateFile">
 initial_state_files = []
-<xsl:for-each select="exp:Experimentation/exp:InitialStates/exp:InitialStateFile">
-<xsl:if test="exp:FileName">
-initial_state_files += ["/<xsl:value-of select="exp:Location"/>/<xsl:value-of select="exp:FileName"/>.xml"]
+<xsl:for-each select="exp:Experimentation/xmml:InitialStates/xmml:InitialStateFile">
+<xsl:if test="xmml:FileName">
+initial_state_files += ["/<xsl:value-of select="xmml:Location"/>/<xsl:value-of select="xmml:FileName"/>.xml"]
 </xsl:if>
 </xsl:for-each>
 </xsl:if>
-
-<xsl:if test="exp:Experimentation/exp:InitialStates/exp:InitialStateFunction">
-<xsl:for-each select="exp:Experimentation/exp:InitialStates/exp:InitialStateFunction">
+<xsl:if test="exp:Experimentation/xmml:InitialStates/xmml:InitialStateFunction">
+<xsl:for-each select="exp:Experimentation/xmml:InitialStates/xmml:InitialStateFunction">
 #Initial state generator function to be created by the user
-def initial_state_generator_function_<xsl:value-of select="exp:FunctionName"/>():
+def initial_state_generator_function_<xsl:value-of select="xmml:FunctionName"/>():
 
 	return<xsl:text>&#xa;</xsl:text>
 </xsl:for-each>
 </xsl:if>
 
-<xsl:if test="exp:Experimentation/exp:InitialStates/@baseDirectory">
+<xsl:if test="exp:Experimentation/xmml:InitialStates/xmml:InitialStateGenerator">
+<xsl:for-each select="exp:Experimentation/xmml:InitialStates/xmml:InitialStateGenerator">
+#Generate initial states based on defined ranges/lists/values for all global and agent population variables<xsl:if test="xmml:GeneratorName"> for experiment <xsl:value-of select="xmml:GeneratorName"/></xsl:if>.
+def generate_initial_states<xsl:if test="xmml:GeneratorName">_<xsl:value-of select="xmml:GeneratorName"/></xsl:if>():
+	global_data = []
+	agent_data = []
+	vary_per_agent = []
+	<xsl:if test="xmml:Globals">
+	global_data = {<xsl:for-each select="xmml:Globals/xmml:Global">"<xsl:value-of select="xmml:Name"/>":<xsl:choose><xsl:when test="xmml:Value/xmml:FixedValue">[<xsl:value-of select="xmml:Value/xmml:FixedValue"/>]</xsl:when><xsl:when test="xmml:Value/xmml:List"><xsl:choose><xsl:when test="xmml:Value/xmml:List/xmml:Select">random.choices([<xsl:value-of select="xmml:Value/xmml:List/xmml:Items"/>],k=<xsl:value-of select="xmml:Value/xmml:List/xmml:Select"/>)</xsl:when><xsl:otherwise>[<xsl:value-of select="xmml:Value/xmml:List/xmml:Items"/>]</xsl:otherwise></xsl:choose></xsl:when><xsl:when test="xmml:Value/xmml:Range"><xsl:choose><xsl:when test="xmml:Value/xmml:Range/xmml:Select">[<xsl:value-of select="xmml:Value/xmml:Type"/>(random.<xsl:value-of select="xmml:Value/xmml:Range/xmml:Distribution"/>(<xsl:value-of select="xmml:Value/xmml:Range/xmml:Min"/>,<xsl:value-of select="xmml:Value/xmml:Range/xmml:Max"/>)) for i in range(<xsl:value-of select="xmml:Value/xmml:Range/xmml:Select"/>)]</xsl:when><xsl:otherwise>range(<xsl:value-of select="xmml:Value/xmml:Range/xmml:Min"/>,<xsl:value-of select="xmml:Value/xmml:Range/xmml:Max"/><xsl:if test="xmml:Value/xmml:Range/xmml:Step">,<xsl:value-of select="xmml:Value/xmml:Range/xmml:Step"/></xsl:if>)</xsl:otherwise></xsl:choose></xsl:when><xsl:when test="xmml:Value/xmml:Random"><xsl:if test="xmml:MultipleValues='False'">[</xsl:if>random.<xsl:value-of select="xmml:Value/xmml:Random/xmml:Function"/>(<xsl:value-of select="xmml:Value/xmml:Random/xmml:Arguments"/>)<xsl:if test="xmml:MultipleValues='False'">]</xsl:if></xsl:when><xsl:otherwise>[]</xsl:otherwise></xsl:choose><xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>}
+	<!-- <xsl:for-each select="xmml:Globals/xmml:Global">
+	<xsl:if test="xmml:Value">global_data += [["<xsl:value-of select="xmml:Name"/>", <xsl:choose><xsl:when test="xmml:Value/xmml:FixedValue"><xsl:value-of select="xmml:Value/xmml:FixedValue"/></xsl:when><xsl:when test="xmml:Value/xmml:List"><xsl:choose><xsl:when test="xmml:Value/xmml:List/xmml:Select">random.choices([<xsl:value-of select="xmml:Value/xmml:List/xmml:Items"/>],k=<xsl:value-of select="xmml:Value/xmml:List/xmml:Select"/>)</xsl:when><xsl:otherwise>[<xsl:value-of select="xmml:Value/xmml:List/xmml:Items"/>]</xsl:otherwise></xsl:choose></xsl:when><xsl:when test="xmml:Value/xmml:Range"><xsl:choose><xsl:when test="xmml:Value/xmml:Range/xmml:Select">[<xsl:value-of select="xmml:Value/xmml:Type"/>(random.<xsl:value-of select="xmml:Value/xmml:Range/xmml:Distribution"/>(<xsl:value-of select="xmml:Value/xmml:Range/xmml:Min"/>,<xsl:value-of select="xmml:Value/xmml:Range/xmml:Max"/>)) for i in range(<xsl:value-of select="xmml:Value/xmml:Range/xmml:Select"/>)]</xsl:when><xsl:otherwise>range(<xsl:value-of select="xmml:Value/xmml:Range/xmml:Min"/>,<xsl:value-of select="xmml:Value/xmml:Range/xmml:Max"/><xsl:if test="xmml:Value/xmml:Range/xmml:Step">,<xsl:value-of select="xmml:Value/xmml:Range/xmml:Step"/></xsl:if>)</xsl:otherwise></xsl:choose></xsl:when><xsl:when test="xmml:Value/xmml:Random">random.<xsl:value-of select="xmml:Value/xmml:Random/xmml:Function"/>(<xsl:value-of select="xmml:Value/xmml:Random/xmml:Arguments"/>)</xsl:when><xsl:otherwise>[]</xsl:otherwise></xsl:choose>]]<xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text></xsl:if>
+	</xsl:for-each> -->
+	</xsl:if>
+	<xsl:if test="xmml:Populations">
+	<xsl:for-each select="xmml:Populations/xmml:Population">
+	<xsl:value-of select="xmml:Agent"/> = {<xsl:if test="xmml:InitialPopulationCount">"initial_population":<xsl:if test="xmml:InitialPopulationCount/xmml:FixedValue">[<xsl:value-of select="xmml:InitialPopulationCount/xmml:FixedValue"/>]</xsl:if><xsl:if test="xmml:InitialPopulationCount/xmml:Range"><xsl:choose><xsl:when test="xmml:InitialPopulationCount/xmml:Range/xmml:Select">[int(random.<xsl:value-of select="xmml:InitialPopulationCount/xmml:Range/xmml:Distribution"/>(<xsl:value-of select="xmml:InitialPopulationCount/xmml:Range/xmml:Min"/>,<xsl:value-of select="xmml:InitialPopulationCount/xmml:Range/xmml:Max"/>)) for i in range(<xsl:value-of select="xmml:InitialPopulationCount/xmml:Range/xmml:Select"/>)]</xsl:when><xsl:otherwise>range(<xsl:value-of select="xmml:InitialPopulationCount/xmml:Range/xmml:Min"/>,<xsl:value-of select="xmml:InitialPopulationCount/xmml:Range/xmml:Max"/><xsl:if test="xmml:InitialPopulationCount/xmml:Range/xmml:Step">,<xsl:value-of select="xmml:InitialPopulationCount/xmml:Range/xmml:Step"/></xsl:if>)</xsl:otherwise></xsl:choose></xsl:if>, </xsl:if><xsl:for-each select="xmml:Variables/xmml:Variable"><xsl:if test="not(xmml:Value/xmml:PerAgentRange)">"<xsl:value-of select="xmml:Name"/>":<xsl:choose><xsl:when test="xmml:Value/xmml:FixedValue">[<xsl:value-of select="xmml:Value/xmml:FixedValue"/>]</xsl:when><xsl:when test="xmml:Value/xmml:Range"><xsl:choose><xsl:when test="xmml:Value/xmml:Range/xmml:Select">[<xsl:value-of select="xmml:Value/xmml:Type"/>(random.<xsl:value-of select="xmml:Value/xmml:Range/xmml:Distribution"/>(<xsl:value-of select="xmml:Value/xmml:Range/xmml:Min"/>,<xsl:value-of select="xmml:Value/xmml:Range/xmml:Max"/>)) for i in range(<xsl:value-of select="xmml:Value/xmml:Range/xmml:Select"/>)]</xsl:when><xsl:otherwise>range(<xsl:value-of select="xmml:Value/xmml:Range/xmml:Min"/>,<xsl:value-of select="xmml:Value/xmml:Range/xmml:Max"/><xsl:if test="xmml:Value/xmml:Range/xmml:Step">,<xsl:value-of select="xmml:Value/xmml:Range/xmml:Step"/></xsl:if>)</xsl:otherwise></xsl:choose></xsl:when><xsl:otherwise>[]</xsl:otherwise></xsl:choose><xsl:if test="not(position()=last())">,</xsl:if></xsl:if></xsl:for-each>}
+	<xsl:value-of select="xmml:Agent"/>_vary_per_agent = {<xsl:for-each select="xmml:Variables/xmml:Variable"><xsl:if test="xmml:Value/xmml:PerAgentRange">"<xsl:value-of select="xmml:Name"/>":[<xsl:value-of select="xmml:Value/xmml:PerAgentRange/xmml:Min"/>,<xsl:value-of select="xmml:Value/xmml:PerAgentRange/xmml:Max"/><xsl:if test="xmml:Value/xmml:PerAgentRange/xmml:Distribution">,"<xsl:value-of select="xmml:Value/xmml:PerAgentRange/xmml:Distribution"/>"</xsl:if>],</xsl:if></xsl:for-each>}<xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text>
+	</xsl:for-each>
+	agent_data = {<xsl:for-each select="xmml:Populations/xmml:Population">"<xsl:value-of select="xmml:Agent"/>":<xsl:value-of select="xmml:Agent"/><xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>}
+	<!-- <xsl:for-each select="xmml:Populations/xmml:Population">
+	<xsl:if test="xmml:Agent">agent_data += [["<xsl:value-of select="xmml:Agent"/>",["initial_population",<xsl:if test="xmml:InitialPopulationCount/xmml:FixedValue">[<xsl:value-of select="xmml:InitialPopulationCount/xmml:FixedValue"/>]</xsl:if><xsl:if test="xmml:InitialPopulationCount/xmml:Range"><xsl:choose><xsl:when test="xmml:InitialPopulationCount/xmml:Range/xmml:Select">[int(random.<xsl:value-of select="xmml:InitialPopulationCount/xmml:Range/xmml:Distribution"/>(<xsl:value-of select="xmml:InitialPopulationCount/xmml:Range/xmml:Min"/>,<xsl:value-of select="xmml:InitialPopulationCount/xmml:Range/xmml:Max"/>)) for i in range(<xsl:value-of select="xmml:InitialPopulationCount/xmml:Range/xmml:Select"/>)]</xsl:when><xsl:otherwise>range(<xsl:value-of select="xmml:InitialPopulationCount/xmml:Range/xmml:Min"/>,<xsl:value-of select="xmml:InitialPopulationCount/xmml:Range/xmml:Max"/><xsl:if test="xmml:InitialPopulationCount/xmml:Range/xmml:Step">,<xsl:value-of select="xmml:InitialPopulationCount/xmml:Range/xmml:Step"/></xsl:if>)</xsl:otherwise></xsl:choose></xsl:if>],<xsl:for-each select="xmml:Variables/xmml:Variable"><xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:text>&#x9;</xsl:text>["<xsl:value-of select="xmml:Name"/>",<xsl:if test="xmml:Value/xmml:FixedValue">[<xsl:value-of select="xmml:Value/xmml:FixedValue"/>]</xsl:if><xsl:if test="xmml:Value/xmml:Range"><xsl:choose><xsl:when test="xmml:Value/xmml:Range/xmml:Select">[<xsl:value-of select="xmml:Value/xmml:Type"/>(random.<xsl:value-of select="xmml:Value/xmml:Range/xmml:Distribution"/>(<xsl:value-of select="xmml:Value/xmml:Range/xmml:Min"/>,<xsl:value-of select="xmml:Value/xmml:Range/xmml:Max"/>)) for i in range(<xsl:value-of select="xmml:Value/xmml:Range/xmml:Select"/>)]</xsl:when><xsl:otherwise>range(<xsl:value-of select="xmml:Value/xmml:Range/xmml:Min"/>,<xsl:value-of select="xmml:Value/xmml:Range/xmml:Max"/><xsl:if test="xmml:Value/xmml:Range/xmml:Step">,<xsl:value-of select="xmml:Value/xmml:Range/xmml:Step"/></xsl:if>)</xsl:otherwise></xsl:choose></xsl:if>]<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>]]<xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text></xsl:if>
+	</xsl:for-each> -->
+	vary_per_agent = {<xsl:for-each select="xmml:Populations/xmml:Population">"<xsl:value-of select="xmml:Agent"/>":<xsl:value-of select="xmml:Agent"/>_vary_per_agent<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>}
+
+	</xsl:if>
+	prefix_components = []
+	<xsl:if test="xmml:Files/xmml:Prefix">
+	<xsl:for-each select="xmml:Files/xmml:Prefix/xmml:AltersWith">prefix_components += [["<xsl:value-of select="text()"/>",global_data["<xsl:value-of select="text()"/>"][0] if len(global_data)>0 else "NA"]]<xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text></xsl:for-each>
+	<xsl:for-each select="xmml:Files/xmml:Prefix/xmml:Alteration">prefix_components += [["<xsl:value-of select="xmml:Variable/xmml:Name"/>", <xsl:if test="xmml:Variable/xmml:Type = 'str'">"</xsl:if><xsl:value-of select="xmml:Variable/xmml:Initial"/><xsl:if test="xmml:Variable/xmml:Type = 'str'">"</xsl:if>]]<xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text></xsl:for-each>
+	prefix_strings = [str(y) for x in prefix_components for y in x]
+	prefix = <xsl:choose><xsl:when test="xmml:Files/xmml:Prefix/xmml:Delimiter">"<xsl:value-of select="xmml:Files/xmml:Prefix/xmml:Delimiter"/>"</xsl:when><xsl:otherwise>"_"</xsl:otherwise></xsl:choose>.join(prefix_strings)
+	</xsl:if>
+	if len(global_data)>0:
+		global_names = [x for x in global_data]
+		unnamed_global_combinations = list(itertools.product(*[y for x,y in global_data.items()]))
+		global_combinations = list(zip([global_names for x in range(len(unnamed_global_combinations))],unnamed_global_combinations))
+	if len(agent_data)>0:
+		agent_names = [x for x in agent_data]
+		unnamed_agent_combinations = list(itertools.product(*[z for x,y in agent_data.items() for w,z in y.items()]))
+		loc = 0
+		agent_combinations = [[] for x in range(len(unnamed_agent_combinations))]
+		for an in agent_names:
+			num_vars = loc+len(agent_data[an])
+			var_names = [x for x in agent_data[an]]
+			sublists = [x[loc:num_vars] for x in unnamed_agent_combinations]
+			named_combinations = list(zip([var_names for x in range(len(sublists))],sublists))
+			for i in range(len(named_combinations)):
+				temp_list = [an]
+				temp_list += [[named_combinations[i][0][x],[named_combinations[i][1][x]]] for x in range(len(named_combinations[i][0]))]
+				agent_combinations[i] += [temp_list]
+			loc = num_vars
+	if len(global_combinations)>0 and len(agent_combinations)>0:
+		for g in global_combinations:
+			for a in agent_combinations:
+				current_agent_data = [agent+[[x[0],x[1]] for x in vary_per_agent[agent[0]].items()] for agent in a]
+				<xsl:choose>
+				<xsl:when test="xmml:Files/xmml:Prefix">
+				initial_state(str(prefix),"<xsl:value-of select="xmml:Files/xmml:InitialFileName"/>",g,current_agent_data)
+				prefix_components = [x if not x[0] in g[0] else [x[0],g[1][g[0].index(x[0])]] for x in prefix_components]
+				<xsl:for-each select="xmml:Files/xmml:Prefix/xmml:Alteration">prefix_components = [x if not x[0]=="<xsl:value-of select="xmml:Variable/xmml:Name"/>" else [x[0],x[1]+<xsl:choose><xsl:when test="xmml:Variable/xmml:Type = 'str'">"</xsl:when><xsl:otherwise><xsl:value-of select="xmml:Variable/xmml:Type"/>(</xsl:otherwise></xsl:choose><xsl:value-of select="xmml:Variable/xmml:Update"/><xsl:choose><xsl:when test="xmml:Variable/xmml:Type = 'str'">"</xsl:when><xsl:otherwise>)</xsl:otherwise></xsl:choose>] for x in prefix_components]<xsl:text>&#xa;</xsl:text></xsl:for-each> 
+				prefix_strings = [str(y) for x in prefix_components for y in x]
+				prefix = <xsl:choose><xsl:when test="xmml:Files/xmml:Prefix/xmml:Delimiter">"<xsl:value-of select="xmml:Files/xmml:Prefix/xmml:Delimiter"/>"</xsl:when><xsl:otherwise>"_"</xsl:otherwise></xsl:choose>.join(prefix_strings)
+				</xsl:when>
+				<xsl:otherwise>initial_state("","<xsl:value-of select="xmml:Files/xmml:InitialFileName"/>",g,current_agent_data)</xsl:otherwise>
+				</xsl:choose>
+	elif len(global_combinations)>0:
+		for g in global_combinations:
+			current_agent_data = [agent+[[x[0],x[1]] for x in vary_per_agent[agent[0]].items()] for agent in agent_data]
+			<xsl:choose>
+			<xsl:when test="xmml:Files/xmml:Prefix">
+			initial_state(str(prefix),"<xsl:value-of select="xmml:Files/xmml:InitialFileName"/>",g,current_agent_data)
+			prefix_components = [x if not x[0] in g[0] else [x[0],g[1][g[0].index(x[0])]] for x in prefix_components]
+			<xsl:for-each select="xmml:Files/xmml:Prefix/xmml:Alteration">prefix_components = [x if not x[0]=="<xsl:value-of select="xmml:Variable/xmml:Name"/>" else [x[0],x[1]+<xsl:choose><xsl:when test="xmml:Variable/xmml:Type = 'str'">"</xsl:when><xsl:otherwise><xsl:value-of select="xmml:Variable/xmml:Type"/>(</xsl:otherwise></xsl:choose><xsl:value-of select="xmml:Variable/xmml:Update"/><xsl:choose><xsl:when test="xmml:Variable/xmml:Type = 'str'">"</xsl:when><xsl:otherwise>)</xsl:otherwise></xsl:choose>] for x in prefix_components]<xsl:text>&#xa;</xsl:text></xsl:for-each> 
+			prefix_strings = [str(y) for x in prefix_components for y in x]
+			prefix = <xsl:choose><xsl:when test="xmml:Files/xmml:Prefix/xmml:Delimiter">"<xsl:value-of select="xmml:Files/xmml:Prefix/xmml:Delimiter"/>"</xsl:when><xsl:otherwise>"_"</xsl:otherwise></xsl:choose>.join(prefix_strings)
+			</xsl:when>
+			<xsl:otherwise>initial_state("","<xsl:value-of select="xmml:Files/xmml:InitialFileName"/>",g,current_agent_data)</xsl:otherwise>
+			</xsl:choose>
+	elif len(agent_combinations)>0:
+		for a in agent_combinations:
+			current_agent_data = [agent+[[x[0],x[1]] for x in vary_per_agent[agent[0]].items()] for agent in a]
+			<xsl:choose>
+			<xsl:when test="xmml:Files/xmml:Prefix">
+			initial_state(str(prefix),"<xsl:value-of select="xmml:Files/xmml:InitialFileName"/>",global_data,current_agent_data)
+			prefix_components = [x if not x[0] in a else [x[0],a.index(x[0])[1]] for x in prefix_components]
+			<xsl:for-each select="xmml:Files/xmml:Prefix/xmml:Alteration">prefix_components = [x if not x[0]=="<xsl:value-of select="xmml:Variable/xmml:Name"/>" else [x[0],x[1]+<xsl:choose><xsl:when test="xmml:Variable/xmml:Type = 'str'">"</xsl:when><xsl:otherwise><xsl:value-of select="xmml:Variable/xmml:Type"/>(</xsl:otherwise></xsl:choose><xsl:value-of select="xmml:Variable/xmml:Update"/><xsl:choose><xsl:when test="xmml:Variable/xmml:Type = 'str'">"</xsl:when><xsl:otherwise>)</xsl:otherwise></xsl:choose>] for x in prefix_components]<xsl:text>&#xa;</xsl:text></xsl:for-each> 
+			prefix_strings = [str(y) for x in prefix_components for y in x]
+			prefix = <xsl:choose><xsl:when test="xmml:Files/xmml:Prefix/xmml:Delimiter">"<xsl:value-of select="xmml:Files/xmml:Prefix/xmml:Delimiter"/>"</xsl:when><xsl:otherwise>"_"</xsl:otherwise></xsl:choose>.join(prefix_strings)
+			</xsl:when>
+			<xsl:otherwise>initial_state("","<xsl:value-of select="xmml:Files/xmml:InitialFileName"/>",global_data,current_agent_data)</xsl:otherwise>
+			</xsl:choose>
+	else:
+		print("No global or agent variations specified for experimentation\n")
+	return global_data,agent_data
+</xsl:for-each>
+</xsl:if>
+<xsl:if test="exp:Experimentation/xmml:InitialStates/@baseDirectory">
 #Initial state file creation.
 def initial_state(save_location,file_name,global_information,agent_information):
-	if not os.path.exists(PROJECT_DIRECTORY+"<xsl:value-of select="exp:Experimentation/exp:InitialStates/@baseDirectory"/>"):
-		os.mkdir(PROJECT_DIRECTORY+"<xsl:value-of select="exp:Experimentation/exp:InitialStates/@baseDirectory"/>")
-	SAVE_DIRECTORY = PROJECT_DIRECTORY+"<xsl:value-of select="exp:Experimentation/exp:InitialStates/@baseDirectory"/>"+"/"
+	if not os.path.exists(PROJECT_DIRECTORY+"<xsl:value-of select="exp:Experimentation/xmml:InitialStates/@baseDirectory"/>"):
+		os.mkdir(PROJECT_DIRECTORY+"<xsl:value-of select="exp:Experimentation/xmml:InitialStates/@baseDirectory"/>")
+	SAVE_DIRECTORY = PROJECT_DIRECTORY+"<xsl:value-of select="exp:Experimentation/xmml:InitialStates/@baseDirectory"/>"+"/"
 	if not os.path.exists(SAVE_DIRECTORY+str(save_location)):
 		os.mkdir(SAVE_DIRECTORY+str(save_location))
 	print("Creating initial state in",SAVE_DIRECTORY,save_location,"/",file_name,"\n")
@@ -98,184 +193,106 @@ def initial_state(save_location,file_name,global_information,agent_information):
 	initial_state_file.write("&lt;/states&gt;")
 	return
 </xsl:if>
-<xsl:if test="exp:Experimentation/exp:InitialStates/exp:InitialStateGenerator">
-<xsl:for-each select="exp:Experimentation/exp:InitialStates/exp:InitialStateGenerator">
-#Generate initial states based on defined ranges/lists/values for all global and agent population variables<xsl:if test="exp:GeneratorName"> for experiment <xsl:value-of select="exp:GeneratorName"/></xsl:if>.
-def generate_initial_states<xsl:if test="exp:GeneratorName">_<xsl:value-of select="exp:GeneratorName"/></xsl:if>():
-	global_data = []
-	agent_data = []
-	<xsl:if test="exp:Globals">
-	global_data = {<xsl:for-each select="exp:Globals/exp:Global">"<xsl:value-of select="exp:Name"/>":<xsl:choose><xsl:when test="exp:Value/exp:FixedValue">[<xsl:value-of select="exp:Value/exp:FixedValue"/>]</xsl:when><xsl:when test="exp:Value/exp:List"><xsl:choose><xsl:when test="exp:Value/exp:List/exp:Select">random.choices([<xsl:value-of select="exp:Value/exp:List/exp:Items"/>],k=<xsl:value-of select="exp:Value/exp:List/exp:Select"/>)</xsl:when><xsl:otherwise>[<xsl:value-of select="exp:Value/exp:List/exp:Items"/>]</xsl:otherwise></xsl:choose></xsl:when><xsl:when test="exp:Value/exp:Range"><xsl:choose><xsl:when test="exp:Value/exp:Range/exp:Select">[<xsl:value-of select="exp:Value/exp:Type"/>(random.<xsl:value-of select="exp:Value/exp:Range/exp:Distribution"/>(<xsl:value-of select="exp:Value/exp:Range/exp:Min"/>,<xsl:value-of select="exp:Value/exp:Range/exp:Max"/>)) for i in range(<xsl:value-of select="exp:Value/exp:Range/exp:Select"/>)]</xsl:when><xsl:otherwise>range(<xsl:value-of select="exp:Value/exp:Range/exp:Min"/>,<xsl:value-of select="exp:Value/exp:Range/exp:Max"/><xsl:if test="exp:Value/exp:Range/exp:Step">,<xsl:value-of select="exp:Value/exp:Range/exp:Step"/></xsl:if>)</xsl:otherwise></xsl:choose></xsl:when><xsl:when test="exp:Value/exp:Random"><xsl:if test="exp:MultipleValues='False'">[</xsl:if>random.<xsl:value-of select="exp:Value/exp:Random/exp:Function"/>(<xsl:value-of select="exp:Value/exp:Random/exp:Arguments"/>)<xsl:if test="exp:MultipleValues='False'">]</xsl:if></xsl:when><xsl:otherwise>[]</xsl:otherwise></xsl:choose><xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>}
-	<!-- <xsl:for-each select="exp:Globals/exp:Global">
-	<xsl:if test="exp:Value">global_data += [["<xsl:value-of select="exp:Name"/>", <xsl:choose><xsl:when test="exp:Value/exp:FixedValue"><xsl:value-of select="exp:Value/exp:FixedValue"/></xsl:when><xsl:when test="exp:Value/exp:List"><xsl:choose><xsl:when test="exp:Value/exp:List/exp:Select">random.choices([<xsl:value-of select="exp:Value/exp:List/exp:Items"/>],k=<xsl:value-of select="exp:Value/exp:List/exp:Select"/>)</xsl:when><xsl:otherwise>[<xsl:value-of select="exp:Value/exp:List/exp:Items"/>]</xsl:otherwise></xsl:choose></xsl:when><xsl:when test="exp:Value/exp:Range"><xsl:choose><xsl:when test="exp:Value/exp:Range/exp:Select">[<xsl:value-of select="exp:Value/exp:Type"/>(random.<xsl:value-of select="exp:Value/exp:Range/exp:Distribution"/>(<xsl:value-of select="exp:Value/exp:Range/exp:Min"/>,<xsl:value-of select="exp:Value/exp:Range/exp:Max"/>)) for i in range(<xsl:value-of select="exp:Value/exp:Range/exp:Select"/>)]</xsl:when><xsl:otherwise>range(<xsl:value-of select="exp:Value/exp:Range/exp:Min"/>,<xsl:value-of select="exp:Value/exp:Range/exp:Max"/><xsl:if test="exp:Value/exp:Range/exp:Step">,<xsl:value-of select="exp:Value/exp:Range/exp:Step"/></xsl:if>)</xsl:otherwise></xsl:choose></xsl:when><xsl:when test="exp:Value/exp:Random">random.<xsl:value-of select="exp:Value/exp:Random/exp:Function"/>(<xsl:value-of select="exp:Value/exp:Random/exp:Arguments"/>)</xsl:when><xsl:otherwise>[]</xsl:otherwise></xsl:choose>]]<xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text></xsl:if>
-	</xsl:for-each> -->
-	</xsl:if>
-	<xsl:if test="exp:Populations">
-	<xsl:for-each select="exp:Populations/exp:Population">
-	<xsl:value-of select="exp:Agent"/> = {<xsl:if test="exp:InitialPopulationCount">"initial_population":<xsl:if test="exp:InitialPopulationCount/exp:FixedValue">[<xsl:value-of select="exp:InitialPopulationCount/exp:FixedValue"/>]</xsl:if><xsl:if test="exp:InitialPopulationCount/exp:Range"><xsl:choose><xsl:when test="exp:InitialPopulationCount/exp:Range/exp:Select">[int(random.<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Distribution"/>(<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Min"/>,<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Max"/>)) for i in range(<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Select"/>)]</xsl:when><xsl:otherwise>range(<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Min"/>,<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Max"/><xsl:if test="exp:InitialPopulationCount/exp:Range/exp:Step">,<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Step"/></xsl:if>)</xsl:otherwise></xsl:choose></xsl:if>, </xsl:if><xsl:for-each select="exp:Variables/exp:Variable"><xsl:if test="not(exp:Value/exp:PerAgentRange)">"<xsl:value-of select="exp:Name"/>":<xsl:choose><xsl:when test="exp:Value/exp:FixedValue">[<xsl:value-of select="exp:Value/exp:FixedValue"/>]</xsl:when><xsl:when test="exp:Value/exp:Range"><xsl:choose><xsl:when test="exp:Value/exp:Range/exp:Select">[<xsl:value-of select="exp:Value/exp:Type"/>(random.<xsl:value-of select="exp:Value/exp:Range/exp:Distribution"/>(<xsl:value-of select="exp:Value/exp:Range/exp:Min"/>,<xsl:value-of select="exp:Value/exp:Range/exp:Max"/>)) for i in range(<xsl:value-of select="exp:Value/exp:Range/exp:Select"/>)]</xsl:when><xsl:otherwise>range(<xsl:value-of select="exp:Value/exp:Range/exp:Min"/>,<xsl:value-of select="exp:Value/exp:Range/exp:Max"/><xsl:if test="exp:Value/exp:Range/exp:Step">,<xsl:value-of select="exp:Value/exp:Range/exp:Step"/></xsl:if>)</xsl:otherwise></xsl:choose></xsl:when><xsl:otherwise>[]</xsl:otherwise></xsl:choose><xsl:if test="not(position()=last())">,</xsl:if></xsl:if></xsl:for-each>}
-	<xsl:value-of select="exp:Agent"/>_vary_per_agent = {<xsl:for-each select="exp:Variables/exp:Variable"><xsl:if test="exp:Value/exp:PerAgentRange">"<xsl:value-of select="exp:Name"/>":[<xsl:value-of select="exp:Value/exp:PerAgentRange/exp:Min"/>,<xsl:value-of select="exp:Value/exp:PerAgentRange/exp:Max"/><xsl:if test="exp:Value/exp:PerAgentRange/exp:Distribution">,"<xsl:value-of select="exp:Value/exp:PerAgentRange/exp:Distribution"/>"</xsl:if>],</xsl:if></xsl:for-each>}<xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text>
-	</xsl:for-each>
-	agent_data = {<xsl:for-each select="exp:Populations/exp:Population">"<xsl:value-of select="exp:Agent"/>":<xsl:value-of select="exp:Agent"/><xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>}
-	<!-- <xsl:for-each select="exp:Populations/exp:Population">
-	<xsl:if test="exp:Agent">agent_data += [["<xsl:value-of select="exp:Agent"/>",["initial_population",<xsl:if test="exp:InitialPopulationCount/exp:FixedValue">[<xsl:value-of select="exp:InitialPopulationCount/exp:FixedValue"/>]</xsl:if><xsl:if test="exp:InitialPopulationCount/exp:Range"><xsl:choose><xsl:when test="exp:InitialPopulationCount/exp:Range/exp:Select">[int(random.<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Distribution"/>(<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Min"/>,<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Max"/>)) for i in range(<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Select"/>)]</xsl:when><xsl:otherwise>range(<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Min"/>,<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Max"/><xsl:if test="exp:InitialPopulationCount/exp:Range/exp:Step">,<xsl:value-of select="exp:InitialPopulationCount/exp:Range/exp:Step"/></xsl:if>)</xsl:otherwise></xsl:choose></xsl:if>],<xsl:for-each select="exp:Variables/exp:Variable"><xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:text>&#x9;</xsl:text><xsl:text>&#x9;</xsl:text>["<xsl:value-of select="exp:Name"/>",<xsl:if test="exp:Value/exp:FixedValue">[<xsl:value-of select="exp:Value/exp:FixedValue"/>]</xsl:if><xsl:if test="exp:Value/exp:Range"><xsl:choose><xsl:when test="exp:Value/exp:Range/exp:Select">[<xsl:value-of select="exp:Value/exp:Type"/>(random.<xsl:value-of select="exp:Value/exp:Range/exp:Distribution"/>(<xsl:value-of select="exp:Value/exp:Range/exp:Min"/>,<xsl:value-of select="exp:Value/exp:Range/exp:Max"/>)) for i in range(<xsl:value-of select="exp:Value/exp:Range/exp:Select"/>)]</xsl:when><xsl:otherwise>range(<xsl:value-of select="exp:Value/exp:Range/exp:Min"/>,<xsl:value-of select="exp:Value/exp:Range/exp:Max"/><xsl:if test="exp:Value/exp:Range/exp:Step">,<xsl:value-of select="exp:Value/exp:Range/exp:Step"/></xsl:if>)</xsl:otherwise></xsl:choose></xsl:if>]<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>]]<xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text></xsl:if>
-	</xsl:for-each> -->
-	vary_per_agent = {<xsl:for-each select="exp:Populations/exp:Population">"<xsl:value-of select="exp:Agent"/>":<xsl:value-of select="exp:Agent"/>_vary_per_agent<xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>}
-
-	</xsl:if>
-	<xsl:if test="exp:Files/exp:Prefix">
-	prefix_components = []
-	<xsl:for-each select="exp:Files/exp:Prefix/exp:AltersWith">prefix_components += [["<xsl:value-of select="text()"/>",global_data["<xsl:value-of select="text()"/>"][0] if len(global_data)>0 else "NA"]]<xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text></xsl:for-each>
-	<xsl:for-each select="exp:Files/exp:Prefix/exp:Alteration">prefix_components += [["<xsl:value-of select="exp:Variable/exp:Name"/>", <xsl:if test="exp:Variable/exp:Type = 'str'">"</xsl:if><xsl:value-of select="exp:Variable/exp:Initial"/><xsl:if test="exp:Variable/exp:Type = 'str'">"</xsl:if>]]<xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text></xsl:for-each>
-	prefix_strings = [str(y) for x in prefix_components for y in x]
-	prefix = <xsl:choose><xsl:when test="exp:Files/exp:Prefix/exp:Delimiter">"<xsl:value-of select="exp:Files/exp:Prefix/exp:Delimiter"/>"</xsl:when><xsl:otherwise>"_"</xsl:otherwise></xsl:choose>.join(prefix_strings)
-	</xsl:if>
-	global_combinations = []
-	agent_combinations = []
-	if len(global_data)>0:
-		global_names = [x for x in global_data]
-		unnamed_global_combinations = list(itertools.product(*[y for x,y in global_data.items()]))
-		global_combinations = list(zip([global_names for x in range(len(unnamed_global_combinations))],unnamed_global_combinations))
-	if len(agent_data)>0:
-		agent_names = [x for x in agent_data]
-		unnamed_agent_combinations = list(itertools.product(*[z for x,y in agent_data.items() for w,z in y.items()]))
-		loc = 0
-		agent_combinations = [[] for x in range(len(unnamed_agent_combinations))]
-		for an in agent_names:
-			num_vars = loc+len(agent_data[an])
-			var_names = [x for x in agent_data[an]]
-			sublists = [x[loc:num_vars] for x in unnamed_agent_combinations]
-			named_combinations = list(zip([var_names for x in range(len(sublists))],sublists))
-			for i in range(len(named_combinations)):
-				temp_list = [an]
-				temp_list += [[named_combinations[i][0][x],[named_combinations[i][1][x]]] for x in range(len(named_combinations[i][0]))]
-				agent_combinations[i] += [temp_list]
-			loc = num_vars
-	if len(global_combinations)>0 and len(agent_combinations)>0:
-		for g in global_combinations:
-			for a in agent_combinations:
-				current_agent_data = [agent+[[x[0],x[1]] for x in vary_per_agent[agent[0]].items()] for agent in a]
-				<xsl:choose>
-				<xsl:when test="exp:Files/exp:Prefix">
-				initial_state(str(prefix),"<xsl:value-of select="exp:Files/exp:InitialFileName"/>",g,current_agent_data)
-				prefix_components = [x if not x[0] in g[0] else [x[0],g[1][g[0].index(x[0])]] for x in prefix_components]
-				<xsl:for-each select="exp:Files/exp:Prefix/exp:Alteration">prefix_components = [x if not x[0]=="<xsl:value-of select="exp:Variable/exp:Name"/>" else [x[0],x[1]+<xsl:choose><xsl:when test="exp:Variable/exp:Type = 'str'">"</xsl:when><xsl:otherwise><xsl:value-of select="exp:Variable/exp:Type"/>(</xsl:otherwise></xsl:choose><xsl:value-of select="exp:Variable/exp:Update"/><xsl:choose><xsl:when test="exp:Variable/exp:Type = 'str'">"</xsl:when><xsl:otherwise>)</xsl:otherwise></xsl:choose>] for x in prefix_components]<xsl:text>&#xa;</xsl:text></xsl:for-each> 
-				prefix_strings = [str(y) for x in prefix_components for y in x]
-				prefix = <xsl:choose><xsl:when test="exp:Files/exp:Prefix/exp:Delimiter">"<xsl:value-of select="exp:Files/exp:Prefix/exp:Delimiter"/>"</xsl:when><xsl:otherwise>"_"</xsl:otherwise></xsl:choose>.join(prefix_strings)
-				</xsl:when>
-				<xsl:otherwise>initial_state("","<xsl:value-of select="exp:Files/exp:InitialFileName"/>",g,current_agent_data)</xsl:otherwise>
-				</xsl:choose>
-	elif len(global_combinations)>0:
-		for g in global_combinations:
-			current_agent_data = [agent+[[x[0],x[1]] for x in vary_per_agent[agent[0]].items()] for agent in agent_data]
-			<xsl:choose>
-			<xsl:when test="exp:Files/exp:Prefix">
-			initial_state(str(prefix),"<xsl:value-of select="exp:Files/exp:InitialFileName"/>",g,current_agent_data)
-			prefix_components = [x if not x[0] in g[0] else [x[0],g[1][g[0].index(x[0])]] for x in prefix_components]
-			<xsl:for-each select="exp:Files/exp:Prefix/exp:Alteration">prefix_components = [x if not x[0]=="<xsl:value-of select="exp:Variable/exp:Name"/>" else [x[0],x[1]+<xsl:choose><xsl:when test="exp:Variable/exp:Type = 'str'">"</xsl:when><xsl:otherwise><xsl:value-of select="exp:Variable/exp:Type"/>(</xsl:otherwise></xsl:choose><xsl:value-of select="exp:Variable/exp:Update"/><xsl:choose><xsl:when test="exp:Variable/exp:Type = 'str'">"</xsl:when><xsl:otherwise>)</xsl:otherwise></xsl:choose>] for x in prefix_components]<xsl:text>&#xa;</xsl:text></xsl:for-each> 
-			prefix_strings = [str(y) for x in prefix_components for y in x]
-			prefix = <xsl:choose><xsl:when test="exp:Files/exp:Prefix/exp:Delimiter">"<xsl:value-of select="exp:Files/exp:Prefix/exp:Delimiter"/>"</xsl:when><xsl:otherwise>"_"</xsl:otherwise></xsl:choose>.join(prefix_strings)
-			</xsl:when>
-			<xsl:otherwise>initial_state("","<xsl:value-of select="exp:Files/exp:InitialFileName"/>",g,current_agent_data)</xsl:otherwise>
-			</xsl:choose>
-	elif len(agent_combinations)>0:
-		for a in agent_combinations:
-			current_agent_data = [agent+[[x[0],x[1]] for x in vary_per_agent[agent[0]].items()] for agent in a]
-			<xsl:choose>
-			<xsl:when test="exp:Files/exp:Prefix">
-			initial_state(str(prefix),"<xsl:value-of select="exp:Files/exp:InitialFileName"/>",global_data,current_agent_data)
-			prefix_components = [x if not x[0] in a else [x[0],a.index(x[0])[1]] for x in prefix_components]
-			<xsl:for-each select="exp:Files/exp:Prefix/exp:Alteration">prefix_components = [x if not x[0]=="<xsl:value-of select="exp:Variable/exp:Name"/>" else [x[0],x[1]+<xsl:choose><xsl:when test="exp:Variable/exp:Type = 'str'">"</xsl:when><xsl:otherwise><xsl:value-of select="exp:Variable/exp:Type"/>(</xsl:otherwise></xsl:choose><xsl:value-of select="exp:Variable/exp:Update"/><xsl:choose><xsl:when test="exp:Variable/exp:Type = 'str'">"</xsl:when><xsl:otherwise>)</xsl:otherwise></xsl:choose>] for x in prefix_components]<xsl:text>&#xa;</xsl:text></xsl:for-each> 
-			prefix_strings = [str(y) for x in prefix_components for y in x]
-			prefix = <xsl:choose><xsl:when test="exp:Files/exp:Prefix/exp:Delimiter">"<xsl:value-of select="exp:Files/exp:Prefix/exp:Delimiter"/>"</xsl:when><xsl:otherwise>"_"</xsl:otherwise></xsl:choose>.join(prefix_strings)
-			</xsl:when>
-			<xsl:otherwise>initial_state("","<xsl:value-of select="exp:Files/exp:InitialFileName"/>",global_data,current_agent_data)</xsl:otherwise>
-			</xsl:choose>
-	else:
-		print("No global or agent variations specified for experimentation\n")
-	return global_data,agent_data
-
-generate_initial_states<xsl:if test="exp:GeneratorName">_<xsl:value-of select="exp:GeneratorName"/></xsl:if>()
-#Initial state creation function
-#initial_state(save_directory, initial_state_file_name, initial_state_global_data_list, initial_state_agent_data_list)
-</xsl:for-each>
 </xsl:if>
-</xsl:if>
-
-
-<xsl:if test="exp:Experimentation/exp:ExperimentSet">
+<xsl:if test="exp:Experimentation/xmml:ExperimentSet">
 #ExperimentSet
-<xsl:for-each select="exp:Experimentation/exp:ExperimentSet/exp:Experiment">
-############## <xsl:if test="exp:ExperimentName"><xsl:value-of select="exp:ExperimentName" /></xsl:if> ############
-<xsl:if test="exp:Configuration">
-<xsl:if test="exp:Configuration/exp:ExperimentVariables">
-<xsl:for-each select="exp:Configuration/exp:ExperimentVariables/exp:Variable">
-<xsl:value-of select="exp:Name" /> = <xsl:if test="not(exp:Type='tuple')"><xsl:value-of select="exp:Type" /></xsl:if>(<xsl:value-of select="exp:Value" />)
-</xsl:for-each>
-</xsl:if>
+<xsl:for-each select="exp:Experimentation/xmml:ExperimentSet/xmml:Experiment">
+############## <xsl:if test="xmml:ExperimentName"><xsl:value-of select="xmml:ExperimentName" /></xsl:if> ############
+<xsl:if test="xmml:Configuration">
+<xsl:if test="xmml:Configuration/xmml:ExperimentFunctions">
+<xsl:for-each select="xmml:Configuration/xmml:ExperimentFunctions/xmml:Function">
+def <xsl:value-of select="xmml:Name" />(<xsl:for-each select="xmml:Arguments/xmml:Argument"><xsl:value-of select="text()"/><xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>):
+	<xsl:if test="xmml:GlobalVariables">global <xsl:for-each select="xmml:GlobalVariables/xmml:Global"><xsl:value-of select="text()"/><xsl:if test="not(position()=last())">,<xsl:text>&#x20;</xsl:text></xsl:if></xsl:for-each><xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text></xsl:if>
+	<xsl:if test="xmml:Returns"><xsl:for-each select="xmml:Returns/xmml:Return"><xsl:value-of select="text()"/> = None<xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text></xsl:for-each></xsl:if>
+	##Model executable
+	#executable = ""
+	#simulation_command = ""
+	#initial_states = [x[0] for x in os.walk("../../<xsl:value-of select="../../../xmml:InitialState/xmml:Location"/>")][1:]
+	#for i in initial_states:
+		#current_initial_state = i+"/0.xml"
+		#if OS_NAME=='nt':
+			#executable = PROJECT_DIRECTORY+"<xsl:value-of select="../../../xmml:Model/xmml:ExecutableLocation" />/<xsl:value-of select="../../../xmml:Model/xmml:ModelName" />.exe"
+			#simulation_command = executable+" "+current_initial_state+" <xsl:value-of select="../../xmml:Iterations"/>"
+		#else:
+			#executable = "./"+PROJECT_DIRECTORY+"<xsl:value-of select="../../../xmml:Model/xmml:ExecutableLocation" />/<xsl:value-of select="../../../xmml:Model/xmml:ModelName" />"
+			#simulation_command = executable+" "+current_initial_state+" <xsl:value-of select="../../xmml:Iterations"/>"
 
-<xsl:if test="exp:Configuration/exp:ExperimentFunctions">
-<xsl:for-each select="exp:Configuration/exp:ExperimentFunctions/exp:Function">
-def <xsl:value-of select="exp:Name" />(<xsl:for-each select="exp:Arguments/exp:Argument"><xsl:value-of select="text()"/><xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>):
-	<xsl:if test="exp:GlobalVariables">global <xsl:for-each select="exp:GlobalVariables/exp:Global"><xsl:value-of select="text()"/><xsl:if test="not(position()=last())">,&#160;</xsl:if></xsl:for-each><xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text></xsl:if>
-	<xsl:if test="exp:Returns"><xsl:for-each select="exp:Returns/exp:Return"><xsl:value-of select="text()"/> = None<xsl:text>&#xa;</xsl:text></xsl:for-each></xsl:if>
-	#Model executable
-	executable = ""
-	simulation_command = ""
-	initial_states = [x[0] for x in os.walk("../../<xsl:value-of select="../../../exp:InitialState/exp:Location"/>")][1:]
-	current_initial_state_loc = initial_states[0]
-	current_initial_state = current_initial_state_loc+"/0.xml"
-	#print("current",current_initial_state)
-	if os.name=='nt':
-		executable = PROJECT_DIRECTORY+"<xsl:value-of select="../../../exp:Model/exp:ExecutableLocation" />/<xsl:value-of select="../../../exp:Model/exp:ModelName" />.exe"
-		simulation_command = executable+" "+current_initial_state+" <xsl:value-of select="../../exp:Iterations"/>"
-	else:
-		executable = "./"+PROJECT_DIRECTORY+"<xsl:value-of select="../../../exp:Model/exp:ExecutableLocation" />/<xsl:value-of select="../../../exp:Model/exp:ModelName" />"
-		simulation_command = executable+" "+current_initial_state+" <xsl:value-of select="../../exp:Iterations"/>"
+		<xsl:choose>
+		<xsl:when test="../../../xmml:InitialState/xmml:Generator">
+		#Initial state creator
+		<xsl:if test="../../xmml:Repeats">
+		#Run for desired number of repeats
+		#for i in range(<xsl:value-of select="../../xmml:Repeats"/>):
+			</xsl:if>#initial_state(save_directory, initial_state_file_name, initial_state_global_data_list, initial_state_agent_data_list)
+			##Run simulation
+			#os.system(simulation_command)
 
-	<xsl:choose>
-	<xsl:when test="../../../exp:InitialState/exp:Generator">
-	#Initial state creator
-	<xsl:if test="../../exp:Repeats">
-	#Run for desired number of repeats
-	#for i in range(<xsl:value-of select="../../exp:Repeats"/>):
-		</xsl:if>#initial_state(save_directory, initial_state_file_name, initial_state_global_data_list, initial_state_agent_data_list)
-		#Run simulation
+			##Parse results
+			#results_file = open("../../<xsl:value-of select="../../../xmml:SimulationOutput/xmml:Location"/>","r")
+			#results = results_file.readlines()
+			#results_file.close()
+		</xsl:when>
+		<xsl:otherwise>
+		##Run simulation
 		#os.system(simulation_command)
-		#Parse results
-		#results_file = open("../../<xsl:value-of select="../../../exp:SimulationOutput/exp:Location"/>","r")
+
+		##Parse results
+		#results_file = open(PROJECT_DIRECTORY+"/<xsl:value-of select="../../../xmml:SimulationOutput/xmml:Location"/>"+current_initial_state_loc+"/<xsl:value-of select="../../../xmml:SimulationOutput/xmml:FileName"/>","r")
 		#results = results_file.readlines()
 		#results_file.close()
-	</xsl:when>
-	<xsl:otherwise>
-	#print(simulation_command)
-	#Run simulation
-	os.system(simulation_command)
-	#Parse results
-	results_file = open(PROJECT_DIRECTORY+"/<xsl:value-of select="../../../exp:SimulationOutput/exp:Location"/>"+current_initial_state_loc+"/<xsl:value-of select="../../../exp:SimulationOutput/exp:FileName"/>","r")
-	results = results_file.readlines()
-	results_file.close()
-	#print("results",results)
-	</xsl:otherwise>
-	</xsl:choose>	
-	return <xsl:if test="exp:Returns"><xsl:for-each select="exp:Returns/exp:Return"><xsl:value-of select="text()"/><xsl:if test="not(position()=last())">&#160;</xsl:if></xsl:for-each></xsl:if><xsl:text>&#xa;</xsl:text>
-
-<xsl:value-of select="exp:Name" />(<xsl:for-each select="exp:Arguments/exp:Argument"><xsl:value-of select="text()"/><xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>)
+		</xsl:otherwise>
+		</xsl:choose>
+	return <xsl:if test="xmml:Returns"><xsl:for-each select="xmml:Returns/xmml:Return"><xsl:value-of select="text()"/><xsl:if test="not(position()=last())">,<xsl:text>&#x20;</xsl:text></xsl:if></xsl:for-each></xsl:if><xsl:text>&#xa;</xsl:text>
 </xsl:for-each>
 </xsl:if>
-<xsl:if test="not(exp:Configuration/exp:ExperimentFunctions) and exp:Configuration"><xsl:if test="exp:Configuration/exp:Repeats">
+<xsl:if test="not(xmml:Configuration/xmml:ExperimentFunctions) and xmml:Configuration"><xsl:if test="xmml:Configuration/xmml:Repeats">
 #Run for desired number of repeats
-#for i in range(<xsl:value-of select="exp:Configuration/exp:Repeats"/>):
-	</xsl:if>#initial_state_creation_<xsl:value-of select="exp:InitialState/exp:Generator"/>(file_name,base_agent_information)
+#for i in range(<xsl:value-of select="xmml:Configuration/xmml:Repeats"/>):
+	</xsl:if>#initial_state_creation_<xsl:value-of select="xmml:InitialState/xmml:Generator"/>(file_name,base_agent_information)
 	#Run simulation
 	#os.system(simulation_command)
 	#Parse results
-	#results_file = open("../../<xsl:value-of select="exp:SimulationOutput/exp:Location"/>"+INSERT_FILE_DIRECTORY_AND_NAME_HERE,"r")
+	#results_file = open("../../<xsl:value-of select="xmml:SimulationOutput/xmml:Location"/>"+INSERT_FILE_DIRECTORY_AND_NAME_HERE,"r")
 	#results = results_file.readlines()
 	#results_file.close()
 </xsl:if>
 </xsl:if>
 </xsl:for-each>
 </xsl:if>
+def main():
+	<xsl:if test="exp:Experimentation/xmml:InitialStates/xmml:InitialStateFunction">
+	<xsl:for-each select="exp:Experimentation/xmml:InitialStates/xmml:InitialStateFunction">
+	#Initial state generator function to be created by the user
+	initial_state_generator_function_<xsl:value-of select="xmml:FunctionName"/>()
+	</xsl:for-each>
+	</xsl:if>
+	<xsl:if test="exp:Experimentation/xmml:InitialStates/xmml:InitialStateGenerator">
+	#Initial state creation function
+	#initial_state(save_directory, initial_state_file_name, initial_state_global_data_list, initial_state_agent_data_list)
 
+	#Generation functions (will automatically call initial state generation function)
+	<xsl:for-each select="exp:Experimentation/xmml:InitialStates/xmml:InitialStateGenerator">
+	generate_initial_states<xsl:if test="xmml:GeneratorName">_<xsl:value-of select="xmml:GeneratorName"/></xsl:if>()
+	</xsl:for-each>
+	</xsl:if>
+	<xsl:if test="exp:Experimentation/xmml:ExperimentSet">
+	#Experiment Set user defined functions
+	<xsl:for-each select="exp:Experimentation/xmml:ExperimentSet/xmml:Experiment">
+	<xsl:if test="xmml:Configuration/xmml:ExperimentVariables">
+	<xsl:for-each select="xmml:Configuration/xmml:ExperimentVariables/xmml:Variable">
+	<xsl:value-of select="xmml:Name" /> = <xsl:if test="not(xmml:Type='tuple')"><xsl:value-of select="xmml:Type" /></xsl:if>(<xsl:value-of select="xmml:Value" />)
+	</xsl:for-each>
+	</xsl:if>
+	<xsl:if test="xmml:Configuration/xmml:ExperimentFunctions">
+	<xsl:for-each select="xmml:Configuration/xmml:ExperimentFunctions/xmml:Function">
+	#<xsl:if test="xmml:Returns"><xsl:for-each select="xmml:Returns/xmml:Return"><xsl:value-of select="text()"/><xsl:if test="not(position()=last())">,</xsl:if><xsl:text>&#x20;</xsl:text></xsl:for-each>= </xsl:if><xsl:value-of select="xmml:Name" />(<xsl:for-each select="xmml:Arguments/xmml:Argument"><xsl:value-of select="text()"/><xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>)
+	</xsl:for-each>
+	</xsl:if>
+	</xsl:for-each>
+	</xsl:if>
+	return
+
+if __name__ == "__main__":
+	main()
 </xsl:template>
 </xsl:stylesheet>
