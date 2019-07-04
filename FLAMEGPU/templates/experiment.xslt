@@ -204,10 +204,38 @@ def initial_state(save_location,file_name,global_information,agent_information):
 def <xsl:value-of select="xmml:Name" />(<xsl:for-each select="xmml:Arguments/xmml:Argument"><xsl:value-of select="text()"/><xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>):
 	<xsl:if test="xmml:GlobalVariables">global <xsl:for-each select="xmml:GlobalVariables/xmml:Global"><xsl:value-of select="text()"/><xsl:if test="not(position()=last())">,<xsl:text>&#x20;</xsl:text></xsl:if></xsl:for-each><xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text></xsl:if>
 	<xsl:if test="xmml:Returns"><xsl:for-each select="xmml:Returns/xmml:Return"><xsl:value-of select="text()"/> = None<xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text></xsl:for-each></xsl:if>
+	<xsl:if test="../../../xmml:InitialState/xmml:Generator">
+	<xsl:if test="../../xmml:Repeats">
+	##Run for desired number of repeats
+	#current_initial_state = PROJECT_DIRECTORY+"<xsl:value-of select="../../../xmml:InitialState/xmml:Location"/>"+"/0.xml"
+	#for i in range(<xsl:value-of select="../../xmml:Repeats"/>):
+		#generate_initial_states_<xsl:value-of select="../../../xmml:InitialState/xmml:Generator"/>()
+		#if OS_NAME=='nt':
+			#executable = PROJECT_DIRECTORY+"<xsl:value-of select="../../../xmml:Model/xmml:ExecutableLocation" />/<xsl:value-of select="../../../xmml:Model/xmml:ModelName" />.exe"
+			#simulation_command = executable+" "+current_initial_state+" <xsl:value-of select="../../xmml:Iterations"/>"
+		#else:
+			#executable = "./"+PROJECT_DIRECTORY+"<xsl:value-of select="../../../xmml:Model/xmml:ExecutableLocation" />/<xsl:value-of select="../../../xmml:Model/xmml:ModelName" />"
+			#simulation_command = executable+" "+current_initial_state+" <xsl:value-of select="../../xmml:Iterations"/>"
+		#print(simulation_command)
+		##Run simulation
+		#os.system(simulation_command)
+
+		##Parse results
+		#results_file = open(PROJECT_DIRECTORY+"/<xsl:value-of select="../../../xmml:SimulationOutput/xmml:Location"/>/<xsl:value-of select="../../../xmml:SimulationOutput/xmml:FileName"/>","r")
+		#results = results_file.readlines()
+		#results_file.close()
+		#print(results)
+	</xsl:if>
+	</xsl:if>
+	<xsl:if test="not(../../../xmml:InitialState/xmml:Generator)">
 	##Model executable
 	#executable = ""
 	#simulation_command = ""
-	#initial_states = [x[0] for x in os.walk("../../<xsl:value-of select="../../../xmml:InitialState/xmml:Location"/>")][1:]
+	#os_walk = os.walk("../../<xsl:value-of select="../../../../../xmml:InitialStates/xmml:InitialStateFile/xmml:Location"/>")
+	#if len(os_walk)>1:
+		#initial_states = [x[0] for x in os_walk][1:]
+	#else:
+		#initial_states = [x[0] for x in os_walk]
 	#for i in initial_states:
 		#current_initial_state = i+"/0.xml"
 		#if OS_NAME=='nt':
@@ -216,32 +244,18 @@ def <xsl:value-of select="xmml:Name" />(<xsl:for-each select="xmml:Arguments/xmm
 		#else:
 			#executable = "./"+PROJECT_DIRECTORY+"<xsl:value-of select="../../../xmml:Model/xmml:ExecutableLocation" />/<xsl:value-of select="../../../xmml:Model/xmml:ModelName" />"
 			#simulation_command = executable+" "+current_initial_state+" <xsl:value-of select="../../xmml:Iterations"/>"
-
-		<xsl:choose>
-		<xsl:when test="../../../xmml:InitialState/xmml:Generator">
-		#Initial state creator
-		<xsl:if test="../../xmml:Repeats">
-		#Run for desired number of repeats
-		#for i in range(<xsl:value-of select="../../xmml:Repeats"/>):
-			</xsl:if>#initial_state(save_directory, initial_state_file_name, initial_state_global_data_list, initial_state_agent_data_list)
-			##Run simulation
-			#os.system(simulation_command)
-
-			##Parse results
-			#results_file = open("../../<xsl:value-of select="../../../xmml:SimulationOutput/xmml:Location"/>","r")
-			#results = results_file.readlines()
-			#results_file.close()
-		</xsl:when>
-		<xsl:otherwise>
+		#print(simulation_command)
+		
+		
 		##Run simulation
 		#os.system(simulation_command)
 
 		##Parse results
-		#results_file = open(PROJECT_DIRECTORY+"/<xsl:value-of select="../../../xmml:SimulationOutput/xmml:Location"/>"+current_initial_state_loc+"/<xsl:value-of select="../../../xmml:SimulationOutput/xmml:FileName"/>","r")
+		#results_file = open(PROJECT_DIRECTORY+"/<xsl:value-of select="../../../xmml:SimulationOutput/xmml:Location"/>"+i+"/<xsl:value-of select="../../../xmml:SimulationOutput/xmml:FileName"/>","r")
 		#results = results_file.readlines()
 		#results_file.close()
-		</xsl:otherwise>
-		</xsl:choose>
+		#print(results)
+		</xsl:if>
 	return <xsl:if test="xmml:Returns"><xsl:for-each select="xmml:Returns/xmml:Return"><xsl:value-of select="text()"/><xsl:if test="not(position()=last())">,<xsl:text>&#x20;</xsl:text></xsl:if></xsl:for-each></xsl:if><xsl:text>&#xa;</xsl:text>
 </xsl:for-each>
 </xsl:if>

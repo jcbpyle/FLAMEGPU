@@ -1,6 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet Type="text/xsl" href="FLAMEGPU_vcproj.xslt"?>
-
 <exp:Experimentation xmlns:exp="https://jcbpyle.github.io/XMMLExperiment" xmlns:gpu="http://www.dcs.shef.ac.uk/~paul/XMMLGPU" xmlns="http://www.dcs.shef.ac.uk/~paul/XMML">
     <Imports>
         <Import>
@@ -27,87 +24,8 @@
             <GeneratorName>predprey</GeneratorName>
             <Files>
                 <InitialFileName>0</InitialFileName>
-                <Prefix>
-                    <Delimiter>_</Delimiter>
-                    <AltersWith>LIST_TEST_VARIABLE</AltersWith>
-                    <AltersWith>LIST_TEST_VARIABLE_2</AltersWith>
-                    <AltersWith>LIST_TEST_VARIABLE_3</AltersWith>
-                    <AltersWith>DISTRIBUTION_TEST_VARIABLE_2</AltersWith>
-                </Prefix>
             </Files>
             <Globals>
-                <Global>
-                    <Name>INTERACTION_DISTANCE_TEST_VARIABLE</Name>
-                    <Value>
-                        <FixedValue>0.12345</FixedValue>
-                    </Value>
-                    <MultipleValues>False</MultipleValues>
-                    <Type>float</Type>
-                </Global>
-                <Global>
-                    <Name>LIST_TEST_VARIABLE</Name>
-                    <Value>
-                        <List>
-                            <Items>1,2,3,4,5</Items>
-                        </List>
-                    </Value>
-                    <MultipleValues>True</MultipleValues>
-                    <Type>list</Type>
-                </Global>
-                <Global>
-                    <Name>LIST_TEST_VARIABLE_2</Name>
-                    <Value>
-                        <List>
-                            <Items>1,2,3,4,5</Items>
-                        </List>
-                    </Value>
-                    <MultipleValues>True</MultipleValues>
-                    <Type>list</Type>
-                </Global>
-                <Global>
-                    <Name>LIST_TEST_VARIABLE_3</Name>
-                    <Value>
-                        <Random>
-                            <Function>choices</Function>
-                            <Arguments>[1,2,3,4,5,10],k=2</Arguments>
-                        </Random>
-                    </Value>
-                    <MultipleValues>True</MultipleValues>
-                    <Type>int</Type>
-                </Global>
-                <Global>
-                    <Name>DISTRIBUTION_TEST_VARIABLE</Name>
-                    <Value>
-                        <Random>
-                            <Function>uniform</Function>
-                            <Arguments>1,10</Arguments>
-                        </Random>
-                    </Value>
-                    <MultipleValues>False</MultipleValues>
-                    <Type>int</Type>
-                </Global>
-                <Global>
-                    <Name>DISTRIBUTION_TEST_VARIABLE_2</Name>
-                    <Value>
-                        <Random>
-                            <Function>sample</Function>
-                            <Arguments>[1,10,5],k=2</Arguments>
-                        </Random>
-                    </Value>
-                    <MultipleValues>True</MultipleValues>
-                    <Type>int</Type>
-                </Global>
-                <Global>
-                    <Name>DISTRIBUTION_TEST_VARIABLE_3</Name>
-                    <Value>
-                        <Random>
-                            <Function>randrange</Function>
-                            <Arguments>1,10,2</Arguments>
-                        </Random>
-                    </Value>
-                    <MultipleValues>False</MultipleValues>
-                    <Type>int</Type>
-                </Global>
                 <Global>
                     <Name>REPRODUCE_PREY_PROB</Name>
                     <Value>
@@ -175,8 +93,8 @@
                     <State>default1</State>
                     <InitialPopulationCount>
                         <Range>
-                            <Min>0</Min>
-                            <Max>5000</Max>
+                            <Min>1</Min>
+                            <Max>1000</Max>
                             <Select>1</Select>
                             <Distribution>uniform</Distribution>
                         </Range>
@@ -252,7 +170,7 @@
                             <Value>
                                 <Range>
                                     <Min>1</Min>
-                                    <Max>50</Max>
+                                    <Max>500</Max>
                                     <Select>1</Select>
                                     <Distribution>uniform</Distribution>
                                 </Range>
@@ -267,8 +185,8 @@
                     <State>default2</State>
                     <InitialPopulationCount>
                         <Range>
-                            <Min>0</Min>
-                            <Max>5000</Max>
+                            <Min>1</Min>
+                            <Max>1000</Max>
                             <Select>1</Select>
                             <Distribution>uniform</Distribution>
                         </Range>
@@ -357,8 +275,8 @@
                     <State>default3</State>
                     <InitialPopulationCount>
                         <Range>
-                            <Min>0</Min>
-                            <Max>5000</Max>
+                            <Min>1</Min>
+                            <Max>1000</Max>
                             <Select>1</Select>
                             <Distribution>uniform</Distribution>
                         </Range>
@@ -415,327 +333,28 @@
 
     <ExperimentSet>
         <Experiment>
-            <ExperimentName>testing_initial_State</ExperimentName>
-            <Model>
-                <ExecutableLocation>../../../bin/x64/Release_Console/</ExecutableLocation>
-                <ModelName>PreyPredator_api_test</ModelName>
-            </Model>
-            <InitialStateGenerator>
-                <Generator>predprey</Generator>
-                <Location>/iterations</Location>
-                <SimulationOutputLocation>/iterations</SimulationOutputLocation>
-            </InitialStateGenerator>
-        </Experiment>
-
-
-        <Experiment>
             <ExperimentName>testing_batch_simulation</ExperimentName>
             <Model>
-                <ExecutableLocation>../../../bin/x64/Release_Console/</ExecutableLocation>
+                <ExecutableLocation>../../bin/x64/Release_Console/</ExecutableLocation>
                 <ModelName>PreyPredator_api_test</ModelName>
             </Model>
-            <InitialStateGenerator>
+            <InitialState>
                 <Generator>predprey</Generator>
-                <Location>/iterations</Location>
-                <SimulationOutputLocation>/iterations</SimulationOutputLocation>
-            </InitialStateGenerator>
+                <Location>iterations</Location>
+            </InitialState>
+            <SimulationOutput>
+                <Location>iterations</Location>
+                <FileName>log.csv</FileName>
+            </SimulationOutput>
             <Configuration>
                 <Iterations>1000</Iterations>
                 <Repeats>10</Repeats>
-            </Configuration>
-        </Experiment>
-
-
-        <Experiment>
-            <ExperimentName>testing_ga_experiment</ExperimentName>
-            <Model>
-                <ExecutableLocation>../../../bin/x64/Release_Console/</ExecutableLocation>
-                <ModelName>PreyPredator_api_test</ModelName>
-            </Model>
-            <InitialStateGenerator>
-                <Generator>predprey</Generator>
-                <Location>/iterations</Location>
-                <SimulationOutputLocation>/iterations</SimulationOutputLocation>
-            </InitialStateGenerator>
-            <Configuration>
-                <ExperimentVariables>
-                    <Variable>
-                        <Name>mu</Name>
-                        <Type>int</Type>
-                        <Value>100</Value>
-                    </Variable>
-                    <Variable>
-                        <Name>LAMBDA</Name>
-                        <Type>int</Type>
-                        <Value>10</Value>
-                    </Variable>
-                    <Variable>
-                        <Name>max_time</Name>
-                        <Type>int</Type>
-                        <Value>60</Value>
-                    </Variable>
-                    <Variable>
-                        <Name>max_generations</Name>
-                        <Type>int</Type>
-                        <Value>10</Value>
-                    </Variable>
-                    <Variable>
-                        <Name>mutation</Name>
-                        <Type>float</Type>
-                        <Value>0.25</Value>
-                    </Variable>
-                    <Variable>
-                        <Name>crossover</Name>
-                        <Type>float</Type>
-                        <Value>0.5</Value>
-                    </Variable>
-                </ExperimentVariables>
                 <ExperimentFunctions>
                     <Function>
-                        <Name>fitness_function</Name>
-                        <Arguments>
-                            <Argument>primary</Argument>
-                            <Argument>secondary</Argument>
-                            <Argument>tertiary</Argument>
-                        </Arguments>
-                        <Returns>
-                            <Return>fitness</Return>
-                        </Returns>
-                    </Function>
-                    <Function>
-                        <Name>setup_ga</Name>
-                        <Arguments>
-                            <Argument>mu</Argument>
-                        </Arguments>
-                        <Returns>
-                            <Return>start_time</Return>
-                            <Return>population</Return>
-                        </Returns>
-                    </Function>
-                    <Function>
-                        <Name>run_ga</Name>
-                        <Arguments>
-                            <Argument>mu</Argument>
-                            <Argument>LAMBDA</Argument>
-                            <Argument>max_generations</Argument>
-                            <Argument>max_time</Argument>
-                            <Argument>start_time</Argument>
-                            <Argument>crossover</Argument>
-                            <Argument>mutation</Argument>
-                        </Arguments>
-                        <GlobalVariables>
-                            <Global>curr_pop</Global>
-                        </GlobalVariables>
-                        <Returns>
-                            <Return>Population</Return>
-                        </Returns>
+                        <Name>run_batch</Name>
                     </Function>
                 </ExperimentFunctions>
-                <Iterations>1000</Iterations>
-                <Repeats>1</Repeats>
-            </Configuration>
-        </Experiment>
-
-        <Experiment>
-            <ExperimentName>testing_surrogate_experiment</ExperimentName>
-            <Model>
-                <ExecutableLocation>../../../bin/x64/Release_Console/</ExecutableLocation>
-                <ModelName>PreyPredator_api_test</ModelName>
-            </Model>
-            <InitialStateGenerator>predprey</InitialStateGenerator>
-            <Configuration>
-                <ExperimentVariables>
-                    <Variable>
-                        <Name>hidden_layers</Name>
-                        <Type>tuple</Type>
-                        <Value>100,100</Value>
-                    </Variable>
-                    <Variable>
-                        <Name>error</Name>
-                        <Type>float</Type>
-                        <Value>1e-9</Value>
-                    </Variable>
-                    <Variable>
-                        <Name>max_time</Name>
-                        <Type>int</Type>
-                        <Value>60</Value>
-                    </Variable>
-                    <Variable>
-                        <Name>max_training_generations</Name>
-                        <Type>int</Type>
-                        <Value>2000</Value>
-                    </Variable>
-                </ExperimentVariables>
-                <ExperimentFunctions>
-                    <Function>
-                        <Name>train_surrogate</Name>
-                        <Arguments>
-                            <Argument>hidden_layers</Argument>
-                            <Argument>error</Argument>
-                            <Argument>max_time</Argument>
-                            <Argument>max_training_generations</Argument>
-                        </Arguments>
-                        <Returns>
-                            <Return>surrogate_accuracy</Return>
-                        </Returns>
-                    </Function>
-                </ExperimentFunctions>
-                <Iterations>1000</Iterations>
-                <Repeats>1</Repeats>
             </Configuration>
         </Experiment>
     </ExperimentSet>
-
-
-
-
-    <Logging>
-        <Log>
-            <InitLog>
-                <Name>log_all_pred_life</Name>
-                <file>log.csv</file> 
-                <identifier>pls</identifier> 
-                <LogAgentVariable>
-                    <Agent>pred</Agent>
-                    <State>default2</State>
-                    <Variable>life</Variable>
-                    <Variable_Type>float</Variable_Type>
-                </LogAgentVariable> 
-            </InitLog>            
-        </Log>
-        <Log>
-            <ExitLog>
-                <Name>log_all_final_pred_life</Name>
-                <file>log.csv</file> 
-                <identifier>ple</identifier> 
-                <LogAgentVariable>
-                    <Agent>pred</Agent>
-                    <State>default2</State>
-                    <Variable>life</Variable>
-                    <Variable_Type>float</Variable_Type>
-                </LogAgentVariable> 
-            </ExitLog>            
-        </Log>
-        <Log>
-            <InitLog>
-                <Name>Global_log_prey</Name>
-                <file>log.csv</file> 
-                <identifier>num_prey</identifier> 
-                <LogAgentTypeCount>
-                    <Agent>prey</Agent>
-                    <State>default1</State>
-                </LogAgentTypeCount> 
-            </InitLog>            
-        </Log>
-        <Log>
-            <InitLog>
-                <Name>Global_log_predator</Name>
-                <file>log.csv</file> 
-                <identifier>num_pred</identifier> 
-                <LogAgentTypeCount>
-                    <Agent>predator</Agent>
-                    <State>default2</State>
-                </LogAgentTypeCount> 
-            </InitLog>            
-        </Log>
-        <Log>
-            <InitLog>
-                <Name>Global_log_grass</Name>
-                <identifier>num_grass</identifier> 
-                <file>log.csv</file> 
-                <LogAgentTypeCount>
-                    <Agent>grass</Agent>
-                    <State>default3</State>
-                </LogAgentTypeCount> 
-            </InitLog>            
-        </Log>
-        <Log>
-            <InitLog>
-                <Name>Global_log_prey_reproduction</Name>
-                <file>log.csv</file> 
-                <identifier>prey_reproduction</identifier> 
-                <LogGlobal>
-                    <Variable_Type>float</Variable_Type>
-                    <Global>REPRODUCE_PREY_PROB</Global>
-                </LogGlobal> 
-            </InitLog>            
-        </Log>
-        <Log>
-            <InitLog>
-                <Name>Global_log_pred_reproduction</Name>
-                <file>log.csv</file> 
-                <identifier>pred_reproduction</identifier> 
-                <LogGlobal>
-                    <Variable_Type>float</Variable_Type>
-                    <Global>REPRODUCE_PREDATOR_PROB</Global>
-                </LogGlobal> 
-            </InitLog>          
-        </Log>
-        <Log>
-            <InitLog>
-                <Name>Global_log_prey_energy_gain</Name>
-                <file>log.csv</file> 
-                <identifier>prey_energy</identifier> 
-                <LogGlobal>
-                    <Variable_Type>int</Variable_Type>
-                    <Global>GAIN_FROM_FOOD_PREY</Global>
-                </LogGlobal> 
-            </InitLog>          
-        </Log>
-        <Log>
-            <InitLog>
-                <Name>Global_log_pred_energy_gain</Name>
-                <file>log.csv</file> 
-                <identifier>pred_energy</identifier> 
-                <LogGlobal>
-                    <Variable_Type>int</Variable_Type>
-                    <Global>GAIN_FROM_FOOD_PREDATOR</Global>
-                </LogGlobal> 
-            </InitLog>           
-        </Log>
-        <Log>
-            <InitLog>
-                <Name>Global_log_grass_regrowth</Name>
-                <file>log.csv</file> 
-                <identifier>grass_regrowth</identifier> 
-                <LogGlobal>
-                    <Variable_Type>int</Variable_Type>
-                    <Global>GRASS_REGROW_CYCLES</Global>
-                </LogGlobal> 
-            </InitLog>             
-        </Log>
-        <Log>
-            <ExitLog>
-                <Name>primary_fitness_output</Name>
-                <file>log.csv</file> 
-                <identifier>primary_fitness</identifier> 
-                <LogFunction>
-                    <function>calculate_primary_fitness</function>
-                    <return_Type>int</return_Type>
-                </LogFunction> 
-            </ExitLog>             
-        </Log>
-        <Log>
-            <ExitLog>
-                <Name>secondary_fitness_output</Name>
-                <file>log.csv</file> 
-                <identifier>secondary_fitness</identifier> 
-                <LogFunction>
-                    <function>calculate_secondary_fitness</function>
-                    <return_Type>float</return_Type>
-                </LogFunction> 
-            </ExitLog>             
-        </Log>
-        <Log>
-            <ExitLog>
-                <Name>tertiary_fitness_output</Name>
-                <file>log.csv</file> 
-                <identifier>tertiary_fitness</identifier> 
-                <LogFunction>
-                    <function>calculate_tertiary_fitness</function>
-                    <return_Type>float</return_Type>
-                </LogFunction> 
-            </ExitLog>             
-        </Log>
-    </Logging>
 </exp:Experimentation>

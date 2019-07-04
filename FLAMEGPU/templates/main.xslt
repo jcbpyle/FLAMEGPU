@@ -26,7 +26,7 @@ char inputfile[MAX_FILEPATH_LENGTH];          /**&lt; Input path char buffer*/
 char outputpath[MAX_FILEPATH_LENGTH];         /**&lt; Output path char buffer*/
 
 // Define the default value indicating if XML output should be produced or not.
-#define OUTPUT_TO_XML 1
+#define OUTPUT_TO_XML 0
 
 #define HELP_OPTION_SHORT "-h"
 #define HELP_OPTION_LONG "--help"

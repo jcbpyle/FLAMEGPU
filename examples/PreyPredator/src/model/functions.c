@@ -101,15 +101,15 @@ __FLAME_GPU_INIT_FUNC__ void initLogFile() {
 //	char agent_count_file[1024];
 //	sprintf(agent_count_file, "%s%s", getOutputDir(), "agent_count_per_iteration_sc.csv");
 //	count_output = fopen(agent_count_file, "w");
-//	initialPred = get_agent_predator_default2_count();
-//	initialPrey = get_agent_prey_default1_count();
-//	initialGrass = reduce_grass_default3_available_variable();
-//	if (initialPred > initialPrey) {
-//		curr = 1;
-//	}
-//	else {
-//		curr = 0;
-//	}
+	/*initialPred = get_agent_predator_default2_count();
+	initialPrey = get_agent_prey_default1_count();
+	initialGrass = reduce_grass_default3_available_variable();
+	if (initialPred > initialPrey) {
+		curr = 1;
+	}
+	else {
+		curr = 0;
+	}*/
 //	//output initial count values at time=0
 //	fprintf(count_output, "Iteration,%d,Predator,%d,Prey,%d,Grass,%d\n", iteration, initialPred, initialPrey, initialGrass);
 }
@@ -166,13 +166,14 @@ __FLAME_GPU_STEP_FUNC__ void outputToLogFile() {
 			death_check = 1;
 			death_iteration = iteration;
 		}
+		printf("By step: iteration %d, prey %d, predator %d, grass %d, pd %d, current %d, pd/it %f \n", iteration, prey, predator, grass, pd, curr, (float(pd) / iteration));
 	}
 
 int calculate_primary_fitness() {
 	return death_iteration;
 }
 
-float calculate_secondary_fitness() {
+int calculate_secondary_fitness() {
 	return changeover;
 }
 
@@ -186,149 +187,159 @@ __FLAME_GPU_INIT_FUNC__ void generate_files() {
 	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
 	simulation_results = fopen(results_file, "w");
 	fclose(simulation_results);
+	initialPred = get_agent_predator_default2_count();
+	initialPrey = get_agent_prey_default1_count();
+	initialGrass = reduce_grass_default3_available_variable();
+	printf("Initial agent counts: prey %d pred %d grass %d \n", initialPrey, initialPred, initialGrass);
+	if (initialPred > initialPrey) {
+		curr = 1;
+	}
+	else {
+		curr = 0;
+	}
 }
 
-/**
-* Automatically generated using logging_and_functions.xslt
-
-*/
+///**
+//* Automatically generated using logging_and_functions.xslt
+//
+//*/
 __FLAME_GPU_INIT_FUNC__ void  log_all_pred_life() {
-	char results_file[1024];
-	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
-	simulation_results = fopen(results_file, "a");
-
-	xmachine_memory_predator_list* agent_list = get_host_predator_default2_agents();
-	for (int i = 0; i<10; i++) {
-		float log_variable = agent_list->life[i];
-		printf("Pred id %d, Life: %f\n", agent_list->id[i], log_variable);
-	}
-	fclose(simulation_results);
+//	char results_file[1024];
+//	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
+//	simulation_results = fopen(results_file, "a");
+//
+//	xmachine_memory_predator_list* agent_list = get_host_predator_default2_agents();
+//	for (int i = 0; i<10; i++) {
+//		float log_variable = agent_list->life[i];
+//		printf("Pred id %d, Life: %f\n", agent_list->id[i], log_variable);
+//	}
+//	fclose(simulation_results);
 }
-
+//
 __FLAME_GPU_EXIT_FUNC__ void  log_pred_final_life() {
-	char results_file[1024];
-	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
-	simulation_results = fopen(results_file, "a");
-
-	cudaError_t cudaStatus;
-	xmachine_memory_predator_list * h_p_list = get_host_predator_default2_agents();
-	int num_predators = get_agent_predator_default2_count();
-	xmachine_memory_predator_list * d_p_list = get_device_predator_default2_agents();
-	cudaStatus = cudaMemcpy(h_p_list, d_p_list, sizeof(xmachine_memory_predator_list), cudaMemcpyDeviceToHost);
-	if (cudaStatus != cudaSuccess)
-	{
-		fprintf(stderr, "Error Copying predator Agent default2 State Memory from GPU: %s\n", cudaGetErrorString(cudaStatus));
-		exit(cudaStatus);
-	}
-	for (int i = 0; i < num_predators; i++) {
-		float log_variable = h_p_list->life[i];
-		printf("Pred id %d, Life: %f\n", h_p_list->id[i], log_variable);
-	}
-	fclose(simulation_results);
+//	char results_file[1024];
+//	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
+//	simulation_results = fopen(results_file, "a");
+//
+//	cudaError_t cudaStatus;
+//	xmachine_memory_predator_list * h_p_list = get_host_predator_default2_agents();
+//	int num_predators = get_agent_predator_default2_count();
+//	xmachine_memory_predator_list * d_p_list = get_device_predator_default2_agents();
+//	cudaStatus = cudaMemcpy(h_p_list, d_p_list, sizeof(xmachine_memory_predator_list), cudaMemcpyDeviceToHost);
+//	if (cudaStatus != cudaSuccess)
+//	{
+//		fprintf(stderr, "Error Copying predator Agent default2 State Memory from GPU: %s\n", cudaGetErrorString(cudaStatus));
+//		exit(cudaStatus);
+//	}
+//	for (int i = 0; i < num_predators; i++) {
+//		float log_variable = h_p_list->life[i];
+//		printf("Pred id %d, Life: %f\n", h_p_list->id[i], log_variable);
+//	}
+//	fclose(simulation_results);
 }
-
-/**
-* Automatically generated using logging_and_functions.xslt
-*
-*/
+//
+///**
+//* Automatically generated using logging_and_functions.xslt
+//*
+//*/
 __FLAME_GPU_INIT_FUNC__ void  global_log_prey() {
-	char results_file[1024];
-	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
-	simulation_results = fopen(results_file, "a");
-	int log_variable = get_agent_prey_default1_count();
-	fprintf(simulation_results, "%s,%d,", "num_prey", log_variable);
-	fclose(simulation_results);
+//	char results_file[1024];
+//	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
+//	simulation_results = fopen(results_file, "a");
+//	int log_variable = get_agent_prey_default1_count();
+//	fprintf(simulation_results, "%s,%d,", "num_prey", log_variable);
+//	fclose(simulation_results);
 }
-
-/**
-* Automatically generated using logging_and_functions.xslt
-*
-*/
+//
+///**
+//* Automatically generated using logging_and_functions.xslt
+//*
+//*/
 __FLAME_GPU_INIT_FUNC__ void  global_log_predator() {
-	char results_file[1024];
-	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
-	simulation_results = fopen(results_file, "a");
-	int log_variable = get_agent_predator_default2_count();
-	fprintf(simulation_results, "%s,%d,", "num_pred", log_variable);
-	fclose(simulation_results);
+//	char results_file[1024];
+//	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
+//	simulation_results = fopen(results_file, "a");
+//	int log_variable = get_agent_predator_default2_count();
+//	fprintf(simulation_results, "%s,%d,", "num_pred", log_variable);
+//	fclose(simulation_results);
 }
-
-/**
-* Automatically generated using logging_and_functions.xslt
-*
-*/
+//
+///**
+//* Automatically generated using logging_and_functions.xslt
+//*
+//*/
 __FLAME_GPU_INIT_FUNC__ void  global_log_grass() {
-	char results_file[1024];
-	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
-	simulation_results = fopen(results_file, "a");
-	int log_variable = get_agent_grass_default3_count();
-	fprintf(simulation_results, "%s,%d,", "num_grass", log_variable);
-	fclose(simulation_results);
+//	char results_file[1024];
+//	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
+//	simulation_results = fopen(results_file, "a");
+//	int log_variable = get_agent_grass_default3_count();
+//	fprintf(simulation_results, "%s,%d,", "num_grass", log_variable);
+//	fclose(simulation_results);
 }
-
-/**
-* Automatically generated using logging_and_functions.xslt
-
-*/
+//
+///**
+//* Automatically generated using logging_and_functions.xslt
+//
+//*/
 __FLAME_GPU_INIT_FUNC__ void  global_log_prey_reproduction() {
-	char results_file[1024];
-	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
-	simulation_results = fopen(results_file, "a");
-	float log_variable = *get_REPRODUCE_PREY_PROB();
-	fprintf(simulation_results, "%s,%f,", "prey_reproduction", log_variable);
-	fclose(simulation_results);
+//	char results_file[1024];
+//	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
+//	simulation_results = fopen(results_file, "a");
+//	float log_variable = *get_REPRODUCE_PREY_PROB();
+//	fprintf(simulation_results, "%s,%f,", "prey_reproduction", log_variable);
+//	fclose(simulation_results);
 }
-
-/**
-* Automatically generated using logging_and_functions.xslt
-
-*/
+//
+///**
+//* Automatically generated using logging_and_functions.xslt
+//
+//*/
 __FLAME_GPU_INIT_FUNC__ void  global_log_pred_reproduction() {
-	char results_file[1024];
-	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
-	simulation_results = fopen(results_file, "a");
-	float log_variable = *get_REPRODUCE_PREDATOR_PROB();
-	fprintf(simulation_results, "%s,%f,", "pred_reproduction", log_variable);
-	fclose(simulation_results);
+//	char results_file[1024];
+//	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
+//	simulation_results = fopen(results_file, "a");
+//	float log_variable = *get_REPRODUCE_PREDATOR_PROB();
+//	fprintf(simulation_results, "%s,%f,", "pred_reproduction", log_variable);
+//	fclose(simulation_results);
 }
-
-/**
-* Automatically generated using logging_and_functions.xslt
-
-*/
+//
+///**
+//* Automatically generated using logging_and_functions.xslt
+//
+//*/
 __FLAME_GPU_INIT_FUNC__ void  global_log_prey_energy_gain() {
-	char results_file[1024];
-	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
-	simulation_results = fopen(results_file, "a");
-	int log_variable = *get_GAIN_FROM_FOOD_PREY();
-	fprintf(simulation_results, "%s,%d,", "prey_energy", log_variable);
-	fclose(simulation_results);
+//	char results_file[1024];
+//	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
+//	simulation_results = fopen(results_file, "a");
+//	int log_variable = *get_GAIN_FROM_FOOD_PREY();
+//	fprintf(simulation_results, "%s,%d,", "prey_energy", log_variable);
+//	fclose(simulation_results);
 }
-
-/**
-* Automatically generated using logging_and_functions.xslt
-
-*/
+//
+///**
+//* Automatically generated using logging_and_functions.xslt
+//
+//*/
 __FLAME_GPU_INIT_FUNC__ void  global_log_pred_energy_gain() {
-	char results_file[1024];
-	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
-	simulation_results = fopen(results_file, "a");
-	int log_variable = *get_GAIN_FROM_FOOD_PREDATOR();
-	fprintf(simulation_results, "%s,%d,", "pred_energy", log_variable);
-	fclose(simulation_results);
+//	char results_file[1024];
+//	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
+//	simulation_results = fopen(results_file, "a");
+//	int log_variable = *get_GAIN_FROM_FOOD_PREDATOR();
+//	fprintf(simulation_results, "%s,%d,", "pred_energy", log_variable);
+//	fclose(simulation_results);
 }
-
-/**
-* Automatically generated using logging_and_functions.xslt
-
-*/
+//
+///**
+//* Automatically generated using logging_and_functions.xslt
+//
+//*/
 __FLAME_GPU_INIT_FUNC__ void  global_log_grass_regrowth() {
-	char results_file[1024];
-	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
-	simulation_results = fopen(results_file, "a");
-	int log_variable = *get_GRASS_REGROW_CYCLES();
-	fprintf(simulation_results, "%s,%d,", "grass_regrowth", log_variable);
-	fclose(simulation_results);
+//	char results_file[1024];
+//	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
+//	simulation_results = fopen(results_file, "a");
+//	int log_variable = *get_GRASS_REGROW_CYCLES();
+//	fprintf(simulation_results, "%s,%d,", "grass_regrowth", log_variable);
+//	fclose(simulation_results);
 }
 
 __FLAME_GPU_EXIT_FUNC__ void  primary_fitness_output() {
@@ -336,6 +347,7 @@ __FLAME_GPU_EXIT_FUNC__ void  primary_fitness_output() {
 	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
 	simulation_results = fopen(results_file, "a");
 	int log_variable = calculate_primary_fitness();
+	printf("Testing logged output: primary fitness %d\n", log_variable);
 	fprintf(simulation_results, "%s,%d,", "primary_fitness", log_variable);
 	fclose(simulation_results);
 }
@@ -344,8 +356,9 @@ __FLAME_GPU_EXIT_FUNC__ void  secondary_fitness_output() {
 	char results_file[1024];
 	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
 	simulation_results = fopen(results_file, "a");
-	float log_variable = calculate_secondary_fitness();
-	fprintf(simulation_results, "%s,%f,", "secondary_fitness", log_variable);
+	int log_variable = calculate_secondary_fitness();
+	printf("Testing logged output: secondary fitness %d\n", log_variable);
+	fprintf(simulation_results, "%s,%d,", "secondary_fitness", log_variable);
 	fclose(simulation_results);
 }
 
@@ -354,6 +367,7 @@ __FLAME_GPU_EXIT_FUNC__ void  tertiary_fitness_output() {
 	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
 	simulation_results = fopen(results_file, "a");
 	float log_variable = calculate_tertiary_fitness();
+	printf("Testing logged output: tertiary fitness %f\n", log_variable);
 	fprintf(simulation_results, "%s,%f,", "tertiary_fitness", log_variable);
 	fclose(simulation_results);
 }
