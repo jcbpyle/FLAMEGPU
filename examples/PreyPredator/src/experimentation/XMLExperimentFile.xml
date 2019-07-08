@@ -168,12 +168,11 @@
                         <Variable>
                             <Name>life</Name>
                             <Value>
-                                <Range>
-                                    <Min>1</Min>
+                                <PerAgentRange>
+                                    <Min>50</Min>
                                     <Max>500</Max>
-                                    <Select>1</Select>
                                     <Distribution>uniform</Distribution>
-                                </Range>
+                                </PerAgentRange>
                                 <Type>int</Type>
                             </Value>
                             <Type>int</Type>
@@ -184,12 +183,13 @@
                     <Agent>predator</Agent>                                 
                     <State>default2</State>
                     <InitialPopulationCount>
-                        <Range>
+                        <!-- <Range>
                             <Min>1</Min>
                             <Max>1000</Max>
                             <Select>1</Select>
                             <Distribution>uniform</Distribution>
-                        </Range>
+                        </Range> -->
+                        <FixedValue>0</FixedValue>
                     </InitialPopulationCount>                                   
                     <Variables>                                         
                         <Variable>
@@ -275,8 +275,8 @@
                     <State>default3</State>
                     <InitialPopulationCount>
                         <Range>
-                            <Min>1</Min>
-                            <Max>1000</Max>
+                            <Min>1000</Min>
+                            <Max>2000</Max>
                             <Select>1</Select>
                             <Distribution>uniform</Distribution>
                         </Range>

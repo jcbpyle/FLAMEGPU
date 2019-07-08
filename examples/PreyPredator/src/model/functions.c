@@ -95,52 +95,6 @@ __FLAME_GPU_FUNC__ float2 boundPosition(float2 agent_position)
 //	}
 //}
 //
-///* This is a CPU function which is listed in the models initFunctions XMML element. It is called after the initial states are loaded but before the first iteration of the simulation. */
-__FLAME_GPU_INIT_FUNC__ void initLogFile() {
-//	//Open a file for logging during simulation
-//	char agent_count_file[1024];
-//	sprintf(agent_count_file, "%s%s", getOutputDir(), "agent_count_per_iteration_sc.csv");
-//	count_output = fopen(agent_count_file, "w");
-	/*initialPred = get_agent_predator_default2_count();
-	initialPrey = get_agent_prey_default1_count();
-	initialGrass = reduce_grass_default3_available_variable();
-	if (initialPred > initialPrey) {
-		curr = 1;
-	}
-	else {
-		curr = 0;
-	}*/
-//	//output initial count values at time=0
-//	fprintf(count_output, "Iteration,%d,Predator,%d,Prey,%d,Grass,%d\n", iteration, initialPred, initialPrey, initialGrass);
-}
-//
-///* This is a CPU function which is listed in the models exitFunctions XMML element. It is called afterthe final simulation iteration. */
-__FLAME_GPU_EXIT_FUNC__ void closeLogFile() {
-//	fclose(count_output);
-//	char results_file[1024];
-//	sprintf(results_file, "%s%s", getOutputDir(), "spatially_complex_simulation_results.csv");
-//	simulation_results = fopen(results_file, "a");
-//	int predator = get_agent_predator_default2_count();
-//	int prey = get_agent_prey_default1_count();
-//	/*if (prey != 0 && predator != 0) {
-//		nz = 1;
-//	}*/
-//	if (death_check == 0) {
-//		if (prey != 0 && predator != 0) {
-//			death_iteration = iteration;
-//		}
-//		else {
-//			death_iteration = iteration+int(iteration/10);
-//		}
-//	}
-//	fprintf(simulation_results, "Parameters,%d,%d,%d,%f,%f,%d,%d,%d,", initialPrey, initialPred, initialGrass, *get_REPRODUCE_PREY_PROB(), *get_REPRODUCE_PREDATOR_PROB(), *get_GAIN_FROM_FOOD_PREY(), *get_GAIN_FROM_FOOD_PREDATOR(), *get_GRASS_REGROW_CYCLES());
-//	//fprintf(simulation_results, "Fitnesses,%d,%d,%f,Iterations,%d\n", nz, changeover, float(pd) / iteration,  iteration);
-//
-//	//New fitness function
-//	fprintf(simulation_results, "Fitnesses,%d,%d,%f,Iterations,%d\n", death_iteration, changeover, float(pd) / iteration, iteration);
-//	//Close the log file at the end of the simulation
-//	fclose(simulation_results);
-}
 
 __FLAME_GPU_STEP_FUNC__ void outputToLogFile() {
 		//Get the agent population counts
@@ -149,9 +103,6 @@ __FLAME_GPU_STEP_FUNC__ void outputToLogFile() {
 		iteration += 1;
 		//Use a FLAME GPU parallel reduction function to get all grass which is available
 		int grass = reduce_grass_default3_available_variable();
-		//Output population and quantity counts
-		//fprintf(count_output, "Iteration,%d,Predator,%d,Prey,%d,Grass,%d\n", iteration, predator, prey, grass);
-		
 		pd += abs(predator - prey);
 		if (predator > prey && curr == 0) {
 			curr = 1;
@@ -166,8 +117,8 @@ __FLAME_GPU_STEP_FUNC__ void outputToLogFile() {
 			death_check = 1;
 			death_iteration = iteration;
 		}
-		printf("By step: iteration %d, prey %d, predator %d, grass %d, pd %d, current %d, pd/it %f \n", iteration, prey, predator, grass, pd, curr, (float(pd) / iteration));
-	}
+		printf("By step: iteration %d, prey %d, predator %d, grass %d, pd %d, current %d, pd/it %f, change %d, death check - iteration %d %d \n", iteration, prey, predator, grass, pd, curr, (float(pd) / iteration), changeover, death_check, death_iteration);
+}
 
 int calculate_primary_fitness() {
 	return death_iteration;
@@ -197,149 +148,6 @@ __FLAME_GPU_INIT_FUNC__ void generate_files() {
 	else {
 		curr = 0;
 	}
-}
-
-///**
-//* Automatically generated using logging_and_functions.xslt
-//
-//*/
-__FLAME_GPU_INIT_FUNC__ void  log_all_pred_life() {
-//	char results_file[1024];
-//	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
-//	simulation_results = fopen(results_file, "a");
-//
-//	xmachine_memory_predator_list* agent_list = get_host_predator_default2_agents();
-//	for (int i = 0; i<10; i++) {
-//		float log_variable = agent_list->life[i];
-//		printf("Pred id %d, Life: %f\n", agent_list->id[i], log_variable);
-//	}
-//	fclose(simulation_results);
-}
-//
-__FLAME_GPU_EXIT_FUNC__ void  log_pred_final_life() {
-//	char results_file[1024];
-//	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
-//	simulation_results = fopen(results_file, "a");
-//
-//	cudaError_t cudaStatus;
-//	xmachine_memory_predator_list * h_p_list = get_host_predator_default2_agents();
-//	int num_predators = get_agent_predator_default2_count();
-//	xmachine_memory_predator_list * d_p_list = get_device_predator_default2_agents();
-//	cudaStatus = cudaMemcpy(h_p_list, d_p_list, sizeof(xmachine_memory_predator_list), cudaMemcpyDeviceToHost);
-//	if (cudaStatus != cudaSuccess)
-//	{
-//		fprintf(stderr, "Error Copying predator Agent default2 State Memory from GPU: %s\n", cudaGetErrorString(cudaStatus));
-//		exit(cudaStatus);
-//	}
-//	for (int i = 0; i < num_predators; i++) {
-//		float log_variable = h_p_list->life[i];
-//		printf("Pred id %d, Life: %f\n", h_p_list->id[i], log_variable);
-//	}
-//	fclose(simulation_results);
-}
-//
-///**
-//* Automatically generated using logging_and_functions.xslt
-//*
-//*/
-__FLAME_GPU_INIT_FUNC__ void  global_log_prey() {
-//	char results_file[1024];
-//	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
-//	simulation_results = fopen(results_file, "a");
-//	int log_variable = get_agent_prey_default1_count();
-//	fprintf(simulation_results, "%s,%d,", "num_prey", log_variable);
-//	fclose(simulation_results);
-}
-//
-///**
-//* Automatically generated using logging_and_functions.xslt
-//*
-//*/
-__FLAME_GPU_INIT_FUNC__ void  global_log_predator() {
-//	char results_file[1024];
-//	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
-//	simulation_results = fopen(results_file, "a");
-//	int log_variable = get_agent_predator_default2_count();
-//	fprintf(simulation_results, "%s,%d,", "num_pred", log_variable);
-//	fclose(simulation_results);
-}
-//
-///**
-//* Automatically generated using logging_and_functions.xslt
-//*
-//*/
-__FLAME_GPU_INIT_FUNC__ void  global_log_grass() {
-//	char results_file[1024];
-//	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
-//	simulation_results = fopen(results_file, "a");
-//	int log_variable = get_agent_grass_default3_count();
-//	fprintf(simulation_results, "%s,%d,", "num_grass", log_variable);
-//	fclose(simulation_results);
-}
-//
-///**
-//* Automatically generated using logging_and_functions.xslt
-//
-//*/
-__FLAME_GPU_INIT_FUNC__ void  global_log_prey_reproduction() {
-//	char results_file[1024];
-//	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
-//	simulation_results = fopen(results_file, "a");
-//	float log_variable = *get_REPRODUCE_PREY_PROB();
-//	fprintf(simulation_results, "%s,%f,", "prey_reproduction", log_variable);
-//	fclose(simulation_results);
-}
-//
-///**
-//* Automatically generated using logging_and_functions.xslt
-//
-//*/
-__FLAME_GPU_INIT_FUNC__ void  global_log_pred_reproduction() {
-//	char results_file[1024];
-//	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
-//	simulation_results = fopen(results_file, "a");
-//	float log_variable = *get_REPRODUCE_PREDATOR_PROB();
-//	fprintf(simulation_results, "%s,%f,", "pred_reproduction", log_variable);
-//	fclose(simulation_results);
-}
-//
-///**
-//* Automatically generated using logging_and_functions.xslt
-//
-//*/
-__FLAME_GPU_INIT_FUNC__ void  global_log_prey_energy_gain() {
-//	char results_file[1024];
-//	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
-//	simulation_results = fopen(results_file, "a");
-//	int log_variable = *get_GAIN_FROM_FOOD_PREY();
-//	fprintf(simulation_results, "%s,%d,", "prey_energy", log_variable);
-//	fclose(simulation_results);
-}
-//
-///**
-//* Automatically generated using logging_and_functions.xslt
-//
-//*/
-__FLAME_GPU_INIT_FUNC__ void  global_log_pred_energy_gain() {
-//	char results_file[1024];
-//	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
-//	simulation_results = fopen(results_file, "a");
-//	int log_variable = *get_GAIN_FROM_FOOD_PREDATOR();
-//	fprintf(simulation_results, "%s,%d,", "pred_energy", log_variable);
-//	fclose(simulation_results);
-}
-//
-///**
-//* Automatically generated using logging_and_functions.xslt
-//
-//*/
-__FLAME_GPU_INIT_FUNC__ void  global_log_grass_regrowth() {
-//	char results_file[1024];
-//	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
-//	simulation_results = fopen(results_file, "a");
-//	int log_variable = *get_GRASS_REGROW_CYCLES();
-//	fprintf(simulation_results, "%s,%d,", "grass_regrowth", log_variable);
-//	fclose(simulation_results);
 }
 
 __FLAME_GPU_EXIT_FUNC__ void  primary_fitness_output() {
@@ -480,7 +288,6 @@ __FLAME_GPU_FUNC__ int prey_move(xmachine_memory_prey* xmemory)
 	float2 agent_position = float2(xmemory->x, xmemory->y);
 	float2 agent_velocity = float2(xmemory->fx, xmemory->fy);
 	float2 agent_steer = float2(xmemory->steer_x, xmemory->steer_y);
-
 	//Adjust the velocity according to the steering velocity
 	agent_velocity += agent_steer;
 
@@ -496,13 +303,13 @@ __FLAME_GPU_FUNC__ int prey_move(xmachine_memory_prey* xmemory)
 
 	//Bound the position within the environment 
 	agent_position = boundPosition(agent_position);
-
+	printf("After movement for prey %d was at %f %f now at %f %f \n", xmemory->id, xmemory->x, xmemory->y, agent_position.x, agent_position.y);
 	//Update the agents position and velocity
 	xmemory->x = agent_position.x;
 	xmemory->y = agent_position.y;
 	xmemory->fx = agent_velocity.x;
 	xmemory->fy = agent_velocity.y;
-
+	
 	//reduce life by one unit of energy
 	xmemory->life--;
 
@@ -558,7 +365,7 @@ __FLAME_GPU_FUNC__ int prey_eat_or_starve(xmachine_memory_prey* xmemory, xmachin
 		if (xmemory->id == grass_eaten_message->prey_id) {
 			xmemory->life += GAIN_FROM_FOOD_PREY;
 		}
-		printf("prey id: %d, life: %d", xmemory->id, xmemory->life);
+		printf("prey id: %d, life: %d\n", xmemory->id, xmemory->life);
 		grass_eaten_message = get_next_grass_eaten_message(grass_eaten_message, grass_eaten_messages);
 	}
 
@@ -592,7 +399,7 @@ __FLAME_GPU_FUNC__ int prey_reproduction(xmachine_memory_prey* agent_prey, xmach
 
 		//add the new agent to the simulation
 		add_prey_agent(agent_prey_agents, id, x, y, 1.0f, fx, fy, 0.0f, 0.0f, agent_prey->life);
-
+		printf("New prey agent created at xy: %f %f\n",x,y);
 	}
 
 	return 0;

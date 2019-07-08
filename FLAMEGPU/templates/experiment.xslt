@@ -67,7 +67,7 @@ def generate_initial_states<xsl:if test="xmml:GeneratorName">_<xsl:value-of sele
 	<xsl:if test="xmml:Populations">
 	<xsl:for-each select="xmml:Populations/xmml:Population">
 	<xsl:value-of select="xmml:Agent"/> = {<xsl:if test="xmml:InitialPopulationCount">"initial_population":<xsl:if test="xmml:InitialPopulationCount/xmml:FixedValue">[<xsl:value-of select="xmml:InitialPopulationCount/xmml:FixedValue"/>]</xsl:if><xsl:if test="xmml:InitialPopulationCount/xmml:Range"><xsl:choose><xsl:when test="xmml:InitialPopulationCount/xmml:Range/xmml:Select">[int(random.<xsl:value-of select="xmml:InitialPopulationCount/xmml:Range/xmml:Distribution"/>(<xsl:value-of select="xmml:InitialPopulationCount/xmml:Range/xmml:Min"/>,<xsl:value-of select="xmml:InitialPopulationCount/xmml:Range/xmml:Max"/>)) for i in range(<xsl:value-of select="xmml:InitialPopulationCount/xmml:Range/xmml:Select"/>)]</xsl:when><xsl:otherwise>range(<xsl:value-of select="xmml:InitialPopulationCount/xmml:Range/xmml:Min"/>,<xsl:value-of select="xmml:InitialPopulationCount/xmml:Range/xmml:Max"/><xsl:if test="xmml:InitialPopulationCount/xmml:Range/xmml:Step">,<xsl:value-of select="xmml:InitialPopulationCount/xmml:Range/xmml:Step"/></xsl:if>)</xsl:otherwise></xsl:choose></xsl:if>, </xsl:if><xsl:for-each select="xmml:Variables/xmml:Variable"><xsl:if test="not(xmml:Value/xmml:PerAgentRange)">"<xsl:value-of select="xmml:Name"/>":<xsl:choose><xsl:when test="xmml:Value/xmml:FixedValue">[<xsl:value-of select="xmml:Value/xmml:FixedValue"/>]</xsl:when><xsl:when test="xmml:Value/xmml:Range"><xsl:choose><xsl:when test="xmml:Value/xmml:Range/xmml:Select">[<xsl:value-of select="xmml:Value/xmml:Type"/>(random.<xsl:value-of select="xmml:Value/xmml:Range/xmml:Distribution"/>(<xsl:value-of select="xmml:Value/xmml:Range/xmml:Min"/>,<xsl:value-of select="xmml:Value/xmml:Range/xmml:Max"/>)) for i in range(<xsl:value-of select="xmml:Value/xmml:Range/xmml:Select"/>)]</xsl:when><xsl:otherwise>range(<xsl:value-of select="xmml:Value/xmml:Range/xmml:Min"/>,<xsl:value-of select="xmml:Value/xmml:Range/xmml:Max"/><xsl:if test="xmml:Value/xmml:Range/xmml:Step">,<xsl:value-of select="xmml:Value/xmml:Range/xmml:Step"/></xsl:if>)</xsl:otherwise></xsl:choose></xsl:when><xsl:otherwise>[]</xsl:otherwise></xsl:choose><xsl:if test="not(position()=last())">,</xsl:if></xsl:if></xsl:for-each>}
-	<xsl:value-of select="xmml:Agent"/>_vary_per_agent = {<xsl:for-each select="xmml:Variables/xmml:Variable"><xsl:if test="xmml:Value/xmml:PerAgentRange">"<xsl:value-of select="xmml:Name"/>":[<xsl:value-of select="xmml:Value/xmml:PerAgentRange/xmml:Min"/>,<xsl:value-of select="xmml:Value/xmml:PerAgentRange/xmml:Max"/><xsl:if test="xmml:Value/xmml:PerAgentRange/xmml:Distribution">,"<xsl:value-of select="xmml:Value/xmml:PerAgentRange/xmml:Distribution"/>"</xsl:if>],</xsl:if></xsl:for-each>}<xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text>
+	<xsl:value-of select="xmml:Agent"/>_vary_per_agent = {<xsl:for-each select="xmml:Variables/xmml:Variable"><xsl:if test="xmml:Value/xmml:PerAgentRange">"<xsl:value-of select="xmml:Name"/>":[<xsl:value-of select="xmml:Value/xmml:PerAgentRange/xmml:Min"/>,<xsl:value-of select="xmml:Value/xmml:PerAgentRange/xmml:Max"/><xsl:if test="xmml:Value/xmml:PerAgentRange/xmml:Distribution">,"<xsl:value-of select="xmml:Value/xmml:PerAgentRange/xmml:Distribution"/>"</xsl:if><xsl:if test="xmml:Value/xmml:Type">,<xsl:value-of select="xmml:Value/xmml:Type"/></xsl:if>],</xsl:if></xsl:for-each>}<xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text>
 	</xsl:for-each>
 	agent_data = {<xsl:for-each select="xmml:Populations/xmml:Population">"<xsl:value-of select="xmml:Agent"/>":<xsl:value-of select="xmml:Agent"/><xsl:if test="not(position()=last())">,</xsl:if></xsl:for-each>}
 	<!-- <xsl:for-each select="xmml:Populations/xmml:Population">
@@ -169,7 +169,7 @@ def initial_state(save_location,file_name,global_information,agent_information):
 			except:
 				ind = 0
 			num_agents = int(agent_information[i][ind][1][0])
-			agent_id = 0
+			agent_id = 1
 			agent_name = agent_information[i][0]
 			for j in range(num_agents):
 				initial_state_file.write("&lt;xagent&gt;\n")
@@ -178,9 +178,11 @@ def initial_state(save_location,file_name,global_information,agent_information):
 				for k in agent_information[i]:
 					if not (k[0]=="initial_population" or k==agent_name):
 						if len(k[1])>1:
-							if len(k[1])==3:
+							if len(k[1])==4:
 								random_method = getattr(random, k[1][2])
-								initial_state_file.write("&lt;"+str(k[0])+"&gt;"+str(random_method(k[1][0],k[1][1]))+"&lt;/"+str(k[0])+"&gt;\n")
+								initial_state_file.write("&lt;"+str(k[0])+"&gt;"+str(k[1][3](random_method(k[1][0],k[1][1])))+"&lt;/"+str(k[0])+"&gt;\n")
+							elif len(k[1])==3:
+								initial_state_file.write("&lt;"+str(k[0])+"&gt;"+str(k[1][2](random.uniform(k[1][0],k[1][1])))+"&lt;/"+str(k[0])+"&gt;\n")
 							else:
 								initial_state_file.write("&lt;"+str(k[0])+"&gt;"+str(random.uniform(k[1][0],k[1][1]))+"&lt;/"+str(k[0])+"&gt;\n")
 						elif type(k[1][0])==type(int()):

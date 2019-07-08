@@ -42,33 +42,6 @@
           <gpu:initFunction>
             <gpu:name>generate_files</gpu:name>
           </gpu:initFunction>
-          <gpu:initFunction>
-            <gpu:name>log_all_pred_life</gpu:name>
-          </gpu:initFunction>
-          <gpu:initFunction>
-            <gpu:name>global_log_prey</gpu:name>
-          </gpu:initFunction>
-          <gpu:initFunction>
-            <gpu:name>global_log_predator</gpu:name>
-          </gpu:initFunction>
-          <gpu:initFunction>
-            <gpu:name>global_log_grass</gpu:name>
-          </gpu:initFunction>
-          <gpu:initFunction>
-            <gpu:name>global_log_prey_reproduction</gpu:name>
-          </gpu:initFunction>
-          <gpu:initFunction>
-            <gpu:name>global_log_pred_reproduction</gpu:name>
-          </gpu:initFunction>
-          <gpu:initFunction>
-            <gpu:name>global_log_prey_energy_gain</gpu:name>
-          </gpu:initFunction>
-          <gpu:initFunction>
-            <gpu:name>global_log_pred_energy_gain</gpu:name>
-          </gpu:initFunction>
-          <gpu:initFunction>
-            <gpu:name>global_log_grass_regrowth</gpu:name>
-          </gpu:initFunction>
         </gpu:initFunctions>
         
         <gpu:exitFunctions>
@@ -80,9 +53,6 @@
           </gpu:exitFunction>
           <gpu:exitFunction>
             <gpu:name>tertiary_fitness_output</gpu:name>
-          </gpu:exitFunction>
-          <gpu:exitFunction>
-            <gpu:name>log_pred_final_life</gpu:name>
           </gpu:exitFunction>
         </gpu:exitFunctions>
         
@@ -106,6 +76,18 @@
                     <name>id</name>
                 </gpu:variable>
                 <gpu:variable>
+                  <type>float</type>
+                  <name>type</name>
+                </gpu:variable>
+                <gpu:variable>
+                  <type>float</type>
+                  <name>steer_x</name>
+                </gpu:variable>
+                <gpu:variable>
+                  <type>float</type>
+                  <name>steer_y</name>
+                </gpu:variable>
+                <gpu:variable>
                     <type>int</type>
                     <name>x</name>
                 </gpu:variable>
@@ -115,23 +97,11 @@
                 </gpu:variable>
                 <gpu:variable>
                     <type>float</type>
-                    <name>type</name>
-                </gpu:variable>
-                <gpu:variable>
-                    <type>float</type>
                     <name>fx</name>
                 </gpu:variable>
                 <gpu:variable>
                     <type>float</type>
                     <name>fy</name>
-                </gpu:variable>
-                <gpu:variable>
-                    <type>float</type>
-                    <name>steer_x</name>
-                </gpu:variable>
-                <gpu:variable>
-                    <type>float</type>
-                    <name>steer_y</name>
                 </gpu:variable>
                 <gpu:variable>
                     <type>int</type>
@@ -233,6 +203,18 @@
                     <name>id</name>
                 </gpu:variable>
                 <gpu:variable>
+                  <type>float</type>
+                  <name>type</name>
+                </gpu:variable>
+                <gpu:variable>
+                  <type>float</type>
+                  <name>steer_x</name>
+                </gpu:variable>
+                <gpu:variable>
+                  <type>float</type>
+                  <name>steer_y</name>
+                </gpu:variable>
+                <gpu:variable>
                     <type>int</type>
                     <name>x</name>
                 </gpu:variable>
@@ -242,23 +224,11 @@
                 </gpu:variable>
                 <gpu:variable>
                     <type>float</type>
-                    <name>type</name>
-                </gpu:variable>
-                <gpu:variable>
-                    <type>float</type>
                     <name>fx</name>
                 </gpu:variable>
                 <gpu:variable>
                     <type>float</type>
                     <name>fy</name>
-                </gpu:variable>
-                <gpu:variable>
-                    <type>float</type>
-                    <name>steer_x</name>
-                </gpu:variable>
-                <gpu:variable>
-                    <type>float</type>
-                    <name>steer_y</name>
                 </gpu:variable>
                 <gpu:variable>
                     <type>int</type>
@@ -339,24 +309,24 @@
                     <name>id</name>
                 </gpu:variable>
                 <gpu:variable>
+                  <type>float</type>
+                  <name>type</name>
+                </gpu:variable>
+                <gpu:variable>
+                  <type>int</type>
+                  <name>dead_cycles</name>
+                </gpu:variable>
+                <gpu:variable>
+                  <type>int</type>
+                  <name>available</name>
+                </gpu:variable>
+                <gpu:variable>
                     <type>float</type>
                     <name>x</name>
                 </gpu:variable>
                 <gpu:variable>
                     <type>float</type>
                     <name>y</name>
-                </gpu:variable>
-                <gpu:variable>
-                    <type>float</type>
-                    <name>type</name>
-                </gpu:variable>
-                <gpu:variable>
-                    <type>int</type>
-                    <name>dead_cycles</name>
-                </gpu:variable>
-                <gpu:variable>
-                    <type>int</type>
-                    <name>available</name>
                 </gpu:variable>
             </memory>
             <functions>
