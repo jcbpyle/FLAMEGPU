@@ -37,17 +37,17 @@ initial_state_files = []
 initial_state_files += ["/iterations/0.xml"]
 
 #Generate initial states based on defined ranges/lists/values for all global and agent population variables for experiment predprey.
-def generate_initial_states_predprey():
+def generate_initial_states_predprey(location_name=''):
 	global_data = []
 	agent_data = []
 	vary_per_agent = []
 	
-	global_data = {"REPRODUCE_PREY_PROB":[float(random.uniform(0,0.25)) for i in range(1)],"REPRODUCE_PREDATOR_PROB":[float(random.uniform(0,0.25)) for i in range(1)],"GAIN_FROM_FOOD_PREY":[int(random.uniform(0,500)) for i in range(1)],"GAIN_FROM_FOOD_PREDATOR":[int(random.uniform(0,500)) for i in range(1)],"GRASS_REGROW_CYCLES":[int(random.uniform(0,500)) for i in range(1)]}
-	prey = {"initial_population":[int(random.uniform(1,1000)) for i in range(1)], "type":[1],"steer_x":[0.0],"steer_y":[0.0],}
-	prey_vary_per_agent = {"x":[-1.0,1.0,"uniform",float],"y":[-1.0,1.0,"uniform",float],"fx":[-1.0,1.0,"uniform",float],"fy":[-1.0,1.0,"uniform",float],"life":[50,500,"uniform",int],}
-	predator = {"initial_population":[0], "type":[1],"steer_x":[0.0],"steer_y":[0.0],}
-	predator_vary_per_agent = {"x":[-1.0,1.0,"uniform",float],"y":[-1.0,1.0,"uniform",float],"fx":[-1.0,1.0,"uniform",float],"fy":[-1.0,1.0,"uniform",float],"life":[1,100,"uniform",int],}
-	grass = {"initial_population":[int(random.uniform(1000,2000)) for i in range(1)], "type":[2],"dead_cycles":[0],"available":[1]}
+	global_data = {"REPRODUCE_PREY_PROB":[float(random.uniform(0,0.25)) for i in range(1)],"REPRODUCE_PREDATOR_PROB":[float(random.uniform(0,0.25)) for i in range(1)],"GAIN_FROM_FOOD_PREY":[int(random.uniform(1,500)) for i in range(1)],"GAIN_FROM_FOOD_PREDATOR":[int(random.uniform(1,500)) for i in range(1)],"GRASS_REGROW_CYCLES":[int(random.uniform(1,500)) for i in range(1)]}
+	prey = {"initial_population":[int(random.uniform(1,5000)) for i in range(1)], "type":[1],"steer_x":[0.0],"steer_y":[0.0],}
+	prey_vary_per_agent = {"x":[-1.0,1.0,"uniform",float],"y":[-1.0,1.0,"uniform",float],"fx":[-1.0,1.0,"uniform",float],"fy":[-1.0,1.0,"uniform",float],"life":[25,150,"uniform",int],}
+	predator = {"initial_population":[int(random.uniform(1,5000)) for i in range(1)], "type":[1],"steer_x":[0.0],"steer_y":[0.0],}
+	predator_vary_per_agent = {"x":[-1.0,1.0,"uniform",float],"y":[-1.0,1.0,"uniform",float],"fx":[-1.0,1.0,"uniform",float],"fy":[-1.0,1.0,"uniform",float],"life":[25,100,"uniform",int],}
+	grass = {"initial_population":[int(random.uniform(1,5000)) for i in range(1)], "type":[2],"dead_cycles":[0],"available":[1]}
 	grass_vary_per_agent = {"x":[-1.0,1.0,"uniform",float],"y":[-1.0,1.0,"uniform",float],}
 	
 	agent_data = {"prey":prey,"predator":predator,"grass":grass}
@@ -57,6 +57,7 @@ def generate_initial_states_predprey():
 	
 	prefix_components = []
 	
+	prefix = location_name
 	if len(global_data)>0:
 		global_names = [x for x in global_data]
 		unnamed_global_combinations = list(itertools.product(*[y for x,y in global_data.items()]))
@@ -80,15 +81,15 @@ def generate_initial_states_predprey():
 		for g in global_combinations:
 			for a in agent_combinations:
 				current_agent_data = [agent+[[x[0],x[1]] for x in vary_per_agent[agent[0]].items()] for agent in a]
-				initial_state("","0",g,current_agent_data)
+				initial_state(str(prefix),"0",g,current_agent_data)
 	elif len(global_combinations)>0:
 		for g in global_combinations:
 			current_agent_data = [agent+[[x[0],x[1]] for x in vary_per_agent[agent[0]].items()] for agent in agent_data]
-			initial_state("","0",g,current_agent_data)
+			initial_state(str(prefix),"0",g,current_agent_data)
 	elif len(agent_combinations)>0:
 		for a in agent_combinations:
 			current_agent_data = [agent+[[x[0],x[1]] for x in vary_per_agent[agent[0]].items()] for agent in a]
-			initial_state("","0",global_data,current_agent_data)
+			initial_state(str(prefix),"0",global_data,current_agent_data)
 	else:
 		print("No global or agent variations specified for experimentation\n")
 	return global_data,agent_data
@@ -146,25 +147,26 @@ def initial_state(save_location,file_name,global_information,agent_information):
 
 def run_batch():
 	
-	##Run for desired number of repeats
-	#current_initial_state = PROJECT_DIRECTORY+"iterations"+"/0.xml"
-	#for i in range(10):
-		#generate_initial_states_predprey()
-		#if OS_NAME=='nt':
-			#executable = PROJECT_DIRECTORY+"../../bin/x64/Release_Console//PreyPredator_api_test.exe"
-			#simulation_command = executable+" "+current_initial_state+" 1000"
-		#else:
-			#executable = "./"+PROJECT_DIRECTORY+"../../bin/x64/Release_Console//PreyPredator_api_test"
-			#simulation_command = executable+" "+current_initial_state+" 1000"
-		#print(simulation_command)
-		##Run simulation
-		#os.system(simulation_command)
+	#Run for desired number of repeats
+	base_output_directory = PROJECT_DIRECTORY+"iterations/"
+	for i in range(10):
+		location_name = "run_batch_"+str(i)+"/"
+		generate_initial_states_predprey(location_name)
+		if OS_NAME=='nt':
+			executable = PROJECT_DIRECTORY+"../../bin/x64/Release_Console//PreyPredator_api_test.exe"
+			simulation_command = executable+" "+base_output_directory+location_name+"/0.xml 1000"
+		else:
+			executable = "./"+PROJECT_DIRECTORY+"../../bin/x64/Release_Console//PreyPredator_api_test"
+			simulation_command = executable+" "+base_output_directory+location_name+"/0.xml 1000"
+		print(simulation_command)
+		#Run simulation
+		os.system(simulation_command)
 
-		##Parse results
-		#results_file = open(PROJECT_DIRECTORY+"/iterations/log.csv","r")
-		#results = results_file.readlines()
-		#results_file.close()
-		#print(results)
+		#Parse results
+		results_file = open(base_output_directory+location_name+"/log.csv","r")
+		results = results_file.readlines()
+		results_file.close()
+		print(results)
 	
 	return 
 
@@ -175,11 +177,11 @@ def main():
 
 	#Generation functions (will automatically call initial state generation function)
 	
-	generate_initial_states_predprey()
+#	generate_initial_states_predprey()
 	
 	#Experiment Set user defined functions
 	
-	#run_batch()
+	run_batch()
 	
 	return
 

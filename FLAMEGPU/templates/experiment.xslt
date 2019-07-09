@@ -54,7 +54,7 @@ def initial_state_generator_function_<xsl:value-of select="xmml:FunctionName"/>(
 <xsl:if test="exp:Experimentation/xmml:InitialStates/xmml:InitialStateGenerator">
 <xsl:for-each select="exp:Experimentation/xmml:InitialStates/xmml:InitialStateGenerator">
 #Generate initial states based on defined ranges/lists/values for all global and agent population variables<xsl:if test="xmml:GeneratorName"> for experiment <xsl:value-of select="xmml:GeneratorName"/></xsl:if>.
-def generate_initial_states<xsl:if test="xmml:GeneratorName">_<xsl:value-of select="xmml:GeneratorName"/></xsl:if>():
+def generate_initial_states<xsl:if test="xmml:GeneratorName">_<xsl:value-of select="xmml:GeneratorName"/></xsl:if>(location_name=''):
 	global_data = []
 	agent_data = []
 	vary_per_agent = []
@@ -83,6 +83,7 @@ def generate_initial_states<xsl:if test="xmml:GeneratorName">_<xsl:value-of sele
 	prefix_strings = [str(y) for x in prefix_components for y in x]
 	prefix = <xsl:choose><xsl:when test="xmml:Files/xmml:Prefix/xmml:Delimiter">"<xsl:value-of select="xmml:Files/xmml:Prefix/xmml:Delimiter"/>"</xsl:when><xsl:otherwise>"_"</xsl:otherwise></xsl:choose>.join(prefix_strings)
 	</xsl:if>
+	prefix = location_name
 	if len(global_data)>0:
 		global_names = [x for x in global_data]
 		unnamed_global_combinations = list(itertools.product(*[y for x,y in global_data.items()]))
@@ -114,7 +115,7 @@ def generate_initial_states<xsl:if test="xmml:GeneratorName">_<xsl:value-of sele
 				prefix_strings = [str(y) for x in prefix_components for y in x]
 				prefix = <xsl:choose><xsl:when test="xmml:Files/xmml:Prefix/xmml:Delimiter">"<xsl:value-of select="xmml:Files/xmml:Prefix/xmml:Delimiter"/>"</xsl:when><xsl:otherwise>"_"</xsl:otherwise></xsl:choose>.join(prefix_strings)
 				</xsl:when>
-				<xsl:otherwise>initial_state("","<xsl:value-of select="xmml:Files/xmml:InitialFileName"/>",g,current_agent_data)</xsl:otherwise>
+				<xsl:otherwise>initial_state(str(prefix),"<xsl:value-of select="xmml:Files/xmml:InitialFileName"/>",g,current_agent_data)</xsl:otherwise>
 				</xsl:choose>
 	elif len(global_combinations)>0:
 		for g in global_combinations:
@@ -127,7 +128,7 @@ def generate_initial_states<xsl:if test="xmml:GeneratorName">_<xsl:value-of sele
 			prefix_strings = [str(y) for x in prefix_components for y in x]
 			prefix = <xsl:choose><xsl:when test="xmml:Files/xmml:Prefix/xmml:Delimiter">"<xsl:value-of select="xmml:Files/xmml:Prefix/xmml:Delimiter"/>"</xsl:when><xsl:otherwise>"_"</xsl:otherwise></xsl:choose>.join(prefix_strings)
 			</xsl:when>
-			<xsl:otherwise>initial_state("","<xsl:value-of select="xmml:Files/xmml:InitialFileName"/>",g,current_agent_data)</xsl:otherwise>
+			<xsl:otherwise>initial_state(str(prefix),"<xsl:value-of select="xmml:Files/xmml:InitialFileName"/>",g,current_agent_data)</xsl:otherwise>
 			</xsl:choose>
 	elif len(agent_combinations)>0:
 		for a in agent_combinations:
@@ -140,7 +141,7 @@ def generate_initial_states<xsl:if test="xmml:GeneratorName">_<xsl:value-of sele
 			prefix_strings = [str(y) for x in prefix_components for y in x]
 			prefix = <xsl:choose><xsl:when test="xmml:Files/xmml:Prefix/xmml:Delimiter">"<xsl:value-of select="xmml:Files/xmml:Prefix/xmml:Delimiter"/>"</xsl:when><xsl:otherwise>"_"</xsl:otherwise></xsl:choose>.join(prefix_strings)
 			</xsl:when>
-			<xsl:otherwise>initial_state("","<xsl:value-of select="xmml:Files/xmml:InitialFileName"/>",global_data,current_agent_data)</xsl:otherwise>
+			<xsl:otherwise>initial_state(str(prefix),"<xsl:value-of select="xmml:Files/xmml:InitialFileName"/>",global_data,current_agent_data)</xsl:otherwise>
 			</xsl:choose>
 	else:
 		print("No global or agent variations specified for experimentation\n")
@@ -209,21 +210,22 @@ def <xsl:value-of select="xmml:Name" />(<xsl:for-each select="xmml:Arguments/xmm
 	<xsl:if test="../../../xmml:InitialState/xmml:Generator">
 	<xsl:if test="../../xmml:Repeats">
 	##Run for desired number of repeats
-	#current_initial_state = PROJECT_DIRECTORY+"<xsl:value-of select="../../../xmml:InitialState/xmml:Location"/>"+"/0.xml"
+	#base_output_directory = PROJECT_DIRECTORY+"<xsl:value-of select="../../../xmml:InitialState/xmml:Location"/>/"
 	#for i in range(<xsl:value-of select="../../xmml:Repeats"/>):
-		#generate_initial_states_<xsl:value-of select="../../../xmml:InitialState/xmml:Generator"/>()
+		#location_name = "<xsl:value-of select="xmml:Name" />_"+str(i)+"/"
+		#generate_initial_states_<xsl:value-of select="../../../xmml:InitialState/xmml:Generator"/>(location_name)
 		#if OS_NAME=='nt':
 			#executable = PROJECT_DIRECTORY+"<xsl:value-of select="../../../xmml:Model/xmml:ExecutableLocation" />/<xsl:value-of select="../../../xmml:Model/xmml:ModelName" />.exe"
-			#simulation_command = executable+" "+current_initial_state+" <xsl:value-of select="../../xmml:Iterations"/>"
+			#simulation_command = executable+" "+base_output_directory+location_name+"/0.xml <xsl:value-of select="../../xmml:Iterations"/>"
 		#else:
 			#executable = "./"+PROJECT_DIRECTORY+"<xsl:value-of select="../../../xmml:Model/xmml:ExecutableLocation" />/<xsl:value-of select="../../../xmml:Model/xmml:ModelName" />"
-			#simulation_command = executable+" "+current_initial_state+" <xsl:value-of select="../../xmml:Iterations"/>"
+			#simulation_command = executable+" "+base_output_directory+location_name+"/0.xml <xsl:value-of select="../../xmml:Iterations"/>"
 		#print(simulation_command)
 		##Run simulation
 		#os.system(simulation_command)
 
 		##Parse results
-		#results_file = open(PROJECT_DIRECTORY+"/<xsl:value-of select="../../../xmml:SimulationOutput/xmml:Location"/>/<xsl:value-of select="../../../xmml:SimulationOutput/xmml:FileName"/>","r")
+		#results_file = open(base_output_directory+location_name+"/<xsl:value-of select="../../../xmml:SimulationOutput/xmml:FileName"/>","r")
 		#results = results_file.readlines()
 		#results_file.close()
 		#print(results)

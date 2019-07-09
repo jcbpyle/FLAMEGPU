@@ -47,8 +47,9 @@ p.richmond@sheffield.ac.uk (http://www.paulrichmond.staff.shef.ac.uk)
 
 
 //Global file variable for logging
-FILE *count_output, *simulation_results;
-int pd = 0, changeover = 0, nz = 0, curr = -1, initialGrass = 0, initialPred = 0, initialPrey = 0, iteration = 0, death_iteration = -1, death_check = 0;
+FILE *count_output;
+int iteration = 0, death_check = 0, death_iteration = -1, oscillations = 0, current_largest_pop = -1, pop_diff = 0, initPrey = 0, initPredator = 0, initGrass = 0;
+
 
 /*---------------------------------------- GPU helper functions ----------------------------------------*/
 
@@ -69,55 +70,54 @@ __FLAME_GPU_FUNC__ float2 boundPosition(float2 agent_position)
 /*---------------------------------------- INIT, STEP and EXIT functions ----------------------------------------*/
 
 /* This is a CPU function which is listed in the models stepFunctions XMML element. It is called after each simulation iteration. */
-//__FLAME_GPU_STEP_FUNC__ void outputToLogFile() {
-//	//Get the agent population counts
-//	int predator = get_agent_predator_default2_count();
-//	int prey = get_agent_prey_default1_count();
-//	iteration += 1;
-//	//Use a FLAME GPU parallel reduction function to get all grass which is available
-//	int grass = reduce_grass_default3_available_variable();
-//	//Output population and quantity counts
-//	fprintf(count_output, "Iteration,%d,Predator,%d,Prey,%d,Grass,%d\n", iteration, predator, prey, grass);
-//	
-//	pd += abs(predator - prey);
-//	if (predator > prey && curr == 0) {
-//		curr = 1;
-//		changeover++;
-//	}
-//	if (prey > predator && curr == 1) {
-//		curr = 0;
-//		changeover++;
-//	}
-//
-//	if (death_check==0 && (predator == 0 || prey == 0)) {
-//		death_check = 1;
-//		death_iteration = iteration;
-//	}
-//}
-//
-
 __FLAME_GPU_STEP_FUNC__ void outputToLogFile() {
-		//Get the agent population counts
-		int predator = get_agent_predator_default2_count();
-		int prey = get_agent_prey_default1_count();
-		iteration += 1;
-		//Use a FLAME GPU parallel reduction function to get all grass which is available
-		int grass = reduce_grass_default3_available_variable();
-		pd += abs(predator - prey);
-		if (predator > prey && curr == 0) {
-			curr = 1;
-			changeover++;
+	iteration++;
+	//Get the agent population counts
+	int predator = get_agent_predator_default2_count();
+	int prey = get_agent_prey_default1_count();
+	//Use a FLAME GPU parallel reduction function to get all grass which is available
+	int grass = reduce_grass_default3_available_variable();
+	pop_diff += abs(predator - prey);
+	if (current_largest_pop == 1 && (prey > predator)) {
+		oscillations++;
+		current_largest_pop = 0;
+	}
+	else {
+		if (current_largest_pop == 0 && (predator > prey)) {
+			oscillations++;
+			current_largest_pop = 1;
 		}
-		if (prey > predator && curr == 1) {
-			curr = 0;
-			changeover++;
-		}
+	}
 	
-		if (death_check==0 && (predator == 0 || prey == 0)) {
-			death_check = 1;
+	float pop_difference_per_time = float(pop_diff) / iteration;
+	if (death_check == 0) {
+		if (prey == 0 || predator == 0) {
 			death_iteration = iteration;
+			death_check = 1;
 		}
-		printf("By step: iteration %d, prey %d, predator %d, grass %d, pd %d, current %d, pd/it %f, change %d, death check - iteration %d %d \n", iteration, prey, predator, grass, pd, curr, (float(pd) / iteration), changeover, death_check, death_iteration);
+	}
+	//printf("Checking stepwise: iteration %d, prey %d, pred %d, grass %d, death check %d, death iteration %d, current pop %d, oscillations %d, pd/it %f\n", iteration, prey, predator, grass, death_check, death_iteration, current_largest_pop, oscillations, pop_difference_per_time);
+	//Output population and quantity counts
+	//fprintf(count_output, "Prey ,%d, Predator ,%d, Grass ,%d\n", prey, predator, grass);
+}
+
+/* This is a CPU function which is listed in the models initFunctions XMML element. It is called after the initial states are loaded but before the first iteration of the simulation. */
+__FLAME_GPU_INIT_FUNC__ void initLogFile() {
+	//Open a file for logging during simulation
+	char output_file[1024];
+	sprintf(output_file, "%s%s", getOutputDir(), "log.csv");
+	count_output = fopen(output_file, "a");
+	fclose(count_output);
+	initPredator = get_agent_predator_default2_count();
+	initPrey = get_agent_prey_default1_count();
+	initGrass = get_agent_grass_default3_count();
+	printf("Initialising with agent populations: prey %d, pred %d, grass %d\n", initPrey, initPredator, initGrass);
+	if (initPredator > initPrey) {
+		current_largest_pop = 1;
+	}
+	else {
+		current_largest_pop = 0;
+	}
 }
 
 int calculate_primary_fitness() {
@@ -125,62 +125,27 @@ int calculate_primary_fitness() {
 }
 
 int calculate_secondary_fitness() {
-	return changeover;
+	return oscillations;
 }
 
 float calculate_tertiary_fitness() {
-	return (float(pd) / iteration);
+	return (float(pop_diff) / iteration);
 }
 
-FILE *results_file;
-__FLAME_GPU_INIT_FUNC__ void generate_files() {
-	char results_file[1024];
-	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
-	simulation_results = fopen(results_file, "w");
-	fclose(simulation_results);
-	initialPred = get_agent_predator_default2_count();
-	initialPrey = get_agent_prey_default1_count();
-	initialGrass = reduce_grass_default3_available_variable();
-	printf("Initial agent counts: prey %d pred %d grass %d \n", initialPrey, initialPred, initialGrass);
-	if (initialPred > initialPrey) {
-		curr = 1;
-	}
-	else {
-		curr = 0;
-	}
+/* This is a CPU function which is listed in the models exitFunctions XMML element. It is called afterthe final simulation iteration. */
+__FLAME_GPU_EXIT_FUNC__ void closeLogFile() {
+	//Close the log file at the end of the simulation
+	//Open a file for logging during simulation
+	char output_file[1024];
+	sprintf(output_file, "%s%s", getOutputDir(), "log.csv");
+	count_output = fopen(output_file, "a");
+	int primary = calculate_primary_fitness();
+	int secondary = calculate_secondary_fitness();
+	float tertiary = calculate_tertiary_fitness();
+	printf("Exiting with values: death iteration %d, oscillation %d, pop over time %f\n", primary, secondary, tertiary);
+	fprintf(count_output, "Parameters,%d,%d,%d,%f,%f,%d,%d,%d,Fitnesses,%d,%d,%f\n", initPrey, initPredator, initGrass, *get_REPRODUCE_PREY_PROB(), *get_REPRODUCE_PREDATOR_PROB(), *get_GAIN_FROM_FOOD_PREY(), *get_GAIN_FROM_FOOD_PREDATOR(), *get_GRASS_REGROW_CYCLES(), primary, secondary, tertiary);
+	fclose(count_output);
 }
-
-__FLAME_GPU_EXIT_FUNC__ void  primary_fitness_output() {
-	char results_file[1024];
-	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
-	simulation_results = fopen(results_file, "a");
-	int log_variable = calculate_primary_fitness();
-	printf("Testing logged output: primary fitness %d\n", log_variable);
-	fprintf(simulation_results, "%s,%d,", "primary_fitness", log_variable);
-	fclose(simulation_results);
-}
-
-__FLAME_GPU_EXIT_FUNC__ void  secondary_fitness_output() {
-	char results_file[1024];
-	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
-	simulation_results = fopen(results_file, "a");
-	int log_variable = calculate_secondary_fitness();
-	printf("Testing logged output: secondary fitness %d\n", log_variable);
-	fprintf(simulation_results, "%s,%d,", "secondary_fitness", log_variable);
-	fclose(simulation_results);
-}
-
-__FLAME_GPU_EXIT_FUNC__ void  tertiary_fitness_output() {
-	char results_file[1024];
-	sprintf(results_file, "%s%s", getOutputDir(), "log.csv");
-	simulation_results = fopen(results_file, "a");
-	float log_variable = calculate_tertiary_fitness();
-	printf("Testing logged output: tertiary fitness %f\n", log_variable);
-	fprintf(simulation_results, "%s,%f,", "tertiary_fitness", log_variable);
-	fclose(simulation_results);
-}
-
-
 
 /*---------------------------------------- PREY FUNCTIONS ----------------------------------------*/
 
@@ -288,6 +253,7 @@ __FLAME_GPU_FUNC__ int prey_move(xmachine_memory_prey* xmemory)
 	float2 agent_position = float2(xmemory->x, xmemory->y);
 	float2 agent_velocity = float2(xmemory->fx, xmemory->fy);
 	float2 agent_steer = float2(xmemory->steer_x, xmemory->steer_y);
+
 	//Adjust the velocity according to the steering velocity
 	agent_velocity += agent_steer;
 
@@ -303,13 +269,13 @@ __FLAME_GPU_FUNC__ int prey_move(xmachine_memory_prey* xmemory)
 
 	//Bound the position within the environment 
 	agent_position = boundPosition(agent_position);
-	printf("After movement for prey %d was at %f %f now at %f %f \n", xmemory->id, xmemory->x, xmemory->y, agent_position.x, agent_position.y);
+
 	//Update the agents position and velocity
 	xmemory->x = agent_position.x;
 	xmemory->y = agent_position.y;
 	xmemory->fx = agent_velocity.x;
 	xmemory->fy = agent_velocity.y;
-	
+
 	//reduce life by one unit of energy
 	xmemory->life--;
 
@@ -356,8 +322,7 @@ __FLAME_GPU_FUNC__ int prey_eat_or_starve(xmachine_memory_prey* xmemory, xmachin
 	int dead = 0;
 
 	// Excercise 3.3
-
-	//Iterate the grass eaten messages until NULL is returned which indicates all messages have been read.
+	//Iterate the prey eaten messages until NULL is returned which indicates all messages have been read.
 	xmachine_message_grass_eaten* grass_eaten_message = get_first_grass_eaten_message(grass_eaten_messages);
 	while (grass_eaten_message)
 	{
@@ -365,7 +330,7 @@ __FLAME_GPU_FUNC__ int prey_eat_or_starve(xmachine_memory_prey* xmemory, xmachin
 		if (xmemory->id == grass_eaten_message->prey_id) {
 			xmemory->life += GAIN_FROM_FOOD_PREY;
 		}
-		printf("prey id: %d, life: %d\n", xmemory->id, xmemory->life);
+
 		grass_eaten_message = get_next_grass_eaten_message(grass_eaten_message, grass_eaten_messages);
 	}
 
@@ -399,7 +364,7 @@ __FLAME_GPU_FUNC__ int prey_reproduction(xmachine_memory_prey* agent_prey, xmach
 
 		//add the new agent to the simulation
 		add_prey_agent(agent_prey_agents, id, x, y, 1.0f, fx, fy, 0.0f, 0.0f, agent_prey->life);
-		printf("New prey agent created at xy: %f %f\n",x,y);
+
 	}
 
 	return 0;
@@ -596,30 +561,27 @@ __FLAME_GPU_FUNC__ int grass_output_location(xmachine_memory_grass* xmemory, xma
 __FLAME_GPU_FUNC__ int grass_eaten(xmachine_memory_grass* xmemory, xmachine_message_prey_location_list* prey_location_messages, xmachine_message_grass_eaten_list* grass_eaten_messages)
 {
 	// Excercise 3.2 
-
 	int eaten = 0;
 	int prey_id = -1;
 	float closest_prey = GRASS_EAT_DISTANCE;
-	int avail = xmemory->available;
 
 	//Iterate the predator location messages until NULL is returned which indicates all messages have been read.
 	xmachine_message_prey_location* prey_location_message = get_first_prey_location_message(prey_location_messages);
 	while (prey_location_message)
 	{
-		if (avail == 1) {
-			//calculate distance between prey and predator
-			float2 prey_pos = float2(prey_location_message->x, prey_location_message->y);
-			float2 grass_pos = float2(xmemory->x, xmemory->y);
-			float distance = length(prey_pos - grass_pos);
+		//calculate distance between prey and predator
+		float2 prey_pos = float2(prey_location_message->x, prey_location_message->y);
+		float2 grass_pos = float2(xmemory->x, xmemory->y);
+		float distance = length(prey_pos - grass_pos);
 
-			//if distance is closer than nearest predator so far then select this predator as the one which will eat the prey
-			if (distance < closest_prey)
-			{
-				prey_id = prey_location_message->id;
-				closest_prey = distance;
-				eaten = 1;
-			}
+		//if distance is closer than nearest predator so far then select this predator as the one which will eat the prey
+		if (distance < closest_prey)
+		{
+			prey_id = prey_location_message->id;
+			closest_prey = distance;
+			eaten = 1;
 		}
+
 		prey_location_message = get_next_prey_location_message(prey_location_message, prey_location_messages);
 	}
 
@@ -630,7 +592,6 @@ __FLAME_GPU_FUNC__ int grass_eaten(xmachine_memory_grass* xmemory, xmachine_mess
 		xmemory->available = 0;
 	}
 
-
 	//return eaten value to remove dead (eaten == 1) agents from the simulation
 	return 0;
 }
@@ -639,17 +600,16 @@ __FLAME_GPU_FUNC__ int grass_eaten(xmachine_memory_grass* xmemory, xmachine_mess
 __FLAME_GPU_FUNC__ int grass_growth(xmachine_memory_grass* agent_grass, RNG_rand48* rand48)
 {
 	// Excercise 3.4
-	if (agent_grass->dead_cycles == GRASS_REGROW_CYCLES) {
+	if (agent_grass->dead_cycles >= GRASS_REGROW_CYCLES) {
 		agent_grass->available = 1;
 		agent_grass->type = 2.0f;
 		agent_grass->dead_cycles = 0;
 	}
 	if (agent_grass->available == 0) {
-		agent_grass->dead_cycles = agent_grass->dead_cycles + 1;
+		agent_grass->dead_cycles++;
 	}
 	return 0;
 }
 
 #endif // #ifndef _FUNCTIONS_H_
-
 

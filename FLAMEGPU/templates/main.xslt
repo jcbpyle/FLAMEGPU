@@ -336,7 +336,7 @@ void runConsoleWithoutXMLOutput(int iterations){
 	// Iteratively tun the correct number of iterations.
 	for (int i=0; i&lt; iterations || iterations == 0; i++)
 	{
-		printf("Processing Simulation Step %i\n", i+1);
+		printf("\rProcessing Simulation Step %i", i+1);
 		//single simulation iteration
 		singleIteration();
 		
@@ -349,7 +349,7 @@ void runConsoleWithXMLOutput(int iterations, int outputFrequency){
 	// Iteratively tun the correct number of iterations.
 	for (int i=0; i&lt; iterations || iterations == 0; i++)
 	{
-		printf("Processing Simulation Step %i\n", i+1);
+		printf("\rProcessing Simulation Step %i", i+1);
 		//single simulation iteration
 		singleIteration();
 		// Save the iteration data to disk

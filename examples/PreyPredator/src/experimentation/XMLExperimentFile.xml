@@ -54,7 +54,7 @@
                     <Name>GAIN_FROM_FOOD_PREY</Name>
                     <Value>
                         <Range>
-                            <Min>0</Min>
+                            <Min>1</Min>
                             <Max>500</Max>
                             <Select>1</Select>
                             <Distribution>uniform</Distribution>
@@ -66,7 +66,7 @@
                     <Name>GAIN_FROM_FOOD_PREDATOR</Name>
                     <Value>
                         <Range>
-                            <Min>0</Min>
+                            <Min>1</Min>
                             <Max>500</Max>
                             <Select>1</Select>
                             <Distribution>uniform</Distribution>
@@ -78,7 +78,7 @@
                     <Name>GRASS_REGROW_CYCLES</Name>
                     <Value>
                         <Range>
-                            <Min>0</Min>
+                            <Min>1</Min>
                             <Max>500</Max>
                             <Select>1</Select>
                             <Distribution>uniform</Distribution>
@@ -94,7 +94,7 @@
                     <InitialPopulationCount>
                         <Range>
                             <Min>1</Min>
-                            <Max>1000</Max>
+                            <Max>5000</Max>
                             <Select>1</Select>
                             <Distribution>uniform</Distribution>
                         </Range>
@@ -169,8 +169,8 @@
                             <Name>life</Name>
                             <Value>
                                 <PerAgentRange>
-                                    <Min>50</Min>
-                                    <Max>500</Max>
+                                    <Min>25</Min>
+                                    <Max>150</Max>
                                     <Distribution>uniform</Distribution>
                                 </PerAgentRange>
                                 <Type>int</Type>
@@ -183,13 +183,13 @@
                     <Agent>predator</Agent>                                 
                     <State>default2</State>
                     <InitialPopulationCount>
-                        <!-- <Range>
+                        <Range>
                             <Min>1</Min>
-                            <Max>1000</Max>
+                            <Max>5000</Max>
                             <Select>1</Select>
                             <Distribution>uniform</Distribution>
-                        </Range> -->
-                        <FixedValue>0</FixedValue>
+                        </Range>
+                        <!-- <FixedValue>0</FixedValue> -->
                     </InitialPopulationCount>                                   
                     <Variables>                                         
                         <Variable>
@@ -261,7 +261,7 @@
                             <Name>life</Name>
                             <Value>
                                 <PerAgentRange>
-                                    <Min>1</Min>
+                                    <Min>25</Min>
                                     <Max>100</Max>
                                     <Distribution>uniform</Distribution>
                                 </PerAgentRange>
@@ -275,8 +275,8 @@
                     <State>default3</State>
                     <InitialPopulationCount>
                         <Range>
-                            <Min>1000</Min>
-                            <Max>2000</Max>
+                            <Min>1</Min>
+                            <Max>5000</Max>
                             <Select>1</Select>
                             <Distribution>uniform</Distribution>
                         </Range>
