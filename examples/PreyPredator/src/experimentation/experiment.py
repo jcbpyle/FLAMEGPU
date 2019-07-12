@@ -42,7 +42,7 @@ def generate_initial_states_predprey(location_name=''):
 	agent_data = []
 	vary_per_agent = []
 	
-	global_data = {"REPRODUCE_PREY_PROB":[float(random.uniform(0,0.25)) for i in range(1)],"REPRODUCE_PREDATOR_PROB":[float(random.uniform(0,0.25)) for i in range(1)],"GAIN_FROM_FOOD_PREY":[int(random.uniform(1,500)) for i in range(1)],"GAIN_FROM_FOOD_PREDATOR":[int(random.uniform(1,500)) for i in range(1)],"GRASS_REGROW_CYCLES":[int(random.uniform(1,500)) for i in range(1)]}
+	global_data = {"INTERACTION_DISTANCE_TEST_VARIABLE":[0.12345],"LIST_TEST_VARIABLE":[1,2,3],"LIST_TEST_VARIABLE_2":[4,5],"LIST_TEST_VARIABLE_3":random.choices([1,2,3,4,5,10],k=2),"DISTRIBUTION_TEST_VARIABLE":[random.uniform(1,10)],"DISTRIBUTION_TEST_VARIABLE_2":random.sample([1,10,5],k=2),"DISTRIBUTION_TEST_VARIABLE_3":[random.randrange(1,10,2)],"REPRODUCE_PREY_PROB":[float(random.uniform(0,0.25)) for i in range(1)],"REPRODUCE_PREDATOR_PROB":[float(random.uniform(0,0.25)) for i in range(1)],"GAIN_FROM_FOOD_PREY":[int(random.uniform(1,500)) for i in range(1)],"GAIN_FROM_FOOD_PREDATOR":[int(random.uniform(1,500)) for i in range(1)],"GRASS_REGROW_CYCLES":[int(random.uniform(1,500)) for i in range(1)]}
 	prey = {"initial_population":[int(random.uniform(1,5000)) for i in range(1)], "type":[1],"steer_x":[0.0],"steer_y":[0.0],}
 	prey_vary_per_agent = {"x":[-1.0,1.0,"uniform",float],"y":[-1.0,1.0,"uniform",float],"fx":[-1.0,1.0,"uniform",float],"fy":[-1.0,1.0,"uniform",float],"life":[25,150,"uniform",int],}
 	predator = {"initial_population":[int(random.uniform(1,5000)) for i in range(1)], "type":[1],"steer_x":[0.0],"steer_y":[0.0],}
@@ -56,8 +56,16 @@ def generate_initial_states_predprey(location_name=''):
 
 	
 	prefix_components = []
+	prefix = ''
+	prefix_components += [["LIST_TEST_VARIABLE",global_data["LIST_TEST_VARIABLE"][0] if len(global_data)>0 else "NA"]]
+	prefix_components += [["LIST_TEST_VARIABLE_2",global_data["LIST_TEST_VARIABLE_2"][0] if len(global_data)>0 else "NA"]]
+	prefix_components += [["LIST_TEST_VARIABLE_3",global_data["LIST_TEST_VARIABLE_3"][0] if len(global_data)>0 else "NA"]]
+	prefix_components += [["DISTRIBUTION_TEST_VARIABLE_2",global_data["DISTRIBUTION_TEST_VARIABLE_2"][0] if len(global_data)>0 else "NA"]]
 	
-	prefix = location_name
+	prefix_strings = [str(y) for x in prefix_components for y in x]
+	prefix = "_".join(prefix_strings)
+	
+	prefix = location_name+prefix
 	if len(global_data)>0:
 		global_names = [x for x in global_data]
 		unnamed_global_combinations = list(itertools.product(*[y for x,y in global_data.items()]))
@@ -81,15 +89,33 @@ def generate_initial_states_predprey(location_name=''):
 		for g in global_combinations:
 			for a in agent_combinations:
 				current_agent_data = [agent+[[x[0],x[1]] for x in vary_per_agent[agent[0]].items()] for agent in a]
+				
 				initial_state(str(prefix),"0",g,current_agent_data)
+				prefix_components = [x if not x[0] in g[0] else [x[0],g[1][g[0].index(x[0])]] for x in prefix_components]
+				 
+				prefix_strings = [str(y) for x in prefix_components for y in x]
+				prefix = location_name+"_".join(prefix_strings)
+				
 	elif len(global_combinations)>0:
 		for g in global_combinations:
 			current_agent_data = [agent+[[x[0],x[1]] for x in vary_per_agent[agent[0]].items()] for agent in agent_data]
+			
 			initial_state(str(prefix),"0",g,current_agent_data)
+			prefix_components = [x if not x[0] in g[0] else [x[0],g[1][g[0].index(x[0])]] for x in prefix_components]
+			 
+			prefix_strings = [str(y) for x in prefix_components for y in x]
+			prefix = location_name+"_".join(prefix_strings)
+			
 	elif len(agent_combinations)>0:
 		for a in agent_combinations:
 			current_agent_data = [agent+[[x[0],x[1]] for x in vary_per_agent[agent[0]].items()] for agent in a]
+			
 			initial_state(str(prefix),"0",global_data,current_agent_data)
+			prefix_components = [x if not x[0] in a else [x[0],a.index(x[0])[1]] for x in prefix_components]
+			 
+			prefix_strings = [str(y) for x in prefix_components for y in x]
+			prefix = location_name+"_".join(prefix_strings)
+			
 	else:
 		print("No global or agent variations specified for experimentation\n")
 	return global_data,agent_data
@@ -99,8 +125,12 @@ def initial_state(save_location,file_name,global_information,agent_information):
 	if not os.path.exists(PROJECT_DIRECTORY+"iterations"):
 		os.mkdir(PROJECT_DIRECTORY+"iterations")
 	SAVE_DIRECTORY = PROJECT_DIRECTORY+"iterations"+"/"
-	if not os.path.exists(SAVE_DIRECTORY+str(save_location)):
-		os.mkdir(SAVE_DIRECTORY+str(save_location))
+	save_split = save_location.split("/")
+	temp = ''
+	for i in save_split:
+		temp += i+"/"
+		if not os.path.exists(SAVE_DIRECTORY+temp):
+			os.mkdir(SAVE_DIRECTORY+temp)
 	print("Creating initial state in",SAVE_DIRECTORY,save_location,"/",file_name,"\n")
 	initial_state_file = open(SAVE_DIRECTORY+str(save_location)+"/"+str(file_name)+".xml","w")
 	initial_state_file.write("<states>\n<itno>0</itno>\n<environment>\n")
@@ -152,23 +182,171 @@ def run_batch():
 	for i in range(10):
 		location_name = "run_batch_"+str(i)+"/"
 		generate_initial_states_predprey(location_name)
-		if OS_NAME=='nt':
-			executable = PROJECT_DIRECTORY+"../../bin/x64/Release_Console//PreyPredator_api_test.exe"
-			simulation_command = executable+" "+base_output_directory+location_name+"/0.xml 1000"
+		#Model executable
+		executable = ""
+		simulation_command = ""
+		os_walk = list(os.walk(base_output_directory+location_name))
+		if len(os_walk[0][1])>1:
+			initial_states = [x[0] for x in os_walk][1:]
 		else:
-			executable = "./"+PROJECT_DIRECTORY+"../../bin/x64/Release_Console//PreyPredator_api_test"
-			simulation_command = executable+" "+base_output_directory+location_name+"/0.xml 1000"
-		print(simulation_command)
-		#Run simulation
-		os.system(simulation_command)
+			initial_states = [x[0] for x in os_walk]
+		for j in initial_states:
+			current_initial_state = j+"/0.xml"
+			if OS_NAME=='nt':
+				executable = PROJECT_DIRECTORY+"../../bin/x64/Release_Console//PreyPredator_api_test.exe"
+				simulation_command = executable+" "+current_initial_state+" 1000"
+			else:
+				executable = "./"+PROJECT_DIRECTORY+"../../bin/x64/Release_Console//PreyPredator_api_test"
+				simulation_command = executable+" "+current_initial_state+" 1000"
+			print(simulation_command)
+			#Run simulation
+			os.system(simulation_command)
 
-		#Parse results
-		results_file = open(base_output_directory+location_name+"/log.csv","r")
-		results = results_file.readlines()
-		results_file.close()
-		print(results)
+			#Parse results
+			results_file = open(j+"/log.csv","r")
+			results = results_file.readlines()
+			results_file.close()
+			print(results)
 	
 	return 
+
+############## testing_ga_experiment ############
+
+def fitness_function(primary,secondary,tertiary):
+	fitness = None
+	
+	##Model executable
+	#executable = ""
+	#simulation_command = ""
+	#os_walk = list(os.walk("../../iterations"))
+	#if len(os_walk[0][1])>1:
+		#initial_states = [x[0] for x in os_walk][1:]
+	#else:
+		#initial_states = [x[0] for x in os_walk]
+	#for i in initial_states:
+		#current_initial_state = i+"/0.xml"
+		#if OS_NAME=='nt':
+			#executable = PROJECT_DIRECTORY+"../../../bin/x64/Release_Console//PreyPredator_api_test.exe"
+			#simulation_command = executable+" "+current_initial_state+" 1000"
+		#else:
+			#executable = "./"+PROJECT_DIRECTORY+"../../../bin/x64/Release_Console//PreyPredator_api_test"
+			#simulation_command = executable+" "+current_initial_state+" 1000"
+		#print(simulation_command)
+		
+		
+		##Run simulation
+		#os.system(simulation_command)
+
+		##Parse results
+		#results_file = open(i+"/","r")
+		#results = results_file.readlines()
+		#results_file.close()
+		#print(results)
+		
+	return fitness
+
+def setup_ga(mu):
+	start_time = None
+	population = None
+	
+	##Model executable
+	#executable = ""
+	#simulation_command = ""
+	#os_walk = list(os.walk("../../iterations"))
+	#if len(os_walk[0][1])>1:
+		#initial_states = [x[0] for x in os_walk][1:]
+	#else:
+		#initial_states = [x[0] for x in os_walk]
+	#for i in initial_states:
+		#current_initial_state = i+"/0.xml"
+		#if OS_NAME=='nt':
+			#executable = PROJECT_DIRECTORY+"../../../bin/x64/Release_Console//PreyPredator_api_test.exe"
+			#simulation_command = executable+" "+current_initial_state+" 1000"
+		#else:
+			#executable = "./"+PROJECT_DIRECTORY+"../../../bin/x64/Release_Console//PreyPredator_api_test"
+			#simulation_command = executable+" "+current_initial_state+" 1000"
+		#print(simulation_command)
+		
+		
+		##Run simulation
+		#os.system(simulation_command)
+
+		##Parse results
+		#results_file = open(i+"/","r")
+		#results = results_file.readlines()
+		#results_file.close()
+		#print(results)
+		
+	return start_time, population
+
+def run_ga(mu,LAMBDA,max_generations,max_time,start_time,crossover,mutation):
+	global curr_pop
+	Population = None
+	
+	##Model executable
+	#executable = ""
+	#simulation_command = ""
+	#os_walk = list(os.walk("../../iterations"))
+	#if len(os_walk[0][1])>1:
+		#initial_states = [x[0] for x in os_walk][1:]
+	#else:
+		#initial_states = [x[0] for x in os_walk]
+	#for i in initial_states:
+		#current_initial_state = i+"/0.xml"
+		#if OS_NAME=='nt':
+			#executable = PROJECT_DIRECTORY+"../../../bin/x64/Release_Console//PreyPredator_api_test.exe"
+			#simulation_command = executable+" "+current_initial_state+" 1000"
+		#else:
+			#executable = "./"+PROJECT_DIRECTORY+"../../../bin/x64/Release_Console//PreyPredator_api_test"
+			#simulation_command = executable+" "+current_initial_state+" 1000"
+		#print(simulation_command)
+		
+		
+		##Run simulation
+		#os.system(simulation_command)
+
+		##Parse results
+		#results_file = open(i+"/","r")
+		#results = results_file.readlines()
+		#results_file.close()
+		#print(results)
+		
+	return Population
+
+############## testing_surrogate_experiment ############
+
+def train_surrogate(hidden_layers,error,max_time,max_training_generations):
+	surrogate_accuracy = None
+	
+	##Model executable
+	#executable = ""
+	#simulation_command = ""
+	#os_walk = list(os.walk("../../iterations"))
+	#if len(os_walk[0][1])>1:
+		#initial_states = [x[0] for x in os_walk][1:]
+	#else:
+		#initial_states = [x[0] for x in os_walk]
+	#for i in initial_states:
+		#current_initial_state = i+"/0.xml"
+		#if OS_NAME=='nt':
+			#executable = PROJECT_DIRECTORY+"../../../bin/x64/Release_Console//PreyPredator_api_test.exe"
+			#simulation_command = executable+" "+current_initial_state+" 1000"
+		#else:
+			#executable = "./"+PROJECT_DIRECTORY+"../../../bin/x64/Release_Console//PreyPredator_api_test"
+			#simulation_command = executable+" "+current_initial_state+" 1000"
+		#print(simulation_command)
+		
+		
+		##Run simulation
+		#os.system(simulation_command)
+
+		##Parse results
+		#results_file = open(i+"/","r")
+		#results = results_file.readlines()
+		#results_file.close()
+		#print(results)
+		
+	return surrogate_accuracy
 
 def main():
 	
@@ -182,6 +360,34 @@ def main():
 	#Experiment Set user defined functions
 	
 	run_batch()
+	
+	#mu = int(100)
+	
+	#LAMBDA = int(10)
+	
+	#max_time = int(60)
+	
+	#max_generations = int(10)
+	
+	#mutation = float(0.25)
+	
+	#crossover = float(0.5)
+	
+	#fitness = fitness_function(primary,secondary,tertiary)
+	
+	#start_time, population = setup_ga(mu)
+	
+	#Population = run_ga(mu,LAMBDA,max_generations,max_time,start_time,crossover,mutation)
+	
+	#hidden_layers = (100,100)
+	
+	#error = float(1e-9)
+	
+	#max_time = int(60)
+	
+	#max_training_generations = int(2000)
+	
+	#surrogate_accuracy = train_surrogate(hidden_layers,error,max_time,max_training_generations)
 	
 	return
 

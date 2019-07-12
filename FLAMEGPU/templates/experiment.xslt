@@ -77,13 +77,14 @@ def generate_initial_states<xsl:if test="xmml:GeneratorName">_<xsl:value-of sele
 
 	</xsl:if>
 	prefix_components = []
+	prefix = ''
 	<xsl:if test="xmml:Files/xmml:Prefix">
 	<xsl:for-each select="xmml:Files/xmml:Prefix/xmml:AltersWith">prefix_components += [["<xsl:value-of select="text()"/>",global_data["<xsl:value-of select="text()"/>"][0] if len(global_data)>0 else "NA"]]<xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text></xsl:for-each>
 	<xsl:for-each select="xmml:Files/xmml:Prefix/xmml:Alteration">prefix_components += [["<xsl:value-of select="xmml:Variable/xmml:Name"/>", <xsl:if test="xmml:Variable/xmml:Type = 'str'">"</xsl:if><xsl:value-of select="xmml:Variable/xmml:Initial"/><xsl:if test="xmml:Variable/xmml:Type = 'str'">"</xsl:if>]]<xsl:text>&#xa;</xsl:text><xsl:text>&#x9;</xsl:text></xsl:for-each>
 	prefix_strings = [str(y) for x in prefix_components for y in x]
 	prefix = <xsl:choose><xsl:when test="xmml:Files/xmml:Prefix/xmml:Delimiter">"<xsl:value-of select="xmml:Files/xmml:Prefix/xmml:Delimiter"/>"</xsl:when><xsl:otherwise>"_"</xsl:otherwise></xsl:choose>.join(prefix_strings)
 	</xsl:if>
-	prefix = location_name
+	prefix = location_name+prefix
 	if len(global_data)>0:
 		global_names = [x for x in global_data]
 		unnamed_global_combinations = list(itertools.product(*[y for x,y in global_data.items()]))
@@ -113,7 +114,7 @@ def generate_initial_states<xsl:if test="xmml:GeneratorName">_<xsl:value-of sele
 				prefix_components = [x if not x[0] in g[0] else [x[0],g[1][g[0].index(x[0])]] for x in prefix_components]
 				<xsl:for-each select="xmml:Files/xmml:Prefix/xmml:Alteration">prefix_components = [x if not x[0]=="<xsl:value-of select="xmml:Variable/xmml:Name"/>" else [x[0],x[1]+<xsl:choose><xsl:when test="xmml:Variable/xmml:Type = 'str'">"</xsl:when><xsl:otherwise><xsl:value-of select="xmml:Variable/xmml:Type"/>(</xsl:otherwise></xsl:choose><xsl:value-of select="xmml:Variable/xmml:Update"/><xsl:choose><xsl:when test="xmml:Variable/xmml:Type = 'str'">"</xsl:when><xsl:otherwise>)</xsl:otherwise></xsl:choose>] for x in prefix_components]<xsl:text>&#xa;</xsl:text></xsl:for-each> 
 				prefix_strings = [str(y) for x in prefix_components for y in x]
-				prefix = <xsl:choose><xsl:when test="xmml:Files/xmml:Prefix/xmml:Delimiter">"<xsl:value-of select="xmml:Files/xmml:Prefix/xmml:Delimiter"/>"</xsl:when><xsl:otherwise>"_"</xsl:otherwise></xsl:choose>.join(prefix_strings)
+				prefix = location_name+<xsl:choose><xsl:when test="xmml:Files/xmml:Prefix/xmml:Delimiter">"<xsl:value-of select="xmml:Files/xmml:Prefix/xmml:Delimiter"/>"</xsl:when><xsl:otherwise>"_"</xsl:otherwise></xsl:choose>.join(prefix_strings)
 				</xsl:when>
 				<xsl:otherwise>initial_state(str(prefix),"<xsl:value-of select="xmml:Files/xmml:InitialFileName"/>",g,current_agent_data)</xsl:otherwise>
 				</xsl:choose>
@@ -126,7 +127,7 @@ def generate_initial_states<xsl:if test="xmml:GeneratorName">_<xsl:value-of sele
 			prefix_components = [x if not x[0] in g[0] else [x[0],g[1][g[0].index(x[0])]] for x in prefix_components]
 			<xsl:for-each select="xmml:Files/xmml:Prefix/xmml:Alteration">prefix_components = [x if not x[0]=="<xsl:value-of select="xmml:Variable/xmml:Name"/>" else [x[0],x[1]+<xsl:choose><xsl:when test="xmml:Variable/xmml:Type = 'str'">"</xsl:when><xsl:otherwise><xsl:value-of select="xmml:Variable/xmml:Type"/>(</xsl:otherwise></xsl:choose><xsl:value-of select="xmml:Variable/xmml:Update"/><xsl:choose><xsl:when test="xmml:Variable/xmml:Type = 'str'">"</xsl:when><xsl:otherwise>)</xsl:otherwise></xsl:choose>] for x in prefix_components]<xsl:text>&#xa;</xsl:text></xsl:for-each> 
 			prefix_strings = [str(y) for x in prefix_components for y in x]
-			prefix = <xsl:choose><xsl:when test="xmml:Files/xmml:Prefix/xmml:Delimiter">"<xsl:value-of select="xmml:Files/xmml:Prefix/xmml:Delimiter"/>"</xsl:when><xsl:otherwise>"_"</xsl:otherwise></xsl:choose>.join(prefix_strings)
+			prefix = location_name+<xsl:choose><xsl:when test="xmml:Files/xmml:Prefix/xmml:Delimiter">"<xsl:value-of select="xmml:Files/xmml:Prefix/xmml:Delimiter"/>"</xsl:when><xsl:otherwise>"_"</xsl:otherwise></xsl:choose>.join(prefix_strings)
 			</xsl:when>
 			<xsl:otherwise>initial_state(str(prefix),"<xsl:value-of select="xmml:Files/xmml:InitialFileName"/>",g,current_agent_data)</xsl:otherwise>
 			</xsl:choose>
@@ -139,7 +140,7 @@ def generate_initial_states<xsl:if test="xmml:GeneratorName">_<xsl:value-of sele
 			prefix_components = [x if not x[0] in a else [x[0],a.index(x[0])[1]] for x in prefix_components]
 			<xsl:for-each select="xmml:Files/xmml:Prefix/xmml:Alteration">prefix_components = [x if not x[0]=="<xsl:value-of select="xmml:Variable/xmml:Name"/>" else [x[0],x[1]+<xsl:choose><xsl:when test="xmml:Variable/xmml:Type = 'str'">"</xsl:when><xsl:otherwise><xsl:value-of select="xmml:Variable/xmml:Type"/>(</xsl:otherwise></xsl:choose><xsl:value-of select="xmml:Variable/xmml:Update"/><xsl:choose><xsl:when test="xmml:Variable/xmml:Type = 'str'">"</xsl:when><xsl:otherwise>)</xsl:otherwise></xsl:choose>] for x in prefix_components]<xsl:text>&#xa;</xsl:text></xsl:for-each> 
 			prefix_strings = [str(y) for x in prefix_components for y in x]
-			prefix = <xsl:choose><xsl:when test="xmml:Files/xmml:Prefix/xmml:Delimiter">"<xsl:value-of select="xmml:Files/xmml:Prefix/xmml:Delimiter"/>"</xsl:when><xsl:otherwise>"_"</xsl:otherwise></xsl:choose>.join(prefix_strings)
+			prefix = location_name+<xsl:choose><xsl:when test="xmml:Files/xmml:Prefix/xmml:Delimiter">"<xsl:value-of select="xmml:Files/xmml:Prefix/xmml:Delimiter"/>"</xsl:when><xsl:otherwise>"_"</xsl:otherwise></xsl:choose>.join(prefix_strings)
 			</xsl:when>
 			<xsl:otherwise>initial_state(str(prefix),"<xsl:value-of select="xmml:Files/xmml:InitialFileName"/>",global_data,current_agent_data)</xsl:otherwise>
 			</xsl:choose>
@@ -154,8 +155,12 @@ def initial_state(save_location,file_name,global_information,agent_information):
 	if not os.path.exists(PROJECT_DIRECTORY+"<xsl:value-of select="exp:Experimentation/xmml:InitialStates/@baseDirectory"/>"):
 		os.mkdir(PROJECT_DIRECTORY+"<xsl:value-of select="exp:Experimentation/xmml:InitialStates/@baseDirectory"/>")
 	SAVE_DIRECTORY = PROJECT_DIRECTORY+"<xsl:value-of select="exp:Experimentation/xmml:InitialStates/@baseDirectory"/>"+"/"
-	if not os.path.exists(SAVE_DIRECTORY+str(save_location)):
-		os.mkdir(SAVE_DIRECTORY+str(save_location))
+	save_split = save_location.split("/")
+	temp = ''
+	for i in save_split:
+		temp += i+"/"
+		if not os.path.exists(SAVE_DIRECTORY+temp):
+			os.mkdir(SAVE_DIRECTORY+temp)
 	print("Creating initial state in",SAVE_DIRECTORY,save_location,"/",file_name,"\n")
 	initial_state_file = open(SAVE_DIRECTORY+str(save_location)+"/"+str(file_name)+".xml","w")
 	initial_state_file.write("&lt;states&gt;\n&lt;itno&gt;0&lt;/itno&gt;\n&lt;environment&gt;\n")
@@ -214,29 +219,39 @@ def <xsl:value-of select="xmml:Name" />(<xsl:for-each select="xmml:Arguments/xmm
 	#for i in range(<xsl:value-of select="../../xmml:Repeats"/>):
 		#location_name = "<xsl:value-of select="xmml:Name" />_"+str(i)+"/"
 		#generate_initial_states_<xsl:value-of select="../../../xmml:InitialState/xmml:Generator"/>(location_name)
-		#if OS_NAME=='nt':
-			#executable = PROJECT_DIRECTORY+"<xsl:value-of select="../../../xmml:Model/xmml:ExecutableLocation" />/<xsl:value-of select="../../../xmml:Model/xmml:ModelName" />.exe"
-			#simulation_command = executable+" "+base_output_directory+location_name+"/0.xml <xsl:value-of select="../../xmml:Iterations"/>"
+		##Model executable
+		#executable = ""
+		#simulation_command = ""
+		#os_walk = list(os.walk(base_output_directory+location_name))
+		#if len(os_walk[0][1])>1:
+			#initial_states = [x[0] for x in os_walk][1:]
 		#else:
-			#executable = "./"+PROJECT_DIRECTORY+"<xsl:value-of select="../../../xmml:Model/xmml:ExecutableLocation" />/<xsl:value-of select="../../../xmml:Model/xmml:ModelName" />"
-			#simulation_command = executable+" "+base_output_directory+location_name+"/0.xml <xsl:value-of select="../../xmml:Iterations"/>"
-		#print(simulation_command)
-		##Run simulation
-		#os.system(simulation_command)
+			#initial_states = [x[0] for x in os_walk]
+		#for j in initial_states:
+			#current_initial_state = j+"/0.xml"
+			#if OS_NAME=='nt':
+				#executable = PROJECT_DIRECTORY+"<xsl:value-of select="../../../xmml:Model/xmml:ExecutableLocation" />/<xsl:value-of select="../../../xmml:Model/xmml:ModelName" />.exe"
+				#simulation_command = executable+" "+current_initial_state+" <xsl:value-of select="../../xmml:Iterations"/>"
+			#else:
+				#executable = "./"+PROJECT_DIRECTORY+"<xsl:value-of select="../../../xmml:Model/xmml:ExecutableLocation" />/<xsl:value-of select="../../../xmml:Model/xmml:ModelName" />"
+				#simulation_command = executable+" "+current_initial_state+" <xsl:value-of select="../../xmml:Iterations"/>"
+			#print(simulation_command)
+			##Run simulation
+			#os.system(simulation_command)
 
-		##Parse results
-		#results_file = open(base_output_directory+location_name+"/<xsl:value-of select="../../../xmml:SimulationOutput/xmml:FileName"/>","r")
-		#results = results_file.readlines()
-		#results_file.close()
-		#print(results)
+			##Parse results
+			#results_file = open(j+"/<xsl:value-of select="../../../xmml:SimulationOutput/xmml:FileName"/>","r")
+			#results = results_file.readlines()
+			#results_file.close()
+			#print(results)
 	</xsl:if>
 	</xsl:if>
 	<xsl:if test="not(../../../xmml:InitialState/xmml:Generator)">
 	##Model executable
 	#executable = ""
 	#simulation_command = ""
-	#os_walk = os.walk("../../<xsl:value-of select="../../../../../xmml:InitialStates/xmml:InitialStateFile/xmml:Location"/>")
-	#if len(os_walk)>1:
+	#os_walk = list(os.walk("../../<xsl:value-of select="../../../../../xmml:InitialStates/xmml:InitialStateFile/xmml:Location"/>"))
+	#if len(os_walk[0][1])>1:
 		#initial_states = [x[0] for x in os_walk][1:]
 	#else:
 		#initial_states = [x[0] for x in os_walk]
@@ -255,7 +270,7 @@ def <xsl:value-of select="xmml:Name" />(<xsl:for-each select="xmml:Arguments/xmm
 		#os.system(simulation_command)
 
 		##Parse results
-		#results_file = open(PROJECT_DIRECTORY+"/<xsl:value-of select="../../../xmml:SimulationOutput/xmml:Location"/>"+i+"/<xsl:value-of select="../../../xmml:SimulationOutput/xmml:FileName"/>","r")
+		#results_file = open(i+"/<xsl:value-of select="../../../xmml:SimulationOutput/xmml:FileName"/>","r")
 		#results = results_file.readlines()
 		#results_file.close()
 		#print(results)
@@ -298,7 +313,7 @@ def main():
 	<xsl:for-each select="exp:Experimentation/xmml:ExperimentSet/xmml:Experiment">
 	<xsl:if test="xmml:Configuration/xmml:ExperimentVariables">
 	<xsl:for-each select="xmml:Configuration/xmml:ExperimentVariables/xmml:Variable">
-	<xsl:value-of select="xmml:Name" /> = <xsl:if test="not(xmml:Type='tuple')"><xsl:value-of select="xmml:Type" /></xsl:if>(<xsl:value-of select="xmml:Value" />)
+	#<xsl:value-of select="xmml:Name" /> = <xsl:if test="not(xmml:Type='tuple')"><xsl:value-of select="xmml:Type" /></xsl:if>(<xsl:value-of select="xmml:Value" />)
 	</xsl:for-each>
 	</xsl:if>
 	<xsl:if test="xmml:Configuration/xmml:ExperimentFunctions">
@@ -312,5 +327,210 @@ def main():
 
 if __name__ == "__main__":
 	main()
+
+
+######################## TEMPLATE SEARCH AND SURROGATE MODELLING CODE ##########################################################
+
+#Template (1+1)GA search
+#from deap import base
+#from deap import creator
+#from deap import tools
+#import numpy as np
+#import datetime
+#import queue
+#import threading
+#
+##Alterable parameters, recommend using larger mu (e.g. 100) to reduce chance of being stuck in local optima and population domination by variations of strong candidate, similar with lambda (e.g. 25)
+#mu = 1
+#lam = 1
+#max_generations = 100
+##Maximum run time in minutes
+#max_time = 100
+#crossover = True
+#mutation_rate = 0.2
+#mates_rate = 0.5
+##Threshold at which a candidate solution is considered optimal
+#optimal_fitness = 0.95
+#Provide a list with min and max for each parameter 
+#parameter_limits = [[parameter1_min,parameter1_max],[parameter2_min,parameter2_max]]
+#output_file = "ga_results.csv"
+#cwd = os.cwwd()+"/"
+#logged_statistics = ["mean", "std", "min", "max"]
+#
+#def ga_search(mu,lam,max_generations,max_time,output_file):
+#	global curr_pop, statistics, toolbox
+#	if not os.path.exists(cwd+"ga_temp/"):
+#		os.mkdir(cwd+"ga_temp/")
+#	working_directory = cwd+"ga_temp/"
+#	if not os.path.exists(working_directory+"optimal_solutions_discovered.csv"):
+#		open(working_directory+"optimal_solutions_discovered.csv","w").close()
+#	#Create a fitness function +ve for maximisation, -ve for minimisation
+#	creator.create("Fitness",base.Fitness,weights=(1.0,))#ALTER THIS FITNESS WEIGHTING (possible to have multiple weightings for multiple values e.g. minimise a and c but maximise b with weightings (-1.0,0.75,-0.5,))
+#	creator.create("Individual",list,fitness=creator.Fitness)
+#	toolbox = base.Toolbox()
+#	toolbox.register("individual",create_individual,creator.Individual)
+#	toolbox.register("population", tools.initRepeat, list, toolbox.individual)
+#	#New statistics should be created for each fitness value to be tracked (and the log method and required globals altered accordingly)
+#	statistics = tools.Statistics(lambda individual: individual.fitness.values[0])
+#	for s in logged_statistics:
+#		method = getattr(np,s)
+#		statistics.register(s,np.method)
+#	logbook = tools.Logbook()
+#	logbook.header = ['generation', 'evaluations'] + (statistics.fields if statistics else [])
+#	toolbox.register("select_parents", select_parents)
+#	toolbox.register("mutate",mutate)
+#	toolbox.register("mate",mate)
+#
+#	current_generation = 0
+#	#Initialise a population of mu individuals
+#	population = toolbox.population(n=mu)
+#	start_time = datetime.datetime.now()
+#	print("Initial population evalauation (Generation 0)")
+#	#Evaluate initial population
+#	initial_fitnesses = evaluate_population(population)
+#	candidates_evaluated = mu
+#	#Record results per GA in file named the same the current seed being used for the random module
+#	unique_run_seed = random.randrange(sys.maxsize)
+#	seed_record = working_directory+str(unique_run_seed)+".csv"
+#	if not os.path.exists(seed_record):
+#		population_record = open(seed_record,"w")
+#	else:
+#		population_record = open(working_directory+str(unique_run_seed)+"(1).csv","w")
+#	population_record.write("generation,0,mu,"+str(mu)+",lambda,"+str(lam)+"\n")
+#	#Set popualtion fitness to evaluated fitness
+#	for i in range(len(initial_fitnesses)):
+#		population[i].fitness.values = initial_fitnesses[i][0]
+#		population_record.write("\tParameters,")
+#		for j in population[i][0].tolist():
+#			population_record.write(str(j)+",")
+#		population_record.write("Fitness,"+str(population[i].fitness.values)+"\n")
+#	population_record.close()
+#	#Record initial population in the logbook
+#	log(logbook, population, current_generation, mu)
+#
+#	#Begin generational GA process
+#	end_conditions = False
+#	optimal_solutions = []
+#	optimal_count = 0
+#	while(current_generation&lt;max_generations and (not end_conditions)):
+#		current_generation += 1
+#		print("\t Generation:",current_generation)
+#		generational_evaluations = 0
+#		curr_pop = 0
+#		offspring = []
+#		evaluations = []
+#		#Generate offspring candidates. If crossover is being used, it is done before mutation
+#		for i in range(lam):
+#			mate_chance = random.uniform(0,1)
+#			if mate_chance&lt;mates_rate and (not crossover):
+#				child = toolbox.individual()
+#			else:
+#				parent1, parent2 = [toolbox.clone(x) for x in toolbox.select_parents(population, 2)]
+#				child = toolbox.mate(parent1, parent2)
+#			offspring += [child]
+#		#Mutate new candidates
+#		for off in offspring:
+#			off, = toolbox.mutate(off)
+#		generational_evaluations += len(offspring)
+#		evaluations = evaluate_population(offspring)
+#		for i in range(len(evaluations)):
+#			offspring[i].fitness.values = evaluations[i][0]
+#		candidates_evaluated += generational_evaluations
+#		#Select the next generation, favouring the offspring in the event of equal fitness values
+#		population, new_individuals = favour_offspring(population, offspring, mu)
+#		#Print a report about the current generation
+#		if generational_evaluations&gt;0:
+#			log(logbook, population, current_generation, generational_evaluations)
+#		#Save to file in case of early exit
+#		#log_fitness = open(working_directory+"current_ga_fitness_log.csv","w")
+#		#log_fitness.write(str(logbook)+"\n")
+#		#log_fitness.close()
+#		if nt os.path.exists(seed_record):
+#			population_record = open(seed_record,"w")
+#		else:
+#			population_record = open(working_directory+str(unique_run_seed)+"(1).csv","w")
+#		check_nonunique = []
+#		for p in population:
+#			population_record.write("\t")
+#			for q in p[0].tolist():
+#				population_record.write(str(q)+",")
+#			population_record.write("fitness,"+str(p.fitness.values)+",fitnesses,"+str(p.fitnesses.values)+"\n")
+#			if p.fitness.values[0]&gt;optimal_fitness:
+#				for opt in optimal_solutions:
+#					check_nonunique.append(all(elem in p[0][:-1] for elem in opt[0][:-1]))
+#				if not any(check_nonunique):
+#					optimal_solutions.append((p,current_generations))
+#		population_record.write("SimulationGA,generation,"+str(current_generation)+"\n")
+#		population_record.close()
+#		end_time = datetime.datetime.now()
+#		time_taken = end_time-start_time
+#		opti = optimal_solutions[optimal_count:]
+#		if len(opti)>0:
+#			opt = open(working_directory+"optimal_solutions_discovered.csv","a")
+#			for b in opti:
+#				opt.write("SimulationGA,"+str(unique_run_seed)+",Solution_Parameters,"+str(b[0][0].tolist())+",Fitness,"+str(b[0].fitness.values)+",Discovered_Generation,"+str(b[1])+",Discovered_Time,"+str(end_time)+"\n")
+#			opt.close()
+#		optimal_count = len(optimal_solutions)
+#
+#	#Record GA results
+#	if not os.path.exists(cwd+results_file):
+#		results_file = open(cwd+results_file,"w")
+#	results_file = open(cwd+results_file,"a")
+#	results_file.write(str(logbook)+"\n")
+#	results_file.close()
+#	if not os.path.exists(cwd+"ga_times.csv"):
+#		open(loc+"times.csv","w").close()
+#	time = open(loc+"times.csv","a")
+#	time.write("ga_seed,"+str(unique_run_seed)+",started_at,"+str(start_time)+",ended_at,"+str(end_time)+",total_time,"+str(time_taken)+"\n")
+#	time.close()
+#	return
+#
+#def create_individual(container):
+#	global curr_pop
+#	new = [0]*(len(parameter_limits)+1)
+#	for i in range(len(parameter_limits)):
+#		if type(parameter_limits[i][0])==type(int()):
+#			new[i] = int(random.uniform(parameter_limits[i][0], parameter_limits[i][1]))
+#		else:
+#			new[i] = round(random.uniform(parameter_limits[i][0], parameter_limits[i][1]),6)
+#	new[-1] = curr_pop
+#	curr_pop += 1
+#	new = np.array(new, dtype=np.float64).reshape(1,-1)
+#	return container(new)
+#
+#def favour_offspring(parents, offspring, MU):
+#	choice = (list(zip(parents, [0]*len(parents))) +
+#				list(zip(offspring, [1]*len(offspring))))
+#	choice.sort(key=lambda x: ((x[0].fitness.values[0]), x[1]), reverse=True)
+#	return [x[0] for x in choice[:MU]], [x[0] for x in choice[:MU] if x[1]==1]
+#
+#def log(logbook, popualtion, gen, evals):
+#	global statistics
+#	record = statistics.compile(population) if statistics else {}
+#	logbook.record(generation=gen,evaluations=evals,**record)
+#	return
+#
+#def evaluate_population(population):
+#	return evaluated_popualtion
+#
+#Define a function for crossover between 2 individuals (many are available in deap if individuals are in bitstring form)
+#def mate(parent1, parent2):
+#	global toolbox
+#	#child = toolbox.individual()
+#	return child
+#
+#Define a function for mutating an individual (many are available in deap if individuals are in bitstring form)
+#def mutate(individual):
+#	global toolbox
+#
+#	return individual,
+#
+#Define a function for selecting parents (many are available in deap)
+#def select_parents(individuals,k):
+#	global toolbox
+#	#Example selection function, randomly select 2 parents from population
+#	#parents = [random.choice(individuals) for i in range(k)]
+#	#return [toolbox.clone(ind) for ind in parents]
+#
 </xsl:template>
 </xsl:stylesheet>
