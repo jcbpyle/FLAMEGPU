@@ -357,7 +357,7 @@ if __name__ == "__main__":
 #cwd = os.cwwd()+"/"
 #logged_statistics = ["mean", "std", "min", "max"]
 #
-#def ga_search(mu,lam,max_generations,max_time,output_file):
+#def genetic_algorithm(mu,lam,max_generations,max_time,output_file):
 #	global curr_pop, statistics, toolbox
 #	if not os.path.exists(cwd+"ga_temp/"):
 #		os.mkdir(cwd+"ga_temp/")

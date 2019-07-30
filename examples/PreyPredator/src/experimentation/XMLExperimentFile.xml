@@ -20,7 +20,7 @@
             <FileName>0</FileName>
             <Location>iterations</Location>
         </InitialStateFile>
-        <InitialStateGenerator>
+        <InitialStateGenerator model="PredatorPrey_api_test">
             <GeneratorName>predprey</GeneratorName>
             <Files>
                 <InitialFileName>0</InitialFileName>
