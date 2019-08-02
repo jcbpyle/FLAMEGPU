@@ -78,15 +78,15 @@ def generate_initial_states_predpreygrass(location_name=''):
 		for g in global_combinations:
 			for a in agent_combinations:
 				current_agent_data = [agent+[[x[0],x[1]] for x in vary_per_agent[agent[0]].items()] for agent in a]
-				initial_state("iterations/",str(prefix),"0.xml",g,current_agent_data)
+				initial_state("reproduced_iterations/",str(prefix),"0.xml",g,current_agent_data)
 	elif len(global_combinations)>0:
 		for g in global_combinations:
 			current_agent_data = [agent+[[x[0],x[1]] for x in vary_per_agent[agent[0]].items()] for agent in agent_data]
-			initial_state("iterations/",str(prefix),"0.xml",g,current_agent_data)
+			initial_state("reproduced_iterations/",str(prefix),"0.xml",g,current_agent_data)
 	elif len(agent_combinations)>0:
 		for a in agent_combinations:
 			current_agent_data = [agent+[[x[0],x[1]] for x in vary_per_agent[agent[0]].items()] for agent in a]
-			initial_state("iterations/",str(prefix),"0.xml",global_data,current_agent_data)
+			initial_state("reproduced_iterations/",str(prefix),"0.xml",global_data,current_agent_data)
 	else:
 		print("No global or agent variations specified for experimentation\n")
 	return global_data,agent_data,location_name
@@ -155,25 +155,25 @@ def initial_state(save_location,folder_prefix,file_name,global_information,agent
 
 def random_parameter_search():
 	
-	experiment_seed = random.randrange(sys.maxsize)
+	experiment_seed = 9214792411961493808
 	random.seed(experiment_seed)
 	experiment_start_time = datetime.datetime.now()
 	
-	if not os.path.exists(PROJECT_DIRECTORY+"/iterations/"):
-		os.mkdir(PROJECT_DIRECTORY+"/iterations/")
-	experiment_info_file = open(PROJECT_DIRECTORY+"/iterations/experiment_information.csv","w")
+	if not os.path.exists(PROJECT_DIRECTORY+"/reproduced_iterations/"):
+		os.mkdir(PROJECT_DIRECTORY+"/reproduced_iterations/")
+	experiment_info_file = open(PROJECT_DIRECTORY+"/reproduced_iterations/experiment_information.csv","w")
 	experiment_info_file.write("Experiment,random_parameter_search\nSeed,"+str(experiment_seed)+"\nstart_time,"+str(experiment_start_time)+"\n")
 	experiment_info_file.close()
-	open(PROJECT_DIRECTORY+"iterations/simulation_results.csv","w").close()
+	open(PROJECT_DIRECTORY+"reproduced_iterations/simulation_results.csv","w").close()
 	
 	#Run for desired number of repeats
 	REPEATS = 10
-	base_output_directory = PROJECT_DIRECTORY+"iterations/"
+	base_output_directory = PROJECT_DIRECTORY+"reproduced_iterations/"
 	for i in range(REPEATS):
 		location_name = "random_parameter_search_"+str(i)+"/"
 		generate_initial_states_predpreygrass(location_name)
 		#generation_time = datetime.datetime.now()
-		#ef = open(PROJECT_DIRECTORY+"iterations/experiment_information.csv","a")
+		#ef = open(PROJECT_DIRECTORY+"reproduced_iterations/experiment_information.csv","a")
 		#ef.write("repeat,"+str(i)+"\ninitial_states_generated,"+str(generation_time)+"\n")
 		#ef.close()
 		#Model executable
@@ -200,14 +200,14 @@ def random_parameter_search():
 			results_file = open(j+"/log.csv","r")
 			results = results_file.readlines()
 			results_file.close()
-			sim_results_file = open(PROJECT_DIRECTORY+"iterations/simulation_results.csv","a")
+			sim_results_file = open(PROJECT_DIRECTORY+"reproduced_iterations/simulation_results.csv","a")
 			for res in results:
 				sim_results_file.write(str(res)+"\n")
 			sim_results_file.close()
 			print(results)
 	experiment_completion_time = datetime.datetime.now()
 	time_taken = experiment_completion_time-experiment_start_time
-	ef = open(PROJECT_DIRECTORY+"iterations/experiment_information.csv","a")
+	ef = open(PROJECT_DIRECTORY+"reproduced_iterations/experiment_information.csv","a")
 	ef.write("completion_time,"+str(experiment_completion_time)+"\ntime_taken,"+str(time_taken)+"\n")
 	
 	return 

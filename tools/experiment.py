@@ -26,10 +26,11 @@ import pycuda.driver as cuda
 import pycuda.autoinit
 
 BASE_DIRECTORY = os.getcwd()+"/"
-PROJECT_DIRECTORY = BASE_DIRECTORY+"../../"
+PROJECT_DIRECTORY = BASE_DIRECTORY
 GPUS_AVAILABLE = cuda.Device(0).count()
 OS_NAME = os.name
 
+PROJECT_DIRECTORY = BASE_DIRECTORY+"/"
 #InitialStates
 
 #Generate initial states based on defined ranges/lists/values for all global and agent population variables for experiment predpreygrass.
@@ -155,7 +156,7 @@ def initial_state(save_location,folder_prefix,file_name,global_information,agent
 
 def random_parameter_search():
 	
-	experiment_seed = random.randrange(sys.maxsize)
+	experiment_seed = 9214792411961493808
 	random.seed(experiment_seed)
 	experiment_start_time = datetime.datetime.now()
 	
@@ -187,10 +188,10 @@ def random_parameter_search():
 		for j in initial_states:
 			current_initial_state = j+"/0.xml"
 			if OS_NAME=='nt':
-				executable = PROJECT_DIRECTORY+"../../bin/x64/Release_Console//PredatorPreyGrass.exe"
+				executable = PROJECT_DIRECTORY+"//PredatorPreyGrass.exe"
 				simulation_command = executable+" "+current_initial_state+" 1000"
 			else:
-				executable = "./"+PROJECT_DIRECTORY+"../../bin/x64/Release_Console//PredatorPreyGrass"
+				executable = "./"+PROJECT_DIRECTORY+"//PredatorPreyGrass"
 				simulation_command = executable+" "+current_initial_state+" 1000"
 			print(simulation_command)
 			#Run simulation

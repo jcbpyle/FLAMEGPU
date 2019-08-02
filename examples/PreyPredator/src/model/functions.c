@@ -76,7 +76,7 @@ __FLAME_GPU_STEP_FUNC__ void outputToLogFile() {
 	int predator = get_agent_predator_default2_count();
 	int prey = get_agent_prey_default1_count();
 	//Use a FLAME GPU parallel reduction function to get all grass which is available
-	int grass = reduce_grass_default3_available_variable();
+	//int grass = reduce_grass_default3_available_variable();
 	pop_diff += abs(predator - prey);
 	if (current_largest_pop == 1 && (prey > predator)) {
 		oscillations++;
@@ -89,7 +89,7 @@ __FLAME_GPU_STEP_FUNC__ void outputToLogFile() {
 		}
 	}
 	
-	float pop_difference_per_time = float(pop_diff) / iteration;
+	//float pop_difference_per_time = float(pop_diff) / iteration;
 	if (death_check == 0) {
 		if (prey == 0 || predator == 0) {
 			death_iteration = iteration;
@@ -107,10 +107,11 @@ __FLAME_GPU_INIT_FUNC__ void initLogFile() {
 	char output_file[1024];
 	sprintf(output_file, "%s%s", getOutputDir(), "log.csv");
 	count_output = fopen(output_file, "a");
-	fclose(count_output);
 	initPredator = get_agent_predator_default2_count();
 	initPrey = get_agent_prey_default1_count();
 	initGrass = get_agent_grass_default3_count();
+	fprintf(count_output, "Parameters,%d,%d,%d,%f,%f,%d,%d,%d,", initPrey, initPredator, initGrass, *get_REPRODUCE_PREY_PROB(), *get_REPRODUCE_PREDATOR_PROB(), *get_GAIN_FROM_FOOD_PREY(), *get_GAIN_FROM_FOOD_PREDATOR(), *get_GRASS_REGROW_CYCLES());
+	fclose(count_output);
 	printf("Initialising with agent populations: prey %d, pred %d, grass %d\n", initPrey, initPredator, initGrass);
 	if (initPredator > initPrey) {
 		current_largest_pop = 1;
@@ -143,7 +144,7 @@ __FLAME_GPU_EXIT_FUNC__ void closeLogFile() {
 	int secondary = calculate_secondary_fitness();
 	float tertiary = calculate_tertiary_fitness();
 	printf("Exiting with values: death iteration %d, oscillation %d, pop over time %f\n", primary, secondary, tertiary);
-	fprintf(count_output, "Parameters,%d,%d,%d,%f,%f,%d,%d,%d,Fitnesses,%d,%d,%f\n", initPrey, initPredator, initGrass, *get_REPRODUCE_PREY_PROB(), *get_REPRODUCE_PREDATOR_PROB(), *get_GAIN_FROM_FOOD_PREY(), *get_GAIN_FROM_FOOD_PREDATOR(), *get_GRASS_REGROW_CYCLES(), primary, secondary, tertiary);
+	fprintf(count_output, "Fitnesses,%d,%d,%f\n", primary, secondary, tertiary);
 	fclose(count_output);
 }
 
